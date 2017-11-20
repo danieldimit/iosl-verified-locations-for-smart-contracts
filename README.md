@@ -27,3 +27,7 @@ This provides you with 10 different accounts and private keys, along with a loca
 3. Open the [Remix IDE](http://remix.ethereum.org/) and click the "Run" tab on the top right side. Then set the value for the "Environment" property to "Web3 Provider". Then click "Yes" on the first and on the next dialog add http://localhost:8545 as Web3 Provider Endpoint.
 
 4. Add the CarSharingContract.sol to the workspace by clicking the upload icon on the top left corner.
+
+## Team
+
+Daniel Dimitrov * Har Preet Singh * Piyasa Basak * Radoslav Vlaskovski * Sebastian Zickau * Victor Friedhelm

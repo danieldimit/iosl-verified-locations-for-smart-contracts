@@ -1,45 +1,47 @@
 pragma solidity ^0.4.18;
 
 contract CarSharingLocation {
-    
+
     //////////////////////////// VARIABLES AND CONSTANTS
-    
+
     address constant owner = 0x51c9dc23fe448520292e7d3395cf71fe1237e442;
     bytes16 constant carGSMNum = "004915902233555";
     uint constant penaltyValue = 10;
     string[] geofence = ["u301185c38uy", "u301185c38uy"];
-    
+
+    string position = "";
+
     address renter;
     bool availability = true;
     bool leftGeofence = false;
-    
-    address constant oracle = 0x69b2b9e53e1105d9d93d8eaeebaa51a97de88c67;
-    
+
+    address constant oracle = 0x91478de5e6768052165ebb7077696e896cd1b32f;
+
     // Money saved in the contract for the owner from penalties
     uint pendingWithdrawals = 0;
-    
-    
-    
+
+
+
     //////////////////////////// MODIFIERS
-    
+
     modifier onlyOwner {
         require(msg.sender == owner);
         _;
     }
-    
+
     modifier onlyRenter {
         require(msg.sender == renter);
         _;
     }
-    
+
     modifier onlyOracle {
         require(msg.sender == oracle);
         _;
     }
-    
-    
+
+
     //////////////////////////// FUNCTIONS
-    
+
     /**
      * Function for the renter to rent the car with.
      */
@@ -48,44 +50,53 @@ contract CarSharingLocation {
             // Check if the applicant renter can cover the penalty
             if (msg.value == penaltyValue) {
                 renter = msg.sender;
-                
+
                 // TODO TRIGGER EVENT for oracle to trace
-                
+
                 availability = false;
-                return true; 
+                return true;
             }
         }
         return false;
     }
-    
+
     /**
      * Function for the renter to return the car with.
      */
     function returnCar(bytes12 _curPos) onlyRenter {
-        
+
         // If the renter didn't leave the Geofence return his money
         if (!leftGeofence) {
             msg.sender.transfer(penaltyValue);
         }
         leftGeofence = false;
         availability = true;
-        
+
         // Remove the address of the renter
         renter = address(0);
     }
-    
+
     /**
      * Function called by the oracle to update the position.
-     * 
+     *
      * TODO: Decide the size of hashes we are going to use.
      * I think 5 character hashes are best compromize between security of personal
      * data and accuracy. After that has been decided change curPos to type bytesX
      * where X is the number of characters chosen
      */
-    function updatePosition(bytes12 curPos) onlyOracle {
-        
+    function updatePosition(string curPos) onlyOracle {
+        position = curPos;
     }
-    
+
+    /**
+     * Function created for testing the updatePosition
+     *
+     * Should probably be removed in the future
+     * */
+    function getPosition() onlyOracle constant returns (string) {
+        return position;
+    }
+
     /**
      * Mark that the renter left the geofence and add his money to the car owner
      * by saving them in the "pendingWithdrawals".
@@ -99,7 +110,7 @@ contract CarSharingLocation {
             leftGeofence = true;
         }
     }
-    
+
     /**
      * Check if "curPos" hash is within the geofence defined in the "geofence" array
      */
@@ -107,7 +118,7 @@ contract CarSharingLocation {
         // TODO implement the function
         return true;
     }
-    
+
     /**
      * Used by the car owner to withdraw his money from penalties
      */

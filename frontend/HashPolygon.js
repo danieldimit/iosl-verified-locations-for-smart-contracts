@@ -1,4 +1,5 @@
-var geohashpoly = require('geohash-poly')
+var geohashpoly = require('geohash-poly');
+var geo = require("ngeohash");
 
 // SET LONGITUDE FIRST THEN LANGITUDE
 // THIS IS AN OCTAGON AROUND BERLIN
@@ -16,7 +17,7 @@ geohashpoly({coords: polygon, precision: 4, hashMode: "extent" }, function (err,
         suffixes.push(hashedPolygon[i].substring(prefix.length, hashedPolygon[i].length));
     }
     console.log(prefix);
-    console.log(suffixes);
+    //console.log(suffixes);
 });
 
 
@@ -41,3 +42,25 @@ function findCommonPrefix(hashes) {
 
     return prefix;
 }
+
+geohashpoly({coords: polygon, precision: 20, integerMode: true, hashMode: "extent" }, function (err, hashes) {
+    console.log(hashes);
+
+    min = hashes[0];
+    max = hashes[0];
+    for(i = 0; i < hashes.length; i++){
+        if(min > hashes[i]){
+            min = hashes[i]
+        }
+        if(max < hashes[i]){
+            max = hashes[i]
+        }
+    }
+
+    lat = 52.520008;
+    longi = 13.404954;
+
+    c = geo.encode_int(lat, longi, 29);
+
+    console.log(c >> 9);
+});

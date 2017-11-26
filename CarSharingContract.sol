@@ -8,15 +8,21 @@ contract CarSharingLocation {
     bytes16 constant carGSMNum = "004915902233555";
     uint constant penaltyValue = 10;
     string geofence_prefix = "u33";
-    string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f","1","3","9","c" ];
+    string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f",
+    "1","3","9","c"];
 
+    int128[] geofenceInt = [855152, 855154, 855160, 855162, 855141, 855143, 855149,
+    855151, 855140, 855142, 855148, 855150, 855137, 855139, 855145, 855147];
+
+
+    int128 positionInt = 0;
     string position = "";
 
     address renter;
     bool availability = true;
     bool leftGeofence = false;
 
-    address constant oracle = 0xa72424327201503c1e81fe320e247c3150fb428d;
+    address constant oracle = 0x8ead2d9305536ebdde184cea020063d2de3665c7;
 
     // Money saved in the contract for the owner from penalties
     uint pendingWithdrawals = 0;
@@ -87,7 +93,12 @@ contract CarSharingLocation {
      */
     function updatePosition(string curPos) onlyOracle {
         position = curPos;
-        checkPositionInGeofence();
+        checkPositionInGeofenceGeohash();
+    }
+
+    function updatePositionInt(int128 curPos) {
+        positionInt = curPos;
+        checkPositionInGeofenceIntGeoHash();
     }
 
     /**
@@ -95,11 +106,15 @@ contract CarSharingLocation {
      *
      * Should probably be removed in the future
      * */
-    function getPosition() onlyOracle constant returns (string) {
+    function getPosition() constant returns (string) {
         return position;
     }
 
-    function hasLeftGeofence() onlyOracle constant returns (bool) {
+    function getPositionInt() constant returns (int128){
+        return positionInt;
+    }
+
+    function hasLeftGeofence() constant returns (bool) {
         return leftGeofence;
     }
 
@@ -120,7 +135,7 @@ contract CarSharingLocation {
     /**
      * Check if "curPos" hash is within the geofence defined in the "geofence" array
      */
-    function checkPositionInGeofence() {
+    function checkPositionInGeofenceGeohash() {
         bytes memory bPrefixFence = bytes(geofence_prefix);
         bytes memory bPosition = bytes(position);
 
@@ -142,6 +157,21 @@ contract CarSharingLocation {
                 */
             }
         }
+    }
+
+    function checkPositionInGeofenceIntGeoHash() {
+        /*
+        * The position and the geofence have to be encoded with the same amount of bits
+        * If for example the position is encoded with more bits, it has to be shifted
+        * to the same amount of bits that the geofence is encoded with
+        */
+        bool inside = false;
+        for(uint i; i < geofenceInt.length; i++){
+            if(positionInt == geofenceInt[i]){
+                inside = true;
+            }
+        }
+        leftGeofence = !inside;
     }
 
     /**

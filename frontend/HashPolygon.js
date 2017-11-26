@@ -8,17 +8,20 @@ polygon = [[[13.624420, 52.305802],[13.127289, 52.359510],[12.888336, 52.451668]
 
 var hashedPolygon = [];
 
-geohashpoly({coords: polygon, precision: 4, hashMode: "extent" }, function (err, hashes) {
-    hashedPolygon = hashes;
-    //console.log(hashedPolygon);
-    var prefix = findCommonPrefix(hashedPolygon);
-    var suffixes = [];
-    for(i = 0; i < hashedPolygon.length; i++){
-        suffixes.push(hashedPolygon[i].substring(prefix.length, hashedPolygon[i].length));
-    }
-    console.log(prefix);
-    //console.log(suffixes);
-});
+function hashToString() {
+    geohashpoly({coords: polygon, precision: 4, hashMode: "extent" }, function (err, hashes) {
+        hashedPolygon = hashes;
+        //console.log(hashedPolygon);
+        var prefix = findCommonPrefix(hashedPolygon);
+        var suffixes = [];
+        for(i = 0; i < hashedPolygon.length; i++){
+            suffixes.push(hashedPolygon[i].substring(prefix.length, hashedPolygon[i].length));
+        }
+        console.log(prefix);
+        console.log(suffixes);
+    });
+}
+
 
 
 function findCommonPrefix(hashes) {
@@ -43,24 +46,29 @@ function findCommonPrefix(hashes) {
     return prefix;
 }
 
-geohashpoly({coords: polygon, precision: 20, integerMode: true, hashMode: "extent" }, function (err, hashes) {
-    console.log(hashes);
+function hashToInt() {
+    geohashpoly({coords: polygon, precision: 20, integerMode: true, hashMode: "extent" }, function (err, hashes) {
+        console.log(hashes);
 
-    min = hashes[0];
-    max = hashes[0];
-    for(i = 0; i < hashes.length; i++){
-        if(min > hashes[i]){
-            min = hashes[i]
+        min = hashes[0];
+        max = hashes[0];
+        for(i = 0; i < hashes.length; i++){
+            if(min > hashes[i]){
+                min = hashes[i]
+            }
+            if(max < hashes[i]){
+                max = hashes[i]
+            }
         }
-        if(max < hashes[i]){
-            max = hashes[i]
-        }
-    }
 
-    lat = 52.520008;
-    longi = 13.404954;
+        lat = 52.520008;
+        longi = 13.404954;
 
-    c = geo.encode_int(lat, longi, 29);
+        c = geo.encode_int(lat, longi, 29);
 
-    console.log(c >> 9);
-});
+        console.log(c >> 9);
+    });
+}
+
+hashToString();
+hashToInt();

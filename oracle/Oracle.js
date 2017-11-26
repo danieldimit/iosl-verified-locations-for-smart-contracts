@@ -9,9 +9,9 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
 
-oracleAccount = "0xa72424327201503c1e81fe320e247c3150fb428d";
+oracleAccount = "0x8ead2d9305536ebdde184cea020063d2de3665c7";
 
-contractAddress = '0x44402b6dcb70269d07e68064fd41c5c92c4e59dd';
+contractAddress = '0x28ec68fbd908b4c6ba6342e40a5d5f24d4b06397';
 
 // ORACLE ACCOUNT
 web3.eth.defaultAccount = oracleAccount;
@@ -28,6 +28,18 @@ var abi = [{
     type: 'function',
     constant: false,
     inputs: [{ name: 'curPos', type: 'string' }],
+    outputs: []
+}, {
+    name: 'getPositionInt',
+    type: 'function',
+    constant: true,
+    inputs: [],
+    outputs: [{name: 'positionInt', type: 'int128' }]
+}, {
+    name: 'updatePositionInt',
+    type: 'function',
+    constant: false,
+    inputs: [{ name: 'curPos', type: 'int128' }],
     outputs: []
 }, {
     name: 'hasLeftGeofence',
@@ -49,6 +61,38 @@ function testGeoHashBerlin() {
     outside2 = "";
 
 }
+
+function generateGeoHash() {
+    lat = Math.random() * 100;
+    long = Math.random() * 100;
+
+    return geo.encode(lat, long)
+}
+
+function updatePosition(newPosition) {
+    var contractInstance = contract.at(contractAddress);
+
+    contractInstance.updatePosition(newPosition);
+
+    var r = contractInstance.getPosition();
+    console.log(r.toString());
+
+    var res = contractInstance.hasLeftGeofence();
+    console.log(res.toString())
+}
+
+function updatePositionInt(newPosition) {
+    var contractInstance = contract.at(contractAddress);
+
+    contractInstance.updatePositionInt(newPosition);
+
+    var r = contractInstance.getPositionInt();
+    console.log(r.toString());
+
+    var res = contractInstance.hasLeftGeofence();
+    console.log(res.toString())
+}
+
 
 function testRandomUpdate() {
     for (i = 0; i < 5; i++) {
@@ -75,27 +119,16 @@ function testRealUpdate() {
     updatePosition(pos4);
 }
 
-function generateGeoHash() {
-    lat = Math.random() * 100;
-    long = Math.random() * 100;
+function testRealUpdateInt() {
+    //Check inside
+    pos1 = 855152;
+    updatePositionInt(pos1);
 
-    return geo.encode(lat, long)
+    // Check outside
+    pos2 = 855153;
+    updatePositionInt(pos2);
 }
 
-function updatePosition(newPosition) {
-    var contractInstance = contract.at(contractAddress);
-
-    contractInstance.updatePosition(newPosition);
-
-    var r = contractInstance.getPosition();
-    console.log(r.toString());
-
-    var res = contractInstance.hasLeftGeofence();
-    console.log(res.toString())
-}
-
-testRealUpdate();
-
-
-
-
+//testRandomUpdate()
+//testRealUpdate();
+testRealUpdateInt();

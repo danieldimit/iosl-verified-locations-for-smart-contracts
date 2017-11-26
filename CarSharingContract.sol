@@ -7,7 +7,8 @@ contract CarSharingLocation {
     address constant owner = 0x51c9dc23fe448520292e7d3395cf71fe1237e442;
     bytes16 constant carGSMNum = "004915902233555";
     uint constant penaltyValue = 10;
-    string[] geofence = ["u301185c38uy", "u301185c38uy"];
+    string geofence_prefix = "u33";
+    string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f","1","3","9","c" ];
 
     string position = "";
 
@@ -15,7 +16,7 @@ contract CarSharingLocation {
     bool availability = true;
     bool leftGeofence = false;
 
-    address constant oracle = 0x91478de5e6768052165ebb7077696e896cd1b32f;
+    address constant oracle = 0xa72424327201503c1e81fe320e247c3150fb428d;
 
     // Money saved in the contract for the owner from penalties
     uint pendingWithdrawals = 0;
@@ -86,6 +87,7 @@ contract CarSharingLocation {
      */
     function updatePosition(string curPos) onlyOracle {
         position = curPos;
+        checkPositionInGeofence();
     }
 
     /**
@@ -97,14 +99,18 @@ contract CarSharingLocation {
         return position;
     }
 
+    function hasLeftGeofence() onlyOracle constant returns (bool) {
+        return leftGeofence;
+    }
+
     /**
      * Mark that the renter left the geofence and add his money to the car owner
      * by saving them in the "pendingWithdrawals".
-     * 
+     *
      * TODO: Maybe merge this function with "checkPositionInGeofence"
      */
-    function checkPenalize(bytes12 curPos) {
-        if (checkPositionInGeofence(curPos)) {
+    function checkPenalize() {
+        if (true) {
             // Add money to the contract
             pendingWithdrawals += penaltyValue;
             leftGeofence = true;
@@ -114,9 +120,28 @@ contract CarSharingLocation {
     /**
      * Check if "curPos" hash is within the geofence defined in the "geofence" array
      */
-    function checkPositionInGeofence(bytes12 curPos) returns (bool) {
-        // TODO implement the function
-        return true;
+    function checkPositionInGeofence() {
+        bytes memory bPrefixFence = bytes(geofence_prefix);
+        bytes memory bPosition = bytes(position);
+
+        for(uint i; i<3; i++){
+            if(bPrefixFence[i] != bPosition[i]) leftGeofence = true;
+        }
+        if(!leftGeofence){
+            leftGeofence = true;
+            for(uint j; j < geofence_suffix.length; j++){
+                bytes memory bSuffix = bytes(geofence_suffix[j]);
+                if(bPosition[3] == bSuffix[0]) leftGeofence = false;
+                /*
+                bool equal = true;
+                bytes memory bSuffix = bytes(geofence_suffix[j]);
+                for(uint k; k < suffix_length; k++ ){
+                    if(bPosition[3 + k] != bSuffix[k]) equal = false;
+                }
+                if(equal) leftGeofence = false;
+                */
+            }
+        }
     }
 
     /**

@@ -9,9 +9,9 @@ if (typeof web3 !== 'undefined') {
     web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 }
 
-oracleAccount = "0xa1c89a074a6bba9f69fa2b294396e942094e0c8d";
+oracleAccount = "0xa72424327201503c1e81fe320e247c3150fb428d";
 
-contractAddress = '0x2a4b903419893e8fdce05fa34a1c608b8d75a9b1';
+contractAddress = '0x44402b6dcb70269d07e68064fd41c5c92c4e59dd';
 
 // ORACLE ACCOUNT
 web3.eth.defaultAccount = oracleAccount;
@@ -29,13 +29,50 @@ var abi = [{
     constant: false,
     inputs: [{ name: 'curPos', type: 'string' }],
     outputs: []
+}, {
+    name: 'hasLeftGeofence',
+    type: 'function',
+    constant: true,
+    inputs: [],
+    outputs: [{name: 'leftGeofence', type: 'bool' }]
 }];
 
 // creation of contract object
 var contract = web3.eth.contract(abi);
 
-for (i = 0; i < 5; i++) {
-    updatePosition(generateGeoHash())
+
+function testGeoHashBerlin() {
+
+    inside1 = "";
+    inside2 = "";
+    outside1 = "";
+    outside2 = "";
+
+}
+
+function testRandomUpdate() {
+    for (i = 0; i < 5; i++) {
+        updatePosition(generateGeoHash())
+    }
+}
+
+function testRealUpdate() {
+
+    //Check inside
+    pos1 = "u33h232";
+    updatePosition(pos1);
+
+    // Check inside prefix outside suffix
+    pos2 = "u33l123";
+    updatePosition(pos2);
+
+    // Check outside prefix, but inside suffix
+    pos3 = "u32h232";
+    updatePosition(pos3);
+
+    // Outside both prefix and suffix
+    pos4 = "u32l232";
+    updatePosition(pos4);
 }
 
 function generateGeoHash() {
@@ -52,7 +89,12 @@ function updatePosition(newPosition) {
 
     var r = contractInstance.getPosition();
     console.log(r.toString());
+
+    var res = contractInstance.hasLeftGeofence();
+    console.log(res.toString())
 }
+
+testRealUpdate();
 
 
 

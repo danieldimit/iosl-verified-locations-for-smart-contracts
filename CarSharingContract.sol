@@ -4,21 +4,18 @@ contract CarSharingLocation {
 
     //////////////////////////// VARIABLES AND CONSTANTS
 
-    address constant owner = 0x51c9dc23fe448520292e7d3395cf71fe1237e442;
-    bytes16 constant carGSMNum = "004915902233555";
-    uint constant penaltyValue = 10;
-    string geofence_prefix = "u33";
-    string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f",
-    "1","3","9","c"];
-
-    int128[] geofenceInt = [855152, 855154, 855160, 855162, 855141, 855143, 855149,
-    855151, 855140, 855142, 855148, 855150, 855137, 855139, 855145, 855147];
-
+    address owner;
+    bytes16 carGSMNum;
+    uint penaltyValue;
+    string geofence_prefix;
+    string[] geofence_suffix;
+    int128[] geofenceInt;
 
     int128 positionInt = 0;
     string position = "";
 
     address renter;
+    uint submittedMoney;
     bool availability = true;
     bool leftGeofence = false;
 
@@ -26,7 +23,28 @@ contract CarSharingLocation {
 
     // Money saved in the contract for the owner from penalties
     uint pendingWithdrawals = 0;
+    
+    // Pay per min variables
+    uint16 demandedMinutes;
+    uint pricePerMinute;
+    uint startTime;
+    
 
+    
+    //////////////////////////// CONSTRUCTOR
+    
+    // TODO: Add variables in constructor. For testing setting the values staticly is sufficient
+    function CarSharingLocation() {
+        owner = 0x51c9dc23fe448520292e7d3395cf71fe1237e442;
+        carGSMNum = "004915902233555";
+        penaltyValue = 10;
+        pricePerMinute = 1;
+        
+        // Geofence setting
+        geofence_prefix = "u33";
+        geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f",
+        "1","3","9","c"];
+    }
 
 
     //////////////////////////// MODIFIERS
@@ -52,14 +70,20 @@ contract CarSharingLocation {
     /**
      * Function for the renter to rent the car with.
      */
-    function rentCar() payable returns (bool) {
+    function rentCar(uint16 dMins) payable returns (bool) {
         if (availability == true) {
-            // Check if the applicant renter can cover the penalty
-            if (msg.value == penaltyValue) {
+            /*
+             * Check if the applicant renter can cover the penalty and costs
+             * for using the car
+             */
+            if (msg.value == (dMins * pricePerMinute) + penaltyValue) {
                 renter = msg.sender;
+                submittedMoney = msg.value;
 
                 // TODO TRIGGER EVENT for oracle to trace
 
+                demandedMinutes = dMins;
+                startTime = now;
                 availability = false;
                 return true;
             }
@@ -71,12 +95,25 @@ contract CarSharingLocation {
      * Function for the renter to return the car with.
      */
     function returnCar(bytes12 _curPos) onlyRenter {
+        
+        // See how much money has to be paid for the journey
+        uint spentMoney = ((now - startTime) / 60) * pricePerMinute;
+        submittedMoney -= spentMoney;
+        pendingWithdrawals += spentMoney;
 
-        // If the renter didn't leave the Geofence return his money
-        if (!leftGeofence) {
-            msg.sender.transfer(penaltyValue);
+        // If the renter didn't leave the Geofence return his penalty money too
+        if (leftGeofence) {
+            submittedMoney -= penaltyValue;
+            pendingWithdrawals += penaltyValue;
         }
+        
+        if (submittedMoney != 0) {
+            msg.sender.transfer(submittedMoney);
+        }
+        
         leftGeofence = false;
+        demandedMinutes = 0;
+        startTime = 0;
         availability = true;
 
         // Remove the address of the renter
@@ -126,9 +163,8 @@ contract CarSharingLocation {
      */
     function checkPenalize() {
         if (true) {
-            // Add money to the contract
-            pendingWithdrawals += penaltyValue;
-            leftGeofence = true;
+            // Mark that the renter left the geofence
+            leftGeofence = leftGeofence || true;
         }
     }
 

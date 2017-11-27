@@ -1,3 +1,5 @@
+import "LocationFeedOracle.sol";
+
 pragma solidity ^0.4.18;
 
 contract CarSharingLocation {
@@ -13,6 +15,7 @@ contract CarSharingLocation {
 
     int128 positionInt = 0;
     string position = "";
+    string startingPosition="";
 
     address renter;
     uint submittedMoney;
@@ -81,6 +84,8 @@ contract CarSharingLocation {
                 submittedMoney = msg.value;
 
                 // TODO TRIGGER EVENT for oracle to trace
+                LocationFeedOracle c = LocationFeedOracle(oracle);
+                c.TraceLocation(carGSMNum);
 
                 demandedMinutes = dMins;
                 startTime = now;

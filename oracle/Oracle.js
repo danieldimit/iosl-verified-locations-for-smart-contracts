@@ -2,6 +2,7 @@ var Web3 = require('web3');
 var geo = require('geo-hash');
 var web3;
 
+
 if (typeof web3 !== 'undefined') {
     web3 = new Web3(web3.currentProvider);
 } else {
@@ -51,6 +52,7 @@ var abi = [{
 
 // creation of contract object
 var contract = web3.eth.contract(abi);
+
 
 
 function testGeoHashBerlin() {
@@ -132,3 +134,37 @@ function testRealUpdateInt() {
 //testRandomUpdate()
 //testRealUpdate();
 testRealUpdateInt();
+
+
+
+
+/******* ORACLE INTERACTION ********/
+
+string currPos="";
+
+//creation of oracle contract object
+var oracleAbi = [{"constant":false,"inputs":[{"name":"GSMnum","type":"bytes16"}],"name":"traceLocation","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"number","type":"bytes16"}],"name":"TraceLocation","type":"event"}];
+
+var oralceContract = web3.eth.contract(oracleAbi);
+var oracleContractInstance = oralceContract.at(oralceContract);
+var traceLocation = oracleContractInstance.TraceLocation();
+
+// watch for changes 
+traceLocation.watch(function(error, result){   
+    if(!error){
+        console.log(result.arg.GSMnum);
+        setTimeout(function(result.arg.GSMnum){
+          //TODO: connect with the oracle service and fetch data
+        // do the hashing of latitude and longitiute and send the hashed value to oracle contract 
+            string postion_from_oracle ="";
+            if(postion_from_oracle!= currPos)
+            {
+                currPos=postion_from_oracle;
+                oracleContractInstance.setPosition(currPos);
+            } 
+        },5000);
+        
+       
+    }
+});
+

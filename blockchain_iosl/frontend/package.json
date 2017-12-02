@@ -1,0 +1,17 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.1.1",
+    "react-dom": "^16.1.1",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "start": "./node_modules/react-scripts/bin/react-scripts.js start",
+    "start:prod": "pushstate-server build",
+    "build": "./node_modules/react-scripts/bin/react-scripts.js build",
+    "test": "./node_modules/react-scripts/bin/react-scripts.js test --env=jsdom",
+    "eject": "./node_modules/react-scripts/bin/react-scripts.js eject"
+  }
+}

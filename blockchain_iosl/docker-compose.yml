@@ -1,0 +1,37 @@
+version: '2'
+services:
+  node-app:
+    build: app
+    ports:
+      - "4000:8080"
+    volumes:
+      - ./app/src:/myapp/src
+    depends_on:
+      - ethernet_server
+      - frontend
+      - db
+    environment:
+      - ETHEREUM_CLIENT_IP=http://172.18.0.1
+      - ETHEREUM_CLIENT_PORT=8545
+      - PG_HOST=db
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_DATABASE=app
+
+  ethernet_server:
+    build: testrpc
+    ports:
+      - "8545:8545"
+
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/frontend
+    environment:
+      - API_URL=http://localhost
+      - API_PORT=8080
+
+  db :
+    build: db

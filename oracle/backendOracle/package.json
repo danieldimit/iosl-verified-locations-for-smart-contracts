@@ -1,0 +1,20 @@
+{
+  "name": "backendcelltower",
+  "version": "1.0.0",
+  "description": "Server giving info about the nearest cell tower to a given coordinate",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Daniel Dimitrov",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.5.0",
+    "cors": "^2.8.4",
+    "csv-parse": "^2.0.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "fast-csv": "^2.4.1",
+    "fs": "0.0.1-security"
+  }
+}

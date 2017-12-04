@@ -1,0 +1,36 @@
+//create link with icon before / use inside a tag
+.icon-link(@content, @top, @left) {
+  position: relative;
+  padding: 11px 0 0 46px;
+  display: inline-block;
+
+}
+
+.link-with-hover(@color; @hover-color){
+  color: @color;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: @hover-color;
+    font-weight: bold;
+  }
+
+  &:focus {
+    .tab-focus();
+  }
+}
+
+.link-with-hover-header(@color; @hover-color){
+  color: @color;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    color: @hover-color;
+  }
+
+  &:focus {
+    .tab-focus();
+  }
+}

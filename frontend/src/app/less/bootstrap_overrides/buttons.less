@@ -1,0 +1,56 @@
+.btn{
+  padding: 10px 20px;
+
+  &.btn-primary{
+    &:hover{
+      background-color: @gray-darker;
+    }
+  }
+
+  &.btn-icon{
+    border: 4px solid @btn-icon-border;
+    border-radius: @btn-icon-border-radius;
+    font-size: 26px;
+    padding: 4px 10px;
+    background-color: @btn-icon-bg;
+    color: @btn-icon-color;
+    margin: 0 5px;
+
+    &:hover{
+      color: @btn-icon-hover-color;
+      border-color: @btn-icon-hover-color;
+    }
+  }
+
+  &.btn-ti-on-dark{
+    border-top: none;
+    border-left: none;
+    border-right: none;
+
+    border-bottom: 2px solid @btn-ti-on-dark-border;
+    border-radius: 0;
+    font-size: 18px;
+    padding: 9px 33px 9px 72px;
+
+    background-color: @btn-ti-on-dark-bg;
+    color: @btn-ti-on-dark-color;
+    margin: 0 5px;
+
+    i{
+      margin: 0 25px 0 0;
+      font-size: 27px;
+    }
+
+    &:hover{
+      color: @btn-ti-on-dark-hover-color;
+      border-color: @btn-ti-on-dark-hover-color;
+    }
+
+
+  }
+
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn.active.focus{
+  outline: 0 auto -webkit-focus-ring-color;
+}

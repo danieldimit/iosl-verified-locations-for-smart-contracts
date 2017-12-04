@@ -1,0 +1,170 @@
+#hero-placeholder {
+  width: 100%;
+  object-fit: contain;
+  position: relative;
+  z-index: -1;
+}
+
+#home {
+  .carousel {
+    position: fixed !important;
+    top: @header-placeholder;
+    z-index: 0;
+  }
+}
+
+
+.legend {
+  letter-spacing: @letter-spacing-hero;
+  h1 {
+    font-weight: bold;
+    font-size: @font-size-heroimage !important;
+  }
+
+  div {
+    font-size: @font-content !important;
+  }
+}
+
+#home-content {
+  position: relative;
+  z-index: 1;
+  background: white;
+  text-align: center;
+
+  img {
+    width: 100%;
+  }
+
+  button {
+    background-color: white;
+    border: 1px solid @text-grey;
+    color: @text-grey;
+    padding: 12px 24px;
+    text-align: center;
+    text-decoration: none;
+
+    -webkit-transition: color 0.35s ease-in-out;
+    -moz-transition: color 0.35s ease-in-out;
+    -ms-transition: color 0.35s ease-in-out;
+    -o-transition: color 0.35s ease-in-out;
+    transition: color 0.35s ease-in-out;
+
+    &:hover {
+      color: @text-black;
+      border-color: @text-black;
+    }
+  }
+
+  #home-top-content {
+    padding-top: 40px;
+    padding-bottom: 0;
+  }
+
+  .home-page-topbottom-margin {
+    padding-bottom: @home-page-section-margins;
+    padding-top: @home-page-section-margins;
+  }
+
+  .exp-type, .exp-referer-person {
+    letter-spacing: 1.5px;
+  }
+
+  .exp-referer-person {
+    line-height: 150%;
+  }
+
+  .exp-referer-org {
+    font-weight: @semi-bold;
+    letter-spacing: 2.5px;
+  }
+
+  .exp-referer-org, .exp-referer-person {
+    color: white;
+  }
+
+  #references {
+    width: 100%;
+    background: @footer-background;
+
+    .ref-text {
+      max-width: 1200px;
+      padding: 0 15px 0 15px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .ref-cols {
+      text-align: left;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+
+      .cursor {
+        cursor: pointer;
+      }
+
+      .ref-padding-color {
+        padding: @refs-padding;
+      }
+
+      .ref-padding {
+        padding: @refs-padding @refs-padding 0 @refs-padding;
+      }
+
+      #ref-1 {
+        background: @1st-ref-col;
+      }
+
+      #ref-2 {
+        background: @2nd-ref-col;
+      }
+
+      #ref-3 {
+        background: @3rd-ref-col;
+      }
+
+      ul {
+        padding-left: 18px;
+        font-size: @refs-font-size;
+        font-weight: 400;
+        line-height: 165%;
+        color: @refs-color;
+        letter-spacing: @refs-spacing;
+      }
+    }
+  }
+
+  #tutor-image {
+    padding-bottom: @padding-tutor;
+  }
+
+  #tutor-text {
+    text-align: left;
+    display: table;
+    height: 100%;
+
+    .table-row {
+      display: table-row;
+
+      .table-cell {
+        display: table-cell;
+        padding-bottom: @padding-tutor;
+      }
+    }
+
+    .valign-bottom {
+      vertical-align: bottom;
+      padding-bottom: 0px !important;
+    }
+
+    #tutor-text-quote {
+      font-size: 100%;
+      line-height: @line-height-prefooter;
+    }
+
+    #tutor-text-place {
+      font-size: 70%;
+    }
+  }
+}

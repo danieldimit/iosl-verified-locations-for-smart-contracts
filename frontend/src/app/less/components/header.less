@@ -1,0 +1,149 @@
+#place-holder-4-header {
+    height: @header-placeholder;
+    width: 100%;
+}
+
+// Remove rounded corners and the border from the bootstrap navbar
+.navbar {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    border-style: none none solid none;
+    border-color: @header-underline-color;
+    border-width: 1px;
+    margin: 0;
+    background: @header-background;
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+
+    .navbar-header {
+        width: 100%;
+        margin-left: 0 !important;
+    }
+
+    #menu-items-container {
+        font-wegith: 600;
+        font-size: 75%;
+        letter-spacing: 0.75px;
+    }
+}
+
+nav {
+
+    li {
+        margin-right: 21px;
+        text-align: right;
+
+        a {
+            display: inline !important;
+        }
+    }
+
+    .container {
+
+        .navbar-header {
+            float: left;
+        }
+
+        #logo-link {
+            margin: @padding-header;
+            display: table;
+            font-size: 95%;
+
+            div {
+                display: table-cell;
+                letter-spacing: 2.5px;
+            }
+
+            #toskov {
+                color: @text-black;
+                font-weight: bold;
+            }
+
+            #architects {
+                color: @text-grey;
+            }
+        }
+
+        .nav-bar-icons {
+            padding: @header-padding-logos;
+            color: @text-black;
+        }
+
+    }
+
+    #burger-btn {
+        border: none;
+        vertical-align: center;
+        height: 40px;
+        width: 40px;
+
+        &:hover {
+            background: none;
+
+            .icon-bar {
+                background: @text-black;
+            }
+        }
+
+        &:focus {
+            background: none;
+        }
+
+        .icon-bar {
+            background: @text-grey;
+            height: @burger-menu-bar-size;
+            width: 28px;
+        }
+    }
+
+    #menu-items-container {
+    }
+
+    #menu-items {
+        text-transform: uppercase;
+    }
+
+    @media (min-width: 768px) {
+
+        .container {
+            width: 100%;
+            display: table;
+            height: auto;
+        }
+
+        #menu-items-container {
+            display: table-cell !important;
+            vertical-align: middle;
+        }
+
+
+        #menu-items {
+            li {
+                margin: 0;
+                a {
+                    .link-with-hover(@text-grey, @text-black);
+                    padding: @navbar-link-padding;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        #menu-items-container {
+            border: none;
+        }
+
+
+        #menu-items {
+            li {
+                a {
+                    .link-with-hover(@text-grey, @text-black);
+                    padding-left: @menu-items-padding;
+                    padding-right: @menu-items-padding;
+                }
+            }
+        }
+    }
+}

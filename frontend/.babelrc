@@ -1,0 +1,4 @@
+{
+  "presets": ["es2015", "es2016", "react", "stage-1"],
+  "plugins": [["styled-components", {"ssr": "true"}]]
+}

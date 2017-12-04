@@ -1,0 +1,144 @@
+@font-face {
+  font-family: 'SEGOEUIL';
+  src: url('../fonts/segoe-ui/SEGOEUIL.ttf') format('truetype');
+}
+
+body {
+  font-family: 'SEGOEUIL' !important;
+  color: @text-color-content;
+}
+
+.selectedMenuItem {
+  font-weight: @semi-bold;
+}
+
+a {
+  text-decoration: none;
+  color: @text-grey;
+}
+
+.text-cap {
+  text-transform: uppercase;
+}
+
+.text-normal {
+  text-transform: none !important;
+}
+
+// Impressum , Contact and About container
+.container-content-page {
+  max-width: 1530px;
+  padding: @container-padding;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: @font-content;
+  line-height: 180%;
+
+  p {
+    margin-bottom: 1.56em;
+  }
+
+  h1 {
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: @font-headers-content;
+    letter-spacing: @letter-spacing-global;
+  }
+}
+
+.margin-bottom-content {
+  margin-bottom: 1.56em;
+}
+
+.container-fluid {
+  padding: 0;
+}
+
+@media (min-width: 750px) {
+  .equal-length-fix {
+    display: flex;
+    flex-wrap: wrap;
+  }
+}
+
+// Carousel
+.dot {
+  opacity: 1.0 !important;
+  background: white !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  box-shadow: none !important;
+  border: 1.5px solid @light-grey-text !important;
+}
+
+.selected {
+  background: @light-grey-text !important;
+}
+
+// Projects
+.grid-projects {
+  color: white;
+}
+.project-container {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+  }
+}
+.thumbnail-header {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0.0;
+
+  -webkit-transition: opacity 0.35s ease-in-out;
+  -moz-transition: opacity 0.35s ease-in-out;
+  -ms-transition: opacity 0.35s ease-in-out;
+  -o-transition: opacity 0.35s ease-in-out;
+  transition: opacity 0.35s ease-in-out;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 1.0;
+  }
+
+  .thumbnail-subcontainer {
+    position: absolute;
+    width: 100%;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -65%);
+
+
+
+
+    .thumbnail-type {
+      font-size: 80%;
+    }
+    .thumnail-title {
+      font-size: 200%;
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .thumbnail-header {
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 1.0 !important;
+  }
+}
+.grid-margin {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}

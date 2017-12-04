@@ -1,0 +1,130 @@
+/*
+===============BUTTON=================
+*/
+#back-to-top-btn {
+  z-index: 2;
+  display: inline-block;
+  -webkit-transform: translate(0, -50%);
+  transform: translate(0, -50%);
+  color: @text-grey;
+  text-decoration: none;
+  font-size: @pre-footer-font-size;
+  text-align: center;
+  transition: opacity .3s;
+  padding-top: 22px;
+  margin-top: @top-bottom-back2top;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  position: relative;
+  bottom: -80px;
+  cursor: pointer;
+
+  &:hover {
+    color: @text-black;
+
+    span {
+      border-color: @text-black;
+    }
+  }
+
+  span {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin-left: -12px;
+    border-left: 1px solid @text-grey;
+    border-bottom: 1px solid @text-grey;
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
+    box-sizing: border-box;
+  }
+}
+#footer-white-background {
+  height: 200px;
+  background: white;
+  z-index: 1;
+  top: -20px;
+  width: 100%;
+  position: relative;
+  margin-bottom: -20px;
+}
+
+/*
+================FOOTER==================
+*/
+
+.container-footer {
+  max-width: 1530px;
+  padding: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  background: @footer-background;
+  font-size: @pre-footer-font-size;
+
+  .container {
+    padding: 0px;
+  }
+
+  img {
+    height: 33px;
+    padding-left: @footer-logos-padding;
+  }
+}
+
+#pre-footer {
+  color: @text-grey;
+  width: 100%;
+  line-height: @line-height-prefooter;
+  padding: @top-bottom-padding-footer 0 @top-bottom-padding-footer 0;
+
+  .top-pad {
+    padding-top: @prefooter-padding;
+  }
+
+  #footer-header {
+    margin: 0;
+    display: table;
+    font-size: 110%;
+
+    div {
+      display: table-cell;
+      letter-spacing: 3px;
+    }
+
+    #toskov {
+      color: @text-black;
+      font-weight: bold;
+    }
+
+    #architects {
+      color: @text-grey;
+    }
+  }
+
+  #footer-text {
+    padding-left: @footer-text-padding-left;
+  }
+
+  #footer-contact {
+    text-align: right;
+  }
+}
+
+.row {
+  margin: 0;
+  padding: 0;
+}
+
+#rights-and-credits {
+  color: @text-grey;
+  font-style: italic;
+  font-size: @rights-font-size;
+}

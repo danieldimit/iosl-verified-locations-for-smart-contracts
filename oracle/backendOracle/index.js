@@ -3,8 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-var csv = require('fast-csv');
-var async = require('async');
+const csv = require('fast-csv');
+const async = require('async');
 const app = express();
 
 
@@ -25,6 +25,8 @@ if (process.env.NODE_ENV === 'production') {
 // Async function => use promise to wait for result
 function findNearestTower(lon, lat) {
     return new Promise(function(resolve, reject) {
+
+        // To make it faster filter with mobile operator MNC number: http://www.mcc-mnc.com/
         var stream = fs.createReadStream('./res/cell_towers_de_berlin.csv');
         var shortest = 100000000;
         var dist = 0;

@@ -1,0 +1,39 @@
+#progress-bar {
+  width: 100%;
+  margin: 0;
+  color: @blue-dark;
+
+  #progress-steps {
+    margin-top: 0;
+    width: 100%;
+    background: @blue-dark-55opacity;
+
+    .current-step {
+      background: @blue-dark-25opacity;
+    }
+
+    div {
+      text-align: center;
+
+      table {
+        margin: 0 auto;
+
+        .enumeration {
+          border-style: solid;
+          border-width: @progress-border-width;
+          border-radius: 5px;
+          padding: @progress-numbering-pad;
+          margin-right: @progress-element-pad;
+        }
+      }
+    }
+  }
+
+  #progress-tips {
+    text-align: center;
+    margin: 0;
+    width: 100%;
+    background: @blue-dark-25opacity;
+    border-bottom: @progress-border-width solid @blue-dark;
+  }
+}

@@ -1,0 +1,78 @@
+.tweet-stats{
+  float: left;
+  width: 335px;
+  margin: 19px 0 0;
+
+  @media screen and (max-width: @screen-sm-max){
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    float: none;  }
+
+
+  .twitter-tweet{
+    box-shadow: 0 4px 30px -11px;
+    margin: 10px auto;
+  }
+
+  .tweet-stats-heading{
+    margin: 0 0 12px 5px;
+
+    @media screen and (max-width: @screen-sm-max){
+      text-align: center;
+      margin: 20px 0;
+    }
+  }
+
+  .list-group{
+    margin-bottom: 8px;
+    box-shadow: 0 4px 30px -11px;
+
+
+    .list-group-item{
+      font-weight: 400;
+      padding: 6px 15px;
+
+
+
+      .list-group-item-heading{
+        font-size: 16px;
+      }
+    }
+  }
+
+  dl{
+    margin-bottom: 0;
+
+    &.dl-horizontal{
+
+      div:nth-child(even){
+        background-color: @tweet-stats-lang-dl-even-bg;
+
+      }
+
+      dt{
+        width: 240px;
+        text-align: left;
+
+
+      }
+      dd{
+        margin-left: 210px;
+        padding: 0;
+      }
+
+
+
+    }
+
+
+  }
+
+  .stats-info{
+    padding: 0 7px;
+  }
+
+
+}
+

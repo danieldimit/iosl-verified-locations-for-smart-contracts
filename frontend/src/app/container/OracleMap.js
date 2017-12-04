@@ -6,7 +6,8 @@ import {
     withGoogleMap,
     GoogleMap,
     Marker,
-    Circle
+    Circle,
+    Rectangle
 } from "react-google-maps";
 
 const OracleMapWithCellTowers = compose(
@@ -25,6 +26,8 @@ const OracleMapWithCellTowers = compose(
         defaultCenter={props.center}
     >
         <Marker position={props.carPosition} draggable={true} onDragEnd={props.onMarkerDrag}/>
+        <Rectangle bounds={{east: 14.693115, west: 11.946533, north: 53.296414, south: 51.459141}}
+                   options={{ fillColor: `black`, fillOpacity: 0.15, strokeWeight: 5}}/>
         <Circle center={props.cellCenter}
                 options={{ fillColor: `purple`, strokeOpacity: 0.7, strokeWeight: 1}}
                 radius={props.cellRadius}/>
@@ -37,10 +40,23 @@ const OracleMapWithCellTowers = compose(
 
 class OracleMap extends Component {
 
-    state = {
-        carPosition: { lat: 52.520007, lng: 13.404954 },
-        cellCenter: { lat: 52.520007, lng: 13.404954 },
-        cellRadius: 500
+    constructor(props) {
+        super(props);
+        this.state = {
+            carPosition: { lat: 52.520007, lng: 13.404954 },
+            cellCenter: { lat: 52.520007, lng: 13.404954 },
+            cellRadius: 0
+        };
+    }
+
+
+
+    componentWillMount() {
+        console.log(this.state.carPosition.lat);
+        let url = 'http://localhost:4000/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.giveToState(result))
     }
 
     giveToState = (cellInfo) => {

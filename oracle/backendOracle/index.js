@@ -27,7 +27,7 @@ function findNearestTower(lon, lat) {
     return new Promise(function(resolve, reject) {
 
         // To make it faster filter with mobile operator MNC number: http://www.mcc-mnc.com/
-        var stream = fs.createReadStream('./res/cell_towers_de_berlin.csv');
+        var stream = fs.createReadStream('./res/cell_towers_de_berlin_o2.csv');
         var shortest = 100000000;
         var dist = 0;
         var nearest = [];

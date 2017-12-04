@@ -41,7 +41,6 @@ function findNearestTower(lon, lat) {
                 }
             })
             .on("end", function(){
-                console.log("done", nearest);
                 return resolve(nearest);
             });
         stream.pipe(csvStream);
@@ -52,8 +51,6 @@ function findNearestTower(lon, lat) {
 // GET - the cell tower nearest to the coordinates given as query params in the url
 app.get('/getInArea', function(req, res) {
     res.header('Access-Control-Allow-Origin', req.get('Origin') || '*');
-    console.log(req.query.lon);
-    console.log(req.query.lat);
 
     findNearestTower(req.query.lon, req.query.lat)
         .then(function(cellTower) { // `delay` returns a promise

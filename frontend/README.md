@@ -1,4 +1,4 @@
-# verified locations for the blockchain - frontend
+# verified locations for smart contracts - frontend
 
 This is the frontend of the verified locations for the blockchain project.
 

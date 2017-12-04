@@ -1,0 +1,25 @@
+version: '2'
+
+services:
+
+  frontend:
+    build: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - oracle_backend_celltower
+    links:
+      - oracle_backend_celltower
+
+  oracle_backend_celltower:
+    build: oracle/backendOracle
+    ports:
+      - "4000:4000"
+
+  ethernet_server:
+    build: testrpc
+    ports:
+      - "8545:8545"
+
+  db :
+    build: db

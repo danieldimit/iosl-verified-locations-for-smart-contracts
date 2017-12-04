@@ -21,13 +21,13 @@ if (process.env.NODE_ENV === 'production') {
     port = process.env.DEV_PORT || 3000;
 }
 
-var stream = fs.createReadStream('./res/cell_towers_de_berlin.csv');
 
 // Async function => use promise to wait for result
 function findNearestTower(lon, lat) {
     return new Promise(function(resolve, reject) {
-        shortest = 100000000;
-        dist = 0;
+        var stream = fs.createReadStream('./res/cell_towers_de_berlin.csv');
+        var shortest = 100000000;
+        var dist = 0;
         var nearest = [];
         var csvStream = csv
             .parse()
@@ -39,7 +39,7 @@ function findNearestTower(lon, lat) {
                 }
             })
             .on("end", function(){
-                console.log("done");
+                console.log("done", nearest);
                 return resolve(nearest);
             });
         stream.pipe(csvStream);

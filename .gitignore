@@ -38,6 +38,7 @@
 
  # Dependency directories
  node_modules/
+ backend/backendOracle/node_modules/
  jspm_packages/
 
  # Typescript v1 declaration files

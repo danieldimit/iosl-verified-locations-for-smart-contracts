@@ -2,6 +2,20 @@
 
 Verified locations for smart contracts is a proof-of-concept project.
 
+## Installation of the whole system
+
+1. Make sure you have docker. Install it if you don't have it already.
+
+2. To get the project locally run:
+```
+git clone https://github.com/danieldimit/iosl-verified-locations-for-smart-contracts.git
+```
+
+3. To start the project, run:
+ ```
+ docker-compose up
+ ```
+
 ## Installation and setup of the smart contract testing environment
 
 To deploy the contract on a test network do the following:

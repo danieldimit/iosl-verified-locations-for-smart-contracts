@@ -53,7 +53,8 @@ class OracleMap extends Component {
 
     componentWillMount() {
         console.log(this.state.carPosition.lat);
-        let url = 'http://localhost:4000/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
+        let url = 'http://192.168.99.100:4000/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
+        console.log(url);
         fetch(url)
             .then(result=>result.json())
             .then(result=>this.giveToState(result))
@@ -72,7 +73,7 @@ class OracleMap extends Component {
 
     handleMarkerDragged = (e) => {
         this.setState({ carPosition:{lat: e.latLng.lat(), lng: e.latLng.lng()}  })
-        let url = 'http://localhost:4000/getInArea?lon=' + e.latLng.lng() + '&lat=' + e.latLng.lat();
+        let url = 'http://192.168.99.100:4000/getInArea?lon=' + e.latLng.lng() + '&lat=' + e.latLng.lat();
 
         fetch(url)
             .then(result=>result.json())

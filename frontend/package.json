@@ -1,5 +1,5 @@
 {
-  "name": "fakenewsgraph",
+  "name": "verified_locations_for_smart_contracts",
   "version": "0.0.1",
   "scripts": {
     "start": "grunt less && npm run start-with-babel-node",

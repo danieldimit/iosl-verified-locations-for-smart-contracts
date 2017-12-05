@@ -51,7 +51,7 @@ class OracleMap extends Component {
 
 
 
-    componentWillMount() {
+    componentDidMount() {
         console.log(this.state.carPosition.lat);
         let url = 'http://192.168.99.100:4000/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
         console.log(url);

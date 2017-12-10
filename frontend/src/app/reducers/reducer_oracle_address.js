@@ -9,7 +9,6 @@ export default (state, action) => {
         return INITIAL_STATE
     }
 
-    console.log('got called', action.type, action.oracleAddress);
     switch (action.type) {
         case FETCH_ORACLE:
             if(action.payload){
@@ -20,7 +19,6 @@ export default (state, action) => {
             break;
         case SET_ORACLE:
             if(action.payload){
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>. ", action.oracleAddress);
                 return action.oracleAddress;
             }
         default:

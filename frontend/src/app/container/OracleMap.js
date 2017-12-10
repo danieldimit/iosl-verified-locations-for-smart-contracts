@@ -55,12 +55,13 @@ class OracleMap extends Component {
             cellCenter: { lat: 52.520007, lng: 13.404954 },
             cellRadius: 0,
             value: '',
-            ghPosition: {ne: {lat: 0, lon: 0}, se: {lat: 0, lon: 0}}
+            ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
         };
 
         this.giveToState = this.giveToState.bind(this);
         this.handleMarkerDragged = this.handleMarkerDragged.bind(this);
     }
+
 
     componentDidMount() {
         console.log(this.state.carPosition.lat);
@@ -106,34 +107,19 @@ class OracleMap extends Component {
         return (
             <div  className="container-content-page">
 
-                <h1 className="section-header">Oracle View</h1>
+                <h1 className="section-header">Oracle Control Panel</h1>
                 <br/>
 
 
                 <section className="row">
-                    <article className="content-block col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                        <h4>Oracle policy</h4>
-                        <form onSubmit={this.handleSubmit}>
-                            Submit location to the smart contract in the block chain:
-                            <label className="oracle-policy-opt">
-                                <input type="radio" name="gender" value="asd1" onChange={this.handleChange}/>
-                                every
-                                <input type="text"></input>
-                                minutes
-                            </label>
-                            <label className="oracle-policy-opt">
-                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
-                                if the car enters another "hash"-square
-                            </label>
-                            <label className="oracle-policy-opt">
-                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
-                                if the car leaves the Geofence
-                            </label>
-                            <input type="submit" value="Submit" />
-                        </form>
+                    <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <h4>Oracle information</h4>
+                        <p>Oracle address:&nbsp;
+                            {String(this.props.oracleAddress)}
+                        </p>
                     </article>
 
-                    <article className="content-block col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         <h4>Oracle policy</h4>
                         <form onSubmit={this.handleSubmit}>
                             Submit location to the smart contract in the block chain:
@@ -174,5 +160,4 @@ const mapStateToProps = store => {
         oracleAddress: store.oracleAddress
     }
 }
-
 export default connect(mapStateToProps)(OracleMap);

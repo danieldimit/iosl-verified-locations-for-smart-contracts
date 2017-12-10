@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
+
+import { oracleBackendUrl } from '../config';
+
+import {ModalContainer, ModalDialog} from 'react-modal-dialog';
 
 import { compose, withProps } from "recompose";
 import {
@@ -40,24 +45,36 @@ const OracleMapWithCellTowers = compose(
 
 class OracleMap extends Component {
 
+
     constructor(props) {
         super(props);
         this.state = {
             carPosition: { lat: 52.520007, lng: 13.404954 },
             cellCenter: { lat: 52.520007, lng: 13.404954 },
-            cellRadius: 0
+            cellRadius: 0,
+            value: ''
         };
+
+        this.giveToState = this.giveToState.bind(this);
+        this.handleMarkerDragged = this.handleMarkerDragged.bind(this);
     }
-
-
 
     componentDidMount() {
         console.log(this.state.carPosition.lat);
-        let url = 'http://192.168.99.100:4000/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
+        let url = oracleBackendUrl + '/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
         console.log(url);
         fetch(url)
             .then(result=>result.json())
             .then(result=>this.giveToState(result))
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        alert('A name was submitted: ' + this.state.value);
+        event.preventDefault();
     }
 
     giveToState = (cellInfo) => {
@@ -73,7 +90,7 @@ class OracleMap extends Component {
 
     handleMarkerDragged = (e) => {
         this.setState({ carPosition:{lat: e.latLng.lat(), lng: e.latLng.lng()}  })
-        let url = 'http://192.168.99.100:4000/getInArea?lon=' + e.latLng.lng() + '&lat=' + e.latLng.lat();
+        let url = oracleBackendUrl + '/getInArea?lon=' + e.latLng.lng() + '&lat=' + e.latLng.lat();
 
         fetch(url)
             .then(result=>result.json())
@@ -86,20 +103,75 @@ class OracleMap extends Component {
     render() {
         return (
             <div  className="container-content-page">
-                <div className="section-content">
-                    <h1 className="section-header">Oracle View</h1>
-                    <br/>
 
-                    <OracleMapWithCellTowers
-                        onMarkerDrag={this.handleMarkerDragged}
-                        carPosition={this.state.carPosition}
-                        cellCenter={this.state.cellCenter}
-                        cellRadius={this.state.cellRadius}
-                    />
-                </div>
+
+
+                <h1 className="section-header">Oracle View</h1>
+                <br/>
+
+
+                <section className="row">
+                    <article className="content-block col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <h4>Oracle policy</h4>
+                        <form onSubmit={this.handleSubmit}>
+                            Submit location to the smart contract in the block chain:
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd1" onChange={this.handleChange}/>
+                                every
+                                <input type="text"></input>
+                                minutes
+                            </label>
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+                                if the car enters another "hash"-square
+                            </label>
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+                                if the car leaves the Geofence
+                            </label>
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </article>
+
+                    <article className="content-block col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                        <h4>Oracle policy</h4>
+                        <form onSubmit={this.handleSubmit}>
+                            Submit location to the smart contract in the block chain:
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd1" onChange={this.handleChange}/>
+                                every
+                                <input type="text"></input>
+                                minutes
+                            </label>
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+                                if the car enters another "hash"-square
+                            </label>
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+                                if the car leaves the Geofence
+                            </label>
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </article>
+                </section>
+
+                <OracleMapWithCellTowers
+                    onMarkerDrag={this.handleMarkerDragged}
+                    carPosition={this.state.carPosition}
+                    cellCenter={this.state.cellCenter}
+                    cellRadius={this.state.cellRadius}
+                />
+
             </div>
         );
     }
 }
 
-export default OracleMap;
+const mapStateToProps = store => {
+    return {
+        oracleAddress: store.oracleAddress
+    }
+}
+
+export default connect(mapStateToProps)(OracleMap);

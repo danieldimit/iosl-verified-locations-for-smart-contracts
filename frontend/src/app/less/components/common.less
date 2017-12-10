@@ -132,6 +132,27 @@ a {
   }
 }
 
+.Modal {
+  z-index: -1;
+  background: white;
+  padding: 40px;
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+}
+
+.Overlay {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(130,130,130,0.8);
+}
+
 @media (max-width: 768px) {
   .thumbnail-header {
     background: rgba(0, 0, 0, 0.4);

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import * as geohash from 'latlon-geohash';
 
 import { oracleBackendUrl } from '../config';
-
-import {ModalContainer, ModalDialog} from 'react-modal-dialog';
 
 import { compose, withProps } from "recompose";
 import {
@@ -33,6 +32,9 @@ const OracleMapWithCellTowers = compose(
         <Marker position={props.carPosition} draggable={true} onDragEnd={props.onMarkerDrag}/>
         <Rectangle bounds={{east: 14.693115, west: 11.946533, north: 53.296414, south: 51.459141}}
                    options={{ fillColor: `black`, fillOpacity: 0.15, strokeWeight: 5}}/>
+        <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
+                            north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
+                   options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
         <Circle center={props.cellCenter}
                 options={{ fillColor: `purple`, strokeOpacity: 0.7, strokeWeight: 1}}
                 radius={props.cellRadius}/>
@@ -52,7 +54,8 @@ class OracleMap extends Component {
             carPosition: { lat: 52.520007, lng: 13.404954 },
             cellCenter: { lat: 52.520007, lng: 13.404954 },
             cellRadius: 0,
-            value: ''
+            value: '',
+            ghPosition: {ne: {lat: 0, lon: 0}, se: {lat: 0, lon: 0}}
         };
 
         this.giveToState = this.giveToState.bind(this);
@@ -81,11 +84,10 @@ class OracleMap extends Component {
         let cellLat = parseFloat(cellInfo[7]);
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
-        this.setState({ cellCenter:{lat: cellLat, lng: cellLng}  });
-        this.setState({ cellRadius:  cellRad  });
-        console.log(cellInfo);
-        console.log(cellLat);
-        console.log(cellRad);
+        let geohashedPos = geohash.encode(cellLat, cellLng, 5);
+        this.setState({ cellCenter:{lat: cellLat, lng: cellLng},
+                        cellRadius: cellRad,
+                        ghPosition: geohash.bounds(geohashedPos)});
     }
 
     handleMarkerDragged = (e) => {
@@ -103,8 +105,6 @@ class OracleMap extends Component {
     render() {
         return (
             <div  className="container-content-page">
-
-
 
                 <h1 className="section-header">Oracle View</h1>
                 <br/>
@@ -161,6 +161,7 @@ class OracleMap extends Component {
                     carPosition={this.state.carPosition}
                     cellCenter={this.state.cellCenter}
                     cellRadius={this.state.cellRadius}
+                    ghPosition={this.state.ghPosition}
                 />
 
             </div>

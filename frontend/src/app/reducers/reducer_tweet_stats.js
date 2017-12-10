@@ -44,7 +44,6 @@ export default function(state, action) {
             } else {
                 return INITIAL_STATE;
             }
-
         default:
             return state;
     }

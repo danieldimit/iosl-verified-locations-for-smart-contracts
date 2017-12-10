@@ -1,1 +1,2 @@
-export const backendUrl = 'http://165.227.144.106:4000';
+export const ethereumBackendUrl = 'http://localhost:4000/api/v1';
+export const oracleBackendUrl = 'http://192.168.99.100:4000';

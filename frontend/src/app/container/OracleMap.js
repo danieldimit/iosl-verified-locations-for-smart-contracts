@@ -1,4 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as geohash from 'latlon-geohash';
+
+import { oracleBackendUrl } from '../config';
 
 import { compose, withProps } from "recompose";
 import {
@@ -28,6 +32,9 @@ const OracleMapWithCellTowers = compose(
         <Marker position={props.carPosition} draggable={true} onDragEnd={props.onMarkerDrag}/>
         <Rectangle bounds={{east: 14.693115, west: 11.946533, north: 53.296414, south: 51.459141}}
                    options={{ fillColor: `black`, fillOpacity: 0.15, strokeWeight: 5}}/>
+        <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
+                            north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
+                   options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
         <Circle center={props.cellCenter}
                 options={{ fillColor: `purple`, strokeOpacity: 0.7, strokeWeight: 1}}
                 radius={props.cellRadius}/>
@@ -40,40 +47,53 @@ const OracleMapWithCellTowers = compose(
 
 class OracleMap extends Component {
 
+
     constructor(props) {
         super(props);
         this.state = {
             carPosition: { lat: 52.520007, lng: 13.404954 },
             cellCenter: { lat: 52.520007, lng: 13.404954 },
-            cellRadius: 0
+            cellRadius: 0,
+            value: '',
+            ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
         };
-    }
 
+        this.giveToState = this.giveToState.bind(this);
+        this.handleMarkerDragged = this.handleMarkerDragged.bind(this);
+    }
 
 
     componentDidMount() {
         console.log(this.state.carPosition.lat);
-        let url = 'http://192.168.99.100:4000/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
+        let url = oracleBackendUrl + '/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
         console.log(url);
         fetch(url)
             .then(result=>result.json())
             .then(result=>this.giveToState(result))
     }
 
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+
+    handleSubmit(event) {
+        alert('A name was submitted: ' + this.state.value);
+        event.preventDefault();
+    }
+
     giveToState = (cellInfo) => {
         let cellLat = parseFloat(cellInfo[7]);
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
-        this.setState({ cellCenter:{lat: cellLat, lng: cellLng}  });
-        this.setState({ cellRadius:  cellRad  });
-        console.log(cellInfo);
-        console.log(cellLat);
-        console.log(cellRad);
+        let geohashedPos = geohash.encode(cellLat, cellLng, 5);
+        this.setState({ cellCenter:{lat: cellLat, lng: cellLng},
+                        cellRadius: cellRad,
+                        ghPosition: geohash.bounds(geohashedPos)});
     }
 
     handleMarkerDragged = (e) => {
         this.setState({ carPosition:{lat: e.latLng.lat(), lng: e.latLng.lng()}  })
-        let url = 'http://192.168.99.100:4000/getInArea?lon=' + e.latLng.lng() + '&lat=' + e.latLng.lat();
+        let url = oracleBackendUrl + '/getInArea?lon=' + e.latLng.lng() + '&lat=' + e.latLng.lat();
 
         fetch(url)
             .then(result=>result.json())
@@ -86,20 +106,58 @@ class OracleMap extends Component {
     render() {
         return (
             <div  className="container-content-page">
-                <div className="section-content">
-                    <h1 className="section-header">Oracle View</h1>
-                    <br/>
 
-                    <OracleMapWithCellTowers
-                        onMarkerDrag={this.handleMarkerDragged}
-                        carPosition={this.state.carPosition}
-                        cellCenter={this.state.cellCenter}
-                        cellRadius={this.state.cellRadius}
-                    />
-                </div>
+                <h1 className="section-header">Oracle Control Panel</h1>
+                <br/>
+
+
+                <section className="row">
+                    <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <h4>Oracle information</h4>
+                        <p>Oracle address:&nbsp;
+                            {String(this.props.oracleAddress)}
+                        </p>
+                    </article>
+
+                    <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <h4>Oracle policy</h4>
+                        <form onSubmit={this.handleSubmit}>
+                            Submit location to the smart contract in the block chain:
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd1" onChange={this.handleChange}/>
+                                every
+                                <input type="text"></input>
+                                minutes
+                            </label>
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+                                if the car enters another "hash"-square
+                            </label>
+                            <label className="oracle-policy-opt">
+                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+                                if the car leaves the Geofence
+                            </label>
+                            <input type="submit" value="Submit" />
+                        </form>
+                    </article>
+                </section>
+
+                <OracleMapWithCellTowers
+                    onMarkerDrag={this.handleMarkerDragged}
+                    carPosition={this.state.carPosition}
+                    cellCenter={this.state.cellCenter}
+                    cellRadius={this.state.cellRadius}
+                    ghPosition={this.state.ghPosition}
+                />
+
             </div>
         );
     }
 }
 
-export default OracleMap;
+const mapStateToProps = store => {
+    return {
+        oracleAddress: store.oracleAddress
+    }
+}
+export default connect(mapStateToProps)(OracleMap);

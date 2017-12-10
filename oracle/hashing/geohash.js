@@ -16,7 +16,7 @@ polygon16 = [[[13.066864, 52.357833],[13.272858, 52.289005],[13.407440, 52.27388
 var hashedPolygon = [];
 
 function hashToString(poly) {
-    geohashpoly({coords: poly, precision: 4, hashMode: "extent" }, function (err, hashes) {
+    geohashpoly({coords: poly, precision: 5, hashMode: "extent" }, function (err, hashes) {
         hashedPolygon = hashes;
         //console.log(hashedPolygon);
         var prefix = findCommonPrefix(hashedPolygon);
@@ -25,8 +25,6 @@ function hashToString(poly) {
             suffixes.push(hashedPolygon[i].substring(prefix.length, hashedPolygon[i].length));
         }
 
-        console.log(prefix.length);
-        console.log(suffixes[0].length);
         console.log(suffixes.length)
     });
 }

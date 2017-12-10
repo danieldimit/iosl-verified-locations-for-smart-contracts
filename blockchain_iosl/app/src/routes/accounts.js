@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const getAllAccounts = (req, res, next) => {
-  // show all accounts
-  console.log(global.web3.isConnected());
+    // show all accounts
+    console.log(global.web3.isConnected());
 	res.json(global.web3.eth.accounts);
 };
 

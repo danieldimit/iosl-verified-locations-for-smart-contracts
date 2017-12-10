@@ -1,5 +1,6 @@
  # GITIGNORE
  #IDE metadata
+ .frontend/.idea/
  .idea/
 
  # Logs
@@ -39,6 +40,8 @@
  # Dependency directories
  node_modules/
  backend/backendOracle/node_modules/
+ backend/node_modules/
+ frontend/node_modules/
  jspm_packages/
 
  # Typescript v1 declaration files

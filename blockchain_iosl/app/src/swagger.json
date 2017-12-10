@@ -47,6 +47,24 @@
             }
          }
       },
+      "/oracle/": {
+        "get": {
+          "tags": [
+            "oracle"
+          ],
+          "summary": "Get the oracle saved in the server",
+          "description": "",
+          "operationId": "getOracle",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation"
+            }
+          }
+        }
+      },
       
     "/owner/{address}":{
       "get": {

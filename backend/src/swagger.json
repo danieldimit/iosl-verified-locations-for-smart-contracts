@@ -1,0 +1,142 @@
+{
+   "swagger": "2.0",
+   "info": {
+      "description": "Blockchain IOSL - Proof of Location",
+      "version": "1.0.0",
+      "title": "BLOCKHAIN IOSL",
+      "termsOfService": "",
+      "contact": {
+         "email": "singh.1@campus.tu-berlin.de"
+      }
+   },
+   "host": "localhost:4000",
+   "basePath": "/api/v1",
+   "tags": [
+      {
+         "name": "account",
+         "description": "Everything about your account"
+      },
+      {
+         "name": "owner",
+         "description": "Access to owner APIs"
+      },
+      {
+         "name": "renter",
+         "description": "Access to renter APIs"
+      }
+   ],
+    "schemes": [
+      "http"
+   ],
+    "paths": {
+      "/account/": {
+         "get": {
+            "tags": [
+               "account"
+            ],
+            "summary": "Get All the accounts in blockchain",
+            "description": "",
+            "operationId": "getAccounts",
+            "produces": [
+               "application/json"
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         }
+      },
+      "/oracle/": {
+        "get": {
+          "tags": [
+            "oracle"
+          ],
+          "summary": "Get the oracle saved in the server",
+          "description": "",
+          "operationId": "getOracle",
+          "produces": [
+            "application/json"
+          ],
+          "responses": {
+            "200": {
+              "description": "successful operation"
+            }
+          }
+        }
+      },
+      
+    "/owner/{address}":{
+      "get": {
+            "tags": [
+               "owner"
+            ],
+            "summary": "Deploy Owener Contract",
+            "description": "",
+            "operationId": "deployContract",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "address",
+                  "in": "path",
+                  "description": "address",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         }
+      
+    },
+    
+    "/owner/{address}/{cargsm}" :{
+      "get":{
+        
+         "tags": [
+               "owner"
+            ],
+            "summary": "Add new car by owner address",
+            "description": "",
+            "operationId": "addNewCar",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "address",
+                  "in": "path",
+                  "description": "address",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               },
+                {
+                  "name": "cargsm",
+                  "in": "path",
+                  "description": "car gsm number",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+            
+        
+      }
+    },
+    "/renter/":{
+      
+    }
+    }
+}

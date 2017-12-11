@@ -15,8 +15,8 @@ var swaggerDocument = require('./swagger.json');
 // Application config
 const LOCAL_APP_PORT = 4000;
 const PUBLIC_APP_PORT = process.env.PUBLIC_APP_PORT || LOCAL_APP_PORT;
-//const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || config.testrpcAddress;
-const ETHEREUM_CLIENT_IP = 'http://testrpc_server';
+const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || config.testrpcAddress;
+//const ETHEREUM_CLIENT_IP = 'http://testrpc_server';
 const ETHEREUM_CLIENT_PORT = process.env.ETHEREUM_CLIENT_PORT || "8545";
 const ETHEREUM_CLIENT =  ETHEREUM_CLIENT_IP + ':' + ETHEREUM_CLIENT_PORT;
 

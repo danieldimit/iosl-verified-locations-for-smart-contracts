@@ -16,7 +16,16 @@ services:
     ports:
       - "4000:4000"
 
-  ethernet_server:
+  backend:
+    build: backend
+    ports:
+      - "5000:4000"
+    depends_on:
+      - testrpc_server
+    links:
+      - testrpc_server
+
+  testrpc_server:
     build: testrpc
     ports:
       - "8545:8545"

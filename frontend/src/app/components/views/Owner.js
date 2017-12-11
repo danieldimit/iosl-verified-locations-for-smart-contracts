@@ -5,6 +5,7 @@ import { fetchOracle } from '../../actions/index';
 import Header from '../Header';
 import Footer from '../Footer';
 import ModalOracle from '../../container/ModalOracle';
+import Owner from '../../container/Owner';
 
 class OwnerView extends Component {
 
@@ -21,7 +22,7 @@ class OwnerView extends Component {
             <div>
                 <Header />
                 {this.props.oracleAddress == null ? <ModalOracle /> : null}
-                <div>Owner</div>
+                <Owner />
                 <Footer />
             </div>
         );

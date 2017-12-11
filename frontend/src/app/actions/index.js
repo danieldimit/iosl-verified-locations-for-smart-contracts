@@ -2,7 +2,8 @@ import axios from 'axios';
 import {
     FETCH_ORACLE,
     SET_ORACLE,
-    FETCH_ALL_ACCOUNTS
+    FETCH_ALL_ACCOUNTS,
+    CREATE_CONTRACT
 } from './types';
 
 import { ethereumBackendUrl } from '../config';

@@ -1,6 +1,7 @@
 module.exports = {
 	
 	successCallback : function (data, cb) {
+		console.log("callback success ", data);
 		cb({
 			success: true,
 			data: data

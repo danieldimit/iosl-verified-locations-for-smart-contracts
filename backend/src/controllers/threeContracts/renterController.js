@@ -2,7 +2,7 @@
 const solc = require('solc');
 const fs = require('fs');
 const Web3 = require('web3');
-var base = require('../model/callback');
+var base = require('../../model/callback');
 
 
 //Added temprory for testing else global.web3 will be used

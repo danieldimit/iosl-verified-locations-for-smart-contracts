@@ -27,10 +27,10 @@ class ModalOracle extends Component {
         this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
         this.chooseOracle = this.chooseOracle.bind(this);
     }
+
     componentDidMount() {
         this.props.fetchAllAccounts();
     }
-
 
     afterOpenModal() {
         // references are now sync'd and can be accessed.

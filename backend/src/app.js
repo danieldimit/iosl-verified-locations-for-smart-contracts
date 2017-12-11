@@ -7,6 +7,7 @@ const Web3 = require('web3');
 const cors = require("cors");
 //Routes
 var routes = require('./routes/routes');
+var config = require('./config');
 
 var swaggerUi = require('swagger-ui-express');
 var swaggerDocument = require('./swagger.json');
@@ -14,7 +15,7 @@ var swaggerDocument = require('./swagger.json');
 // Application config
 const LOCAL_APP_PORT = 4000;
 const PUBLIC_APP_PORT = process.env.PUBLIC_APP_PORT || LOCAL_APP_PORT;
-const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || "http://localhost";
+const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || config.testrpcAddress;
 const ETHEREUM_CLIENT_PORT = process.env.ETHEREUM_CLIENT_PORT || "8545";
 const ETHEREUM_CLIENT =  ETHEREUM_CLIENT_IP + ':' + ETHEREUM_CLIENT_PORT;
 
@@ -34,16 +35,21 @@ app.listen(LOCAL_APP_PORT, function() {
 
 // Express middleware
 app.use(bodyParser());
-app.use(bodyParser.json()); 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true
+}));
 app.use(cors());
-
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //Routes Mapping
-app.use('/api/v1',routes);
+app.use('/api/v1', routes);
+
+
 
 app.get('/',function (req , res){
-res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
-	+JSON.stringify(global.web3.eth.accounts,null,4));
- // res.sendfile(__dirname + '/dist/index.html');
+    console.log(req.body);
+    res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
+        +JSON.stringify(global.web3.eth.accounts,null,4));
+     // res.sendfile(__dirname + '/dist/index.html');
 });

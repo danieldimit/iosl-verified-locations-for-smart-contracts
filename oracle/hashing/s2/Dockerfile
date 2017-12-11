@@ -20,4 +20,6 @@ WORKDIR python
 
 RUN cmake . && make && make install
 
-ENTRYPOINT python
+ADD . .
+
+ENTRYPOINT python s2-test.py

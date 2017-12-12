@@ -10,7 +10,7 @@ function getDistanceFromLatLonInKm(location1, location2) {
     lat1 = location1[0];
     lon1 = location1[1];
     lat2 = location2[0];
-    lon1 = location2[1];
+    lon2 = location2[1];
 
     var R = 6371;
     var dLat = deg2rad(lat2-lat1);  // deg2rad below

@@ -1,5 +1,7 @@
 var geohashpoly = require('geohash-poly');
 const geoarea = require('geo-area')(/*options*/{x: 'lng', y: 'lat'});
+var Chart = require("chart.js");
+
 
 /*
 * GENERATE RANDOM GEOFENCES
@@ -83,7 +85,7 @@ function generateRandomGeofence(){
         while(newBearing > 360) {
             newBearing = Math.floor(Math.random() * maxBearing) + bearing;
         }
-        distance = Math.floor(Math.random() * 30) + 20;
+        distance = Math.floor(Math.random() * 10) + 10;
         geofence.push(getNewPointFromDistanceBearing(center, distance, newBearing));
         bearing = newBearing;
     }
@@ -94,7 +96,7 @@ function generateRandomGeofence(){
 * GeoHash FUNCTIONS
  */
 
-function hashToString(poly, geohash_cells, geohash_diffs) {
+function hashToString(poly, geohash_cells, geohash_diffs, geohash_area) {
 
     geofence_area = calculateArea(poly);
     var geohash_geofence = poly;
@@ -105,12 +107,17 @@ function hashToString(poly, geohash_cells, geohash_diffs) {
         geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
             geohash_cells.push(hashes.length);
             geohash_diffs.push(geofence_area - hashes.length * 0.72);
+            geohash_area.push(geofence_area);
+
 
             if(geohash_cells.length == 100){
-                console.log(geohash_cells.reduce(function(a, b) {
+                console.log("Number of cells " + geohash_cells.reduce(function(a, b) {
                     return a + b;
                 }, 0) / 100);
-                console.log(geohash_diffs.reduce(function(a, b) {
+                console.log("Area not covered " + geohash_diffs.reduce(function(a, b) {
+                    return a + b;
+                }, 0) / 100);
+                console.log("Mean area " + geohash_area.reduce(function(a, b) {
                     return a + b;
                 }, 0) / 100);
             }
@@ -132,12 +139,13 @@ function main() {
 
     geohash_cells = [];
     geohash_area_diffs = [];
+    geohash_area = [];
 
     for(i = 0; i < 100; i++){
         geofence = generateRandomGeofence();
 
-        geohash_polygon = hashToString(geofence, geohash_cells, geohash_area_diffs);
+        geohash_polygon = hashToString(geofence, geohash_cells, geohash_area_diffs, geohash_area);
     }
 }
 
-main();
+main()

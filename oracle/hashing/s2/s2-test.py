@@ -1,4 +1,4 @@
-from s2sphere import *
+from s2 import *
 import math
 import random
 
@@ -54,11 +54,11 @@ def generateRandomGeofence():
 
 def hashPolygon():
 
-    #loop = S2Loop([S2CellId.FromLatLng(S2LatLng.FromDegrees(-51.264871, -30.241701)).id()])
+    loop = S2Loop([S2LatLng.FromDegrees(-51.264871, -30.241701).toPoint()])
 
-    region = LatLngRect(
-        LatLng.from_degrees(-51.264871, -30.241701),
-        LatLng.from_degrees(-51.04618, -30.000003))
+    region = S2LatLngRect(
+        S2LatLng.FromDegrees(-51.264871, -30.241701),
+        S2LatLng.FromDegrees(-51.04618, -30.000003))
 
     coverer = RegionCoverer()
     coverer.min_level = 8

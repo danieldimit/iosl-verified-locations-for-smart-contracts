@@ -3,6 +3,15 @@ import { connect } from 'react-redux';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 
+
+
+const markers = [{info:' Marker1',icon:'image/icon.jpg', label:'A',
+    latLng:{lng:2.13815342634916,lat:41.39485570794}},
+    {info:' Marker2', label:'B',latLng:{lng:2.13815342634926,lat:41.39485570795}}];
+
+
+
+
 class Owner extends Component {
 
     constructor(props) {
@@ -17,6 +26,25 @@ class Owner extends Component {
 
     componentDidMount() {
         this.props.fetchAllAccounts();
+        console.log("called");
+        const initMapScript = document.createElement("script");
+        const script = document.createElement("script");
+        initMapScript.src = "/js/googleMapsDrawPolygon.js";
+        initMapScript.async = true;
+        initMapScript.id = "initMap"
+        document.body.appendChild(initMapScript);
+
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&libraries=drawing&callback=initMap";
+        script.async = true;
+        script.id = "googleMapsScript";
+        document.body.appendChild(script);
+    }
+
+    componentWillUnmount() {
+        var id = document.getElementById("initMap");
+        document.body.removeChild(id);
+        id = document.getElementById("googleMapsScript");
+        document.body.removeChild(id);
     }
 
     onOwnerChange(e) {
@@ -54,6 +82,12 @@ class Owner extends Component {
         }
     }
 
+    handleReturnedMarkers(markers) {
+        this.setState({
+            activeMarkers: markers
+        });
+    }
+
     render() {
 
         return (
@@ -89,6 +123,7 @@ class Owner extends Component {
                     <button onClick={this.createContract}>Create contract</button>
                 </div>
 
+                <div id="map"></div>
 
             </div>
 

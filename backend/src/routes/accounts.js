@@ -1,14 +1,21 @@
 const express = require('express');
 const router = express.Router();
-
-const getAllAccounts = (req, res, next) => {
-    // show all accounts
-	res.json(global.web3.eth.accounts);
-};
-
+var accounts = require('../controllers/accountController');
 // Routes
 
 //Show All the Accounts
-router.get('/', getAllAccounts);
+
+router.get('/', function (request, response) {
+	accounts.getAllAccounts(request, function (result) {
+		response.json(result);	
+	});
+});
+
+
+router.get('/:address', function (request, response) {
+	accounts.getAddresses(request, function (result) {
+		response.json(result);	
+	});
+});
 
 module.exports = router;

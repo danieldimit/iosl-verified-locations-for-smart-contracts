@@ -107,9 +107,8 @@ contract CarDetails {
             // TODO: trigger oracle event
             TraceLocation(_carGSMNum);
             availability=false;
-
-            //Testing the gas consumption use this
-            //updatePosition("u33a");
+            position ="u33a";
+            checkPositionInGeofenceGeohash();
         }
     
    
@@ -208,7 +207,6 @@ contract SmartCarSharing{
     }
 
     function rentCar(address carAddress) payable returns (bool){
-        bool isRentSuccess = false;
         for(uint i = 0; i < cars.length; i++) {
             CarDetails carObj = CarDetails(cars[i]);
             bool isCarAvailable = carObj.isAvailable();
@@ -216,10 +214,9 @@ contract SmartCarSharing{
                  renters.push(Renter(msg.sender, carAddress, msg.value));
                  carObj.MonitorCarLocation(carObj.carGSMNum());
                  owner_balance += msg.value;
-                 isRentSuccess=true;
             }
         }
-        return isRentSuccess;
+        
     }
 
     function returnCar(address renter, address carAddress, bytes12 _curPos) {
@@ -231,13 +228,9 @@ contract SmartCarSharing{
             {
                 //if the renter did not left geofence, return money
                 for(uint i=0;i< renters.length; i++){
-                if(renters[i].renter == renter)
-                {
                     renters[i].renter.send(deposit);
                     owner_balance -= deposit;
                     delete renters[i];
-                }
-                    
                 }
             }
         }

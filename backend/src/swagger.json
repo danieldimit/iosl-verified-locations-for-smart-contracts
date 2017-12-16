@@ -25,10 +25,10 @@
          "description": "Access to renter APIs"
       }
    ],
-    "schemes": [
+   "schemes": [
       "http"
    ],
-    "paths": {
+   "paths": {
       "/account/": {
          "get": {
             "tags": [
@@ -47,27 +47,36 @@
             }
          }
       },
-      "/oracle/": {
-        "get": {
-          "tags": [
-            "oracle"
-          ],
-          "summary": "Get the oracle saved in the server",
-          "description": "",
-          "operationId": "getOracle",
-          "produces": [
-            "application/json"
-          ],
-          "responses": {
-            "200": {
-              "description": "successful operation"
+      "/account/{address}": {
+         "get": {
+            "tags": [
+               "account"
+            ],
+            "summary": "Get associated address to the accounts in blockchain",
+            "description": "",
+            "operationId": "getAccountDetails",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "address",
+                  "in": "path",
+                  "description": "address",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
             }
-          }
-        }
+         }
       },
-      
-    "/owner/{address}":{
-      "get": {
+      "/owner/{address}": {
+         "get": {
             "tags": [
                "owner"
             ],
@@ -92,17 +101,12 @@
                   "description": "successful operation"
                }
             }
-         }
-      
-    },
-    
-    "/owner/{address}/{cargsm}" :{
-      "get":{
-        
-         "tags": [
+         },
+         "post": {
+            "tags": [
                "owner"
             ],
-            "summary": "Add new car by owner address",
+            "summary": "Add a New Car",
             "description": "",
             "operationId": "addNewCar",
             "produces": [
@@ -117,10 +121,74 @@
                   "type": "string",
                   "format": "string"
                },
-                {
-                  "name": "cargsm",
+               {
+                  "in": "body",
+                  "name": "body",
+                  "description": "Add a New Car",
+                  "required": true,
+                  "schema": {
+                     "$ref": "#/components/schemas/addmewcar"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         },
+         "delete": {
+            "tags": [
+               "owner"
+            ],
+            "summary": "Delete a Car from the contract",
+            "description": "",
+            "operationId": "deleteCar",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "address",
                   "in": "path",
-                  "description": "car gsm number",
+                  "description": "address",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               },
+               {
+                  "in": "body",
+                  "name": "body",
+                  "description": "Delete a  Car",
+                  "required": true,
+                  "schema": {
+                     "$ref": "#/components/schemas/deletecar"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         }
+      },
+      "/owner/getcars/{address}": {
+         "get": {
+            "tags": [
+               "owner"
+            ],
+            "summary": "get all the cars of the owner",
+            "description": "",
+            "operationId": "getAllCars",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "address",
+                  "in": "path",
+                  "description": "address",
                   "required": true,
                   "type": "string",
                   "format": "string"
@@ -131,12 +199,38 @@
                   "description": "successful operation"
                }
             }
-            
-        
+         }
+      },
+      "/renter/": {}
+   },
+   "components": {
+      "schemas": {
+         "addmewcar": {
+            "title": "Adding a new car",
+            "type": "object",
+            "properties": {
+               "cargsm": {
+                  "type": "string",
+                  "description": "cargsm id"
+               }
+            },
+            "required": [
+               "cargsm"
+            ]
+         },
+         "deletecar": {
+            "title": "delete a car",
+            "type": "object",
+            "properties": {
+               "caraddress": {
+                  "type": "string",
+                  "description": "Address of car"
+               }
+            },
+            "required": [
+               "caraddress"
+            ]
+         }
       }
-    },
-    "/renter/":{
-      
-    }
-    }
+   }
 }

@@ -13,20 +13,20 @@ var contracts_output = solc.compile(contracts_input.toString(), 1);
 var car_abi = JSON.parse(contracts_output.contracts[':carDetails'].interface);
 var car_contract = web3.eth.contract(car_abi);
 
-// //owner
-var owner_bytecode = contracts_output.contracts[':carOwner'].bytecode;
-var owner_abi = JSON.parse(contracts_output.contracts[':carOwner'].interface);
-var owner_contract = web3.eth.contract(owner_abi);
+//Project Owner
+var renter_bytecode = contracts_output.contracts[':SmartCarSharing'].bytecode;
+var renter_abi = JSON.parse(contracts_output.contracts[':SmartCarSharing'].interface);
+var renter_contract = global.web3.eth.contract(renter_abi);
 
 
 module.exports = {
 
-	deployCarOwnerContract : function(address, callback){
+	deployRenterContract : function(address, callback){
 	 var acccount_balance = web3.fromWei(web3.eth.getBalance(address), 'ether');
-		var owner = owner_contract.new(
+		var renter = renter.new(
                 {
                     from: address,
-                    data: owner_bytecode,
+                    data: renter_abi,
                     gas: '4700000'
                 }, function (e, contract){
                 if (typeof contract.address !== 'undefined') {
@@ -42,42 +42,11 @@ module.exports = {
 		});
 	},
 
-	createNewCar : function (account_address, CGSMKey , callback){
-		var owner = owner_contract.at(account_address);
-		owner.addNewCar(CGSMKey,
-			{from: account_address,
-            gas: '4700000'},(err,result) =>{
-            	if(result){
-            		console.log("hrere");
-            		base.successCallback(result,callback);
-            	}else {
-            			            		console.log("hreredsadsadsad");
-
-            		base.successCallback(err,callback);
-            	}
-            }
-		);
+	rentCar : function (account_address, CGSMKey , callback){
+		//Implementation Pending as per ABI		
 	},
 
-	deleteCar : function (owner_address, car_address , callback){
-
-		//Implementation Pending as per ABI
-	},
-
-	withdrawPenalties: function (owner_address , callback){
-		//Implementation Pending as per ABI
-	},
-
-	iscarLeftGeofence: function(owner_address ,car_address , callback){
-		//Implementation Pending as per ABI
-	},
-
-	getAllCarDetails : function (owner_address , callback){
-		//Implementation Pending as per ABI
-	} ,
-
-	getPosition : function (owner_address , car_address , callback){
+	returnCar : function (owner_address, car_address , callback){
 		//Implementation Pending as per ABI
 	}
-
 }

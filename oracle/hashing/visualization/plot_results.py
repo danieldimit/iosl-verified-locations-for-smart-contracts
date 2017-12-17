@@ -5,9 +5,12 @@ import cartopy
 
 from shapely .geometry import Polygon
 
-def read_fences():
+def read_fences(s2=True):
 
-    f = open("s2/fences.txt", "r")
+    if s2:
+        f = open("s2/fences.txt", "r")
+    else:
+        f = open("geohash/fences.txt", "r")
 
     fences = list()
     for i in range(0, 100):
@@ -17,12 +20,18 @@ def read_fences():
         for i in range(0, len(cords), 2):
             lat = cords[i]
             lon = cords[i+1]
-            latlon.append([float(lon),float(lat)])
+            if(s2):
+                latlon.append([float(lon),float(lat)])
+            else:
+                latlon.append([float(lat), float(lon)])
         fences.append(latlon)
     return fences
 
-def read_fences_point():
-    f = open("s2/fences_points.txt", "r")
+def read_fences_point(s2=True):
+    if s2:
+      f = open("s2/fences_points.txt", "r")
+    else:
+        f = open("geohash/fences_points.txt", "r")
 
     fences = list()
     for i in range(0, 100):
@@ -58,7 +67,7 @@ def plot_fence(fence, fence_points):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([13, 14, 52, 53])
+    ax.set_extent([13, 14, 51.5, 53])
 
     geoms = []
     geo = Polygon(fence)
@@ -80,8 +89,8 @@ def plot_fence(fence, fence_points):
 
 if __name__ == "__main__":
 
-    fences = read_fences()
-    fence_points = read_fences_point()
+    fences = read_fences(True)
+    fence_points = read_fences_point(True)
 
     for x in range(0, len(fences)):
         plot_fence(fences[x], fence_points[x])

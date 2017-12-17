@@ -54,4 +54,18 @@ function findCommonPrefix(hashes) {
 }
 
 
-hashToString(polygon16);
+//hashToString(polygon16);
+
+var geohash = require("latlon-geohash");
+
+function getPoints(hash) {
+    bounds = geohash.bounds(hash);
+    lat1 = bounds["sw"]["lat"];
+    lon1 = bounds["sw"]["lon"];
+    lat2 = bounds["ne"]["lat"];
+    lon2 = bounds["ne"]["lon"];
+
+    return [lat1, lon1, lat1, lon2, lat2, lon1, lat2, lon2]
+}
+
+console.log(getPoints("u33"));

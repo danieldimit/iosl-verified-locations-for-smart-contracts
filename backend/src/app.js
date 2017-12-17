@@ -7,7 +7,7 @@ const Web3 = require('web3');
 const cors = require("cors");
 //Routes
 var routes = require('./routes/routes');
-const Account = require('./model/accounts');
+const Account = require('./model/accounts').Accounts;
 
 var swaggerUi = require('swagger-ui-express');
 var swaggerDocument = require('./swagger.json');

@@ -16,8 +16,9 @@ global.db = new Sequelize( PG_DATABASE, PG_USER, PG_PASSWORD,{
 		   }
 });
 
-module.exports = global.db.define('accounts', {
-  account_address: {
+
+var Accounts = global.db.define('accounts', {
+    account_address: {
     type: Sequelize.STRING
   },
   car_owner_address: {
@@ -26,13 +27,27 @@ module.exports = global.db.define('accounts', {
   renter_address: {
     type: Sequelize.STRING
   },
-  car_address : {
-    type: Sequelize.STRING
-  }
 }, {
   timestamps: false
 });
 
+var Cars = global.db.define('cars', {
+   account_address: {
+    type: Sequelize.STRING
+  },
+    car_address : {
+    type: Sequelize.STRING
+  }}, {
+  timestamps: false
+});
+
+
+
+
+module.exports = {
+              Accounts:Accounts ,
+              Cars :Cars,
+            };
 
 global.db.authenticate().then(function(err){
     console.log('Connection to database could be established successfully.');

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Account = require('../model/accounts');
+const Account = require('../model/accounts').Accounts;
+const Car = require('../model/accounts').Cars;
 var base = require('../model/callback');
 
 module.exports = {
@@ -24,17 +25,27 @@ module.exports = {
         'account_address': address
     };
     
-    return Account.findOne({ where: body }).then(data => {
-            if(!data) {
-        return Account.create(body)
-                .then(newAccount => {
-                console.log(`New account for address ${address} has been created.`);
-       	return base.successCallback(newAccount,callback);
-    });
-    } else {
-        console.log('Account with ' + address + ' is found.');
-        return base.successCallback(data,callback);
-    }
+    Account.findOne({ where: body }).then(data => {
+            if(data) {
+                Car.findAll({ where: body }).then(cars =>{
+                        if(cars){
+                            console.log("Cars found "+JSON.stringify(cars));
+                            var AllCars = new Array();
+                            for (var i = 0, len = cars.length; i < len; i++) {
+                                if(cars[i].car_address){
+                                   AllCars.push(cars[i].car_address);                                    
+                                }
+                            }
+                                return base.successCallback({data,AllCars},callback);
+                        }else{
+                                 console.log("Cars not found "+JSON.stringify(cars));
+                                return base.successCallback({data,cars : "No Car Found"},callback);                            
+                        }
+                });
+            } else {
+                console.log('Account with ' + address + ' is not found.');
+                return base.errorCallback({message: "Invalid Account Address"},callback);
+            }
 });
 	} 
 }

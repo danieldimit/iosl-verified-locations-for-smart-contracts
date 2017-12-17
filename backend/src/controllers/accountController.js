@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Account = require('../model/accounts').Accounts;
-const Car = require('../model/accounts').Cars;
 var base = require('../model/callback');
+var owner = require('./ownerController');
 
 module.exports = {
 
@@ -27,23 +27,10 @@ module.exports = {
     
     Account.findOne({ where: body }).then(data => {
             if(data) {
-                Car.findAll({ where: body }).then(cars =>{
-                        if(cars){
-                            console.log("Cars found "+JSON.stringify(cars));
-                            var AllCars = new Array();
-                            for (var i = 0, len = cars.length; i < len; i++) {
-                                if(cars[i].car_address){
-                                   AllCars.push(cars[i].car_address);                                    
-                                }
-                            }
-                                return base.successCallback({data,AllCars},callback);
-                        }else{
-                                 console.log("Cars not found "+JSON.stringify(cars));
-                                return base.successCallback({data,cars : "No Car Found"},callback);                            
-                        }
+                owner.getAllCarDetails(address , function(result){
+                 return base.successCallback({data , result},callback);
                 });
             } else {
-                console.log('Account with ' + address + ' is not found.');
                 return base.errorCallback({message: "Invalid Account Address"},callback);
             }
 });

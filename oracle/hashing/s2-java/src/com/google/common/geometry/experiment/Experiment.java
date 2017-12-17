@@ -141,14 +141,22 @@ public class Experiment {
 
         BufferedWriter writer_fences = new BufferedWriter(new FileWriter( "fences.txt", true));
         BufferedWriter writer_fences_hashed = new BufferedWriter(new FileWriter( "fences_hashed.txt", true));
+        BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
 
         List<Long> ids = new ArrayList<Long>();
+        String fence_points = "";
+        double sum = 0;
         for(S2CellId id : union.cellIds()){
             S2Cell s2Cell = new S2Cell(id);
-            //log.info(s2Cell.getCenter().toDegreesString());
+            sum += s2Cell.approxArea();
             ids.add(removeZeros(id.id()));
-            log.info(String.valueOf(removeZeros(id.id())));
+
+            for(int j = 0; j < 4; j++){
+                S2Point p = s2Cell.getVertex(j);
+                fence_points = fence_points.concat(p.toDegreesString() + ",");
+            }
         }
+        log.info(String.valueOf(sum));
         writer_fences.write(fenceToString(fence));
         writer_fences.newLine();
         writer_fences.close();
@@ -156,6 +164,11 @@ public class Experiment {
         writer_fences_hashed.write(convertToString(ids));
         writer_fences_hashed.newLine();
         writer_fences_hashed.close();
+
+        writer_fences_points.write(fence_points);
+        writer_fences_points.newLine();
+        writer_fences_points.close();
+
         return union.size();
     }
 

@@ -37,8 +37,8 @@ module.exports = {
                 if(result[i].car_owner_address){
                     console.log("Car owebers "+JSON.stringify(result[i]));
                         var car_owner = owner_contract.at(result[i].car_owner_address);
-                        var availablecar = car_owner.ListAvailableCars.call();
-                        availableCars.push(availablecar);
+                        var available_car = car_owner.ListAvailableCars.call();
+                        availableCars.push({ownerContract:result[i].car_owner_address,availableCarContract:available_car});
                 }
             }
              base.successCallback(availableCars,callback);

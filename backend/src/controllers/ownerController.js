@@ -3,7 +3,8 @@ const solc = require('solc');
 const fs = require('fs');
 const Web3 = require('web3');
 var base = require('../model/callback');
-const Account = require('../model/accounts');
+const Account = require('../model/accounts').Accounts;
+const Car = require('../model/accounts').Cars;
 
 
 //Added temprory for testing else global.web3 will be used
@@ -61,31 +62,42 @@ module.exports = {
 		}); 
 	},
 
-	createNewCar : function (account_address, CGSMKey , callback){
-		 const body = {
+	createNewCar : function (account_address, responsebody , callback){
+		//Requested Body
+			//{
+			//   "carGSMNum": "string",
+			//   "penaltyValue": 0,
+			//   "geofencePrefix": "string",
+			//   "geofenceSuffix": [
+			//     "string"
+			//   ]
+			// }	
+		const body = {
         'account_address': account_address
     	};
     	console.log("account_address is :"+account_address);
 
-    	console.log("cargms is :"+CGSMKey);
+    	console.log("cargms is :"+responsebody.carGSMNum);
 
     	Account.findOne({ where: body }).then(data => {
     		if(data.car_owner_address){
     			var car_owner = owner_contract.at(data.car_owner_address);
-    			var addNewCar = car_owner.addNewCar(CGSMKey,
+    			var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
                     {from: account_address, gas: 4700000},
                     (err, result) => {
                     	if(err){
                     		base.errorCallback(err,callback);
-                    	}if(result){
+                    	}
+                    	if(result){
                     		var res = { Message : "New car is added", car_address : result };
-                    		data.updateAttributes({car_address : result});
-                    		base.successCallback(res,callback);
+                    		Car.create({ account_address:account_address ,car_address:result}).then(result => {
+                    			base.successCallback(res,callback);
+                    		});
                     	}
                     });
     		}else{
     			var res = { Message : "Create a car owner contract first"};
-    			base.successCallback(res,callback);
+    			base.errorCallback(res,callback);
     		}
     	});
 	},
@@ -108,7 +120,7 @@ module.exports = {
 	                    });
     		}else{
     			var res = { Message : "Create a car owner contract first"};
-    			base.successCallback(res,callback);
+    			base.errorCallback(res,callback);
     		}
     	});
 	},

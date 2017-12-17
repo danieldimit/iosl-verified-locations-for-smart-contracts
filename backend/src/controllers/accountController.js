@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Account = require('../model/accounts');
+const Account = require('../model/accounts').Accounts;
 var base = require('../model/callback');
+var owner = require('./ownerController');
 
 module.exports = {
 
@@ -24,17 +25,14 @@ module.exports = {
         'account_address': address
     };
     
-    return Account.findOne({ where: body }).then(data => {
-            if(!data) {
-        return Account.create(body)
-                .then(newAccount => {
-                console.log(`New account for address ${address} has been created.`);
-       	return base.successCallback(newAccount,callback);
-    });
-    } else {
-        console.log('Account with ' + address + ' is found.');
-        return base.successCallback(data,callback);
-    }
+    Account.findOne({ where: body }).then(data => {
+            if(data) {
+                owner.getAllCarDetails(address , function(result){
+                 return base.successCallback({data , result},callback);
+                });
+            } else {
+                return base.errorCallback({message: "Invalid Account Address"},callback);
+            }
 });
 	} 
 }

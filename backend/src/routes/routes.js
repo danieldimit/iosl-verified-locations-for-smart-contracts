@@ -3,18 +3,17 @@ var app = express();
 
 const accounts = require('./accounts');
 const owner = require('./owner');
-const oracle = require('./oracle');
 var renter = require('./renter');
+var cars = require('./cars');
 
 //Routes
 app.use('/account', accounts);
 
 app.use('/owner', owner);
 
-app.use('/oracle', oracle);
-
 app.use('/renter', renter);
 
+app.use ('/cars' , cars);
 
 module.exports = app;
 

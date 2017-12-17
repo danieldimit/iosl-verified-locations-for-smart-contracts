@@ -7,6 +7,7 @@ import Footer from '../Footer';
 import ModalOracle from '../../container/ModalOracle';
 import Owner from '../../container/Owner';
 
+
 class OwnerView extends Component {
 
     constructor(props) {

@@ -7,7 +7,7 @@ const Web3 = require('web3');
 const cors = require("cors");
 //Routes
 var routes = require('./routes/routes');
-var config = require('./config');
+const Account = require('./model/accounts');
 
 var swaggerUi = require('swagger-ui-express');
 var swaggerDocument = require('./swagger.json');
@@ -15,8 +15,7 @@ var swaggerDocument = require('./swagger.json');
 // Application config
 const LOCAL_APP_PORT = 4000;
 const PUBLIC_APP_PORT = process.env.PUBLIC_APP_PORT || LOCAL_APP_PORT;
-const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || config.testrpcAddress;
-//const ETHEREUM_CLIENT_IP = 'http://testrpc_server';
+const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || "http://localhost";
 const ETHEREUM_CLIENT_PORT = process.env.ETHEREUM_CLIENT_PORT || "8545";
 const ETHEREUM_CLIENT =  ETHEREUM_CLIENT_IP + ':' + ETHEREUM_CLIENT_PORT;
 
@@ -32,25 +31,30 @@ app.listen(LOCAL_APP_PORT, function() {
 	console.log("Looking for ethereum accounts on address"+ETHEREUM_CLIENT_IP);
     var accounts = global.web3.eth.accounts;
     console.log('Available ethereum accounts: ' + JSON.stringify(accounts,null,4));
+
+    Account.sync({force: false}).then(function(){
+         console.log('Table for accounts created ... (Old table is used if it has already existed.)');
+        var body = {'account_address': ''};
+        for (var i = 0; i < accounts.length; i++){
+             var address = accounts[i];
+             body = {'account_address': address};
+             Account.findOrCreate({
+                where: body, defaults: body});
+         }
+    });
 });
 
 // Express middleware
 app.use(bodyParser());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-    extended: true
-}));
+app.use(bodyParser.json()); 
 app.use(cors());
+
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //Routes Mapping
-app.use('/api/v1', routes);
-
-
+app.use('/api/v1',routes);
 
 app.get('/',function (req , res){
-    console.log(req.body);
-    res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
-        +JSON.stringify(global.web3.eth.accounts,null,4));
-     // res.sendfile(__dirname + '/dist/index.html');
+res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
+	+JSON.stringify(global.web3.eth.accounts,null,4));
 });

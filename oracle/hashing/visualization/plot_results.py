@@ -5,12 +5,10 @@ import cartopy
 
 from shapely .geometry import Polygon
 
-def read_fences(s2=True):
+def read_fences():
 
-    if s2:
-        f = open("s2/fences.txt", "r")
-    else:
-        f = open("geohash/fences.txt", "r")
+
+    f = open("fences.txt", "r")
 
     fences = list()
     for i in range(0, 100):
@@ -20,10 +18,7 @@ def read_fences(s2=True):
         for i in range(0, len(cords), 2):
             lat = cords[i]
             lon = cords[i+1]
-            if(s2):
-                latlon.append([float(lon),float(lat)])
-            else:
-                latlon.append([float(lat), float(lon)])
+            latlon.append([float(lat), float(lon)])
         fences.append(latlon)
     return fences
 
@@ -58,10 +53,9 @@ def read_fences_point(s2=True):
         fences.append(cells)
     return fences
 
-def plot_fence(fence, fence_points):
+def plot_fence(fence, fence_points, subplot):
     proj = cimgt.MapQuestOSM()
-    plt.figure(figsize=(20,20))
-    ax = plt.axes(projection=proj.crs)
+    ax = plt.subplot(subplot[0], subplot[1], subplot[2], projection=proj.crs)
     ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
     ax.add_feature(cartopy.feature.LAND)
     ax.add_feature(cartopy.feature.COASTLINE)
@@ -84,14 +78,18 @@ def plot_fence(fence, fence_points):
     ax.add_geometries(geoms2, ccrs.PlateCarree(), facecolor='orange',
                       edgecolor='black', alpha=0.2)
 
-    plt.show()
-
 
 if __name__ == "__main__":
 
-    fences = read_fences(True)
-    fence_points = read_fences_point(True)
+    fences = read_fences()
+    fence_points_S2 = read_fences_point(True)
+    fence_points_geohash = read_fences_point(False)
 
-    for x in range(0, len(fences)):
-        plot_fence(fences[x], fence_points[x])
+    for x in range(0, len(fences) - 1):
+        plt.figure(figsize=(20, 20))
+
+        plot_fence(fences[x], fence_points_S2[len(fences) - 1 - x], [1,2,1])
+        plot_fence(fences[x], fence_points_geohash[x], [1,2,2])
+
+        plt.show()
 

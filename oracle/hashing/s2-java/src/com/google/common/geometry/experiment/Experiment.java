@@ -117,14 +117,9 @@ public class Experiment {
     }
 
 
-    private static int findCover() throws IOException {
-
-        //S2LatLngRect region = S2LatLngRect.fromPointPair(S2LatLng.fromDegrees(-51.264871, -30.241701),
-          //              S2LatLng.fromDegrees(-51.04618, -30.000003));
+    private static int findCover(List<double[]> fence) throws IOException {
 
         List<S2Point> points = new ArrayList<>();
-
-        List<double[]> fence = generateRandomGeofence();
 
         for(double[] point : fence){
             points.add(S2LatLng.fromDegrees(point[0], point[1]).toPoint());
@@ -132,14 +127,13 @@ public class Experiment {
 
         S2Loop loop = new S2Loop(points);
         S2Polygon region = new S2Polygon(loop);
-        //log.info(String.valueOf(region.getArea()));
 
         S2RegionCoverer coverer = new S2RegionCoverer();
         coverer.setMaxLevel(12);
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 
-        BufferedWriter writer_fences = new BufferedWriter(new FileWriter( "fences.txt", true));
+        //BufferedWriter writer_fences = new BufferedWriter(new FileWriter( "fences.txt", true));
         BufferedWriter writer_fences_hashed = new BufferedWriter(new FileWriter( "fences_hashed.txt", true));
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
 
@@ -157,9 +151,9 @@ public class Experiment {
             }
         }
         log.info(String.valueOf(sum));
-        writer_fences.write(fenceToString(fence));
-        writer_fences.newLine();
-        writer_fences.close();
+        //writer_fences.write(fenceToString(fence));
+        //writer_fences.newLine();
+        //writer_fences.close();
 
         writer_fences_hashed.write(convertToString(ids));
         writer_fences_hashed.newLine();
@@ -174,10 +168,18 @@ public class Experiment {
 
     public static void main(String[] args) throws IOException {
         double sum = 0;
-        for(int i = 0; i < 100; i++){
-            sum += findCover();
+
+        BufferedReader br = new BufferedReader(new FileReader("fences.txt"));
+        String line;
+
+        while ((line = br.readLine()) != null) {
+            List<double[]> fence = new ArrayList<>();
+            String[] cords = line.split(",");
+            for(int j=0; j < cords.length; j +=2){
+                fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
+            }
+
+            findCover(fence);
         }
-        log.info(String.valueOf("Number of cells " + sum / 100));
-        log.info(String.valueOf("Mean area covered " + (sum / 100) * 6));
     }
 }

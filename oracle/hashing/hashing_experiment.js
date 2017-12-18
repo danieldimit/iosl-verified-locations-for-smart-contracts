@@ -125,7 +125,7 @@ function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
-        geohashpoly({coords: g_final, precision: 5x, hashMode: "inside" }, function (err, hashes) {
+        geohashpoly({coords: g_final, precision: 5, hashMode: "inside" }, function (err, hashes) {
             geohash_cells.push(hashes.length);
             geohash_diffs.push(geofence_area - hashes.length * 0.72);
             geohash_area.push(geofence_area);

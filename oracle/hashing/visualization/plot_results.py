@@ -52,7 +52,7 @@ def read_fences_point(path):
 def plot_fence(fence, fence_points, subplot, title):
     proj = cimgt.MapQuestOSM()
     ax = plt.subplot(subplot[0], subplot[1], subplot[2], projection=proj.crs)
-    ax.title.set_text(title)
+
     ax.add_feature(cartopy.feature.BORDERS, linestyle=':')
     ax.add_feature(cartopy.feature.LAND)
     ax.add_feature(cartopy.feature.COASTLINE)
@@ -69,6 +69,7 @@ def plot_fence(fence, fence_points, subplot, title):
         g = Polygon(cell)
         geoms2.append(g)
 
+    ax.title.set_text(title + "\nNumber of hashes: " + str(len(geoms2)))
     ax.add_geometries(geoms, ccrs.PlateCarree(), facecolor='red',
                       edgecolor='black', alpha=1)
 
@@ -87,10 +88,9 @@ if __name__ == "__main__":
     for x in range(0, len(fences) - 1):
         plt.figure(figsize=(20, 20))
 
-        plot_fence(fences[x], fence_points_S2_12[x], [2,2,1], "S2 Max Precision: 12")
-        plot_fence(fences[x], fence_points_S2_15[x], [2,2,2], "S2 Max Precision: 15")
-        plot_fence(fences[x], fence_points_geohash_5[x], [2,2,3], "Geohash Precision: 5")
-        plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6")
+        plot_fence(fences[x], fence_points_S2_12[x], [2,2,1], "S2 Max Precision: 12, 25bit - Hash")
+        plot_fence(fences[x], fence_points_S2_15[x], [2,2,2], "S2 Max Precision: 15, 29bit - Hash")
+        plot_fence(fences[x], fence_points_geohash_5[x], [2,2,3], "Geohash Precision: 5, 25bit - Hash")
+        plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash")
 
-        plt.show()
-
+        plt.savefig("experiment-1/Test-" + str(x) + ".png")

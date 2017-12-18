@@ -38,4 +38,10 @@ router.get('/:address/getCarContracts', function (request, response){
 	});
 }); 
 
+router.post('/:address/withdrawMoney' , function(request , response){
+	owner.withdrawMoney(request.params.address , function (result){
+		response.json(result);
+	});
+});
+
 module.exports = router;

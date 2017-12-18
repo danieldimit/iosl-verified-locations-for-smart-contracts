@@ -31,17 +31,19 @@ app.listen(LOCAL_APP_PORT, function() {
 	console.log("Looking for ethereum accounts on address"+ETHEREUM_CLIENT_IP);
     var accounts = global.web3.eth.accounts;
     console.log('Available ethereum accounts: ' + JSON.stringify(accounts,null,4));
-
-    Account.sync({force: false}).then(function(){
-         console.log('Table for accounts created ... (Old table is used if it has already existed.)');
-        var body = {'account_address': ''};
-        for (var i = 0; i < accounts.length; i++){
-             var address = accounts[i];
-             body = {'account_address': address};
-             Account.findOrCreate({
-                where: body, defaults: body});
-         }
-    });
+    
+        Account.drop().then(function(){
+                    Account.sync({force: false}).then(function(){
+                         console.log('Table for accounts created ... (Old table is used if it has already existed.)');
+                        var body = {'account_address': ''};
+                        for (var i = 0; i < accounts.length; i++){
+                             var address = accounts[i];
+                             body = {'account_address': address};
+                             Account.findOrCreate({
+                                where: body, defaults: body});
+                         }
+                    });
+        });
 });
 
 // Express middleware

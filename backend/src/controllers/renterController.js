@@ -48,11 +48,17 @@ module.exports = {
         });
     },
 
-	rentCar : function (account_address, CGSMKey , callback){
-		//Implementation Pending as per ABI		
+    getOwnerContractAsRenter : function(accounts_address, callback){
+            base.successCallback({Message : "Implementation is pending"},callback);
+    },
+
+	rentCar : function (account_address, ownercontractaddress ,car_contract_address, callback){
+		//Implementation Pending as per ABI	
+            base.successCallback({Message : "Implementation is pending"},callback);	
 	},
 
-	returnCar : function (owner_address, car_address , callback){
+	returnCar : function (owner_address, ownercontractaddress ,car_contract_address, callback){
 		//Implementation Pending as per ABI
+            base.successCallback({Message : "Implementation is pending"},callback);
 	}
 }

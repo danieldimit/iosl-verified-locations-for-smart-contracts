@@ -148,8 +148,8 @@ module.exports = {
     	});
 	},
 
-	withdrawPenalties: function (owner_address , callback){
-		//Implementation Pending as per ABI
+	withdrawMoney: function (owner_address , callback){
+		base.successCallback({Message : "Implementation is pending"},callback);
 	},
 
 	iscarLeftGeofence: function(owner_address ,car_address , callback){

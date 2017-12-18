@@ -166,10 +166,8 @@ public class Experiment {
         return union.size();
     }
 
-    public static void main(String[] args) throws IOException {
-        double sum = 0;
-
-        BufferedReader br = new BufferedReader(new FileReader("fences.txt"));
+    public static void readFromFile(String path) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(path));
         String line;
 
         while ((line = br.readLine()) != null) {
@@ -178,8 +176,15 @@ public class Experiment {
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-
             findCover(fence);
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        readFromFile("fences.txt");
+        /*for(int i =0; i < 100; i++){
+            findCover(generateRandomGeofence());
+        }*/
     }
 }

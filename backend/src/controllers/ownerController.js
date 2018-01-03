@@ -12,7 +12,6 @@ var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
 //car
 var contracts_input = fs.readFileSync('src/smartcontracts/CarSharingContract.sol');
 var contracts_output = solc.compile(contracts_input.toString(), 1);
-
 var car_bytecode = contracts_output.contracts[':CarDetails'].bytecode;
 var car_abi = JSON.parse(contracts_output.contracts[':CarDetails'].interface);
 var car_contract = web3.eth.contract(car_abi);
@@ -83,6 +82,10 @@ module.exports = {
     		if(data.car_owner_address){
     			var car_owner = owner_contract.at(data.car_owner_address);
     			var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
+    				responsebody.penaltyValue,
+    				responsebody.position,
+    				responsebody.geofencePrefix,
+    				responsebody.geofenceSuffix,
                     {from: account_address, gas: 4700000},
                     (err, result) => {
                     	if(err){
@@ -146,6 +149,52 @@ module.exports = {
     			base.successCallback(res,callback);
     		}
     	});
+	},
+
+	showBalance : function (account_address , callback){
+				const body = {
+		        'account_address': account_address
+		    	};
+		    	Account.findOne({ where: body }).then(data => {
+		    		if(data.car_owner_address){
+		    			var car_owner = owner_contract.at(data.car_owner_address);
+		    			var car_list = car_owner.showBalance(
+			    			{from: account_address, gas: 4700000},
+			                    (err, result) => {
+			                    	if(err){
+			                    		base.errorCallback(err,callback);
+			                    	}if(result){
+			                    		base.successCallback(result,callback);
+			                    	}
+			                    });
+		    		}else{
+		    			var res = { Message : "Create a car owner contract first"};
+		    			base.successCallback(res,callback);
+		    		}
+		    	});
+	},
+
+	showRenters : function (account_address , callback){
+				const body = {
+		        'account_address': account_address
+		    	};
+		    	Account.findOne({ where: body }).then(data => {
+		    		if(data.car_owner_address){
+		    			var car_owner = owner_contract.at(data.car_owner_address);
+		    			var car_list = car_owner.showRenters(
+			    			{from: account_address, gas: 4700000},
+			                    (err, result) => {
+			                    	if(err){
+			                    		base.errorCallback(err,callback);
+			                    	}if(result){
+			                    		base.successCallback(result,callback);
+			                    	}
+			                    });
+		    		}else{
+		    			var res = { Message : "Create a car owner contract first"};
+		    			base.successCallback(res,callback);
+		    		}
+		    	});
 	},
 
 	withdrawMoney: function (owner_address , callback){

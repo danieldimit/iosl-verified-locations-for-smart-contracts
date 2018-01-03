@@ -538,7 +538,7 @@
                "type": "string"
             },
             "geofenceSuffix": {
-               "type": "array",
+               "type": "string",
                "items": {
                   "type": "string"
                }

@@ -29,7 +29,7 @@ contract CarDetails {
       }
 
       //event TraceLocation(bytes16 number);
-      event CarRenterSatus(address renter, address car);
+      event CarRenterSatus(address renter, address car , bool status);
       
       
 
@@ -144,7 +144,7 @@ contract CarDetails {
       
 }
 
-contract Owner{
+contract Owner {
 
     /* for simplicity following assumptions have been taken:
     * 1. Renter can rent only one car
@@ -173,7 +173,7 @@ contract Owner{
     }
     
     function Owner(bytes16 carGSMNum) {
-        owner_address = msg.sender;
+        Owner_address = msg.sender;
     }
     
 

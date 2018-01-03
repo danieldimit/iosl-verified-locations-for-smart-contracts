@@ -18,8 +18,8 @@ var car_abi = JSON.parse(contracts_output.contracts[':CarDetails'].interface);
 var car_contract = web3.eth.contract(car_abi);
 
 //owner
-var owner_bytecode = contracts_output.contracts[':SmartCarSharing'].bytecode;
-var owner_abi = JSON.parse(contracts_output.contracts[':SmartCarSharing'].interface);
+var owner_bytecode = contracts_output.contracts[':Owner'].bytecode;
+var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 
 

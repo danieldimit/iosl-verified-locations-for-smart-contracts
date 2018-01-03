@@ -15,12 +15,12 @@ contract CarDetails {
       address constant oracle = 0x8ead2d9305536ebdde184cea020063d2de3665c7;
       uint pendingWithdrawals = 0;
       
-       modifier onlyOwner() {
+      modifier onlyOwner() {
         require(msg.sender == owner);
         _;
-       }
+      }
        
-       modifier onlyOracle {
+      modifier onlyOracle {
         require(msg.sender == oracle);
         _;
       }
@@ -82,7 +82,7 @@ contract CarDetails {
             }
         }
         leftGeofence = !inside;
-    }
+      }
 
       /////////////////////////////////////
       // Functions called by car itself 
@@ -103,13 +103,20 @@ contract CarDetails {
         selfdestruct(owner);
       }
     
+      /*
       function MonitorCarLocation(bytes16 _carGSMNum){
             // TODO: trigger oracle event
             TraceLocation(_carGSMNum);
             availability=false;
             position ="u33a";
             checkPositionInGeofenceGeohash();
-        }
+      }
+      */
+
+      function SetCarStatus(bytes16 _carGSMNum){
+            TraceLocation(_carGSMNum);
+            availability=false;
+      }
     
    
       /////////////////////////////////////
@@ -125,18 +132,21 @@ contract CarDetails {
           return position;
       }
       
-    
 }
 
-contract SmartCarSharing{
+contract Owner{
 
+    /* for simplicity following assumptions have been taken:
+    * 1. Renter can rent only one car
+    * 2. Owner can have multiple renters.
+    *
+    */
     struct Renter{
         address renter;
         address rented_car;
         uint moneyForcar; //rent + deposit
     }
-
-    //renter can take multiple cars and there exist multiple renter
+    
     Renter[] renters; 
 
 
@@ -152,7 +162,7 @@ contract SmartCarSharing{
         _;
     }
     
-    function SmartCarSharing(bytes16 carGSMNum) {
+    function Owner(bytes16 carGSMNum) {
 
      // initially the car owner will start with 1 car and later he can increase it
         owner_address = msg.sender;
@@ -212,15 +222,15 @@ contract SmartCarSharing{
             bool isCarAvailable = carObj.isAvailable();
             if(cars[i] == carAddress && isCarAvailable){
                  renters.push(Renter(msg.sender, carAddress, msg.value));
-                 carObj.MonitorCarLocation(carObj.carGSMNum());
+                 carObj.SetCarStatus(carObj.carGSMNum());
                  owner_balance += msg.value;
             }
         }
         
     }
 
-    function returnCar(address renter, address carAddress, bytes12 _curPos) {
-        for(uint k = 0; k < cars.length; k++) {
+    function returnCar(address carAddress, bytes12 _curPos) {
+      /*  for(uint k = 0; k < cars.length; k++) {
             CarDetails carObj = CarDetails(cars[k]);
             bool leftGeofence = carObj.hasLeftGeofence();
             uint deposit = carObj.penaltyValue();
@@ -233,8 +243,21 @@ contract SmartCarSharing{
                     delete renters[i];
                 }
             }
+        }*/
+
+        for(uint i=0;i<renters.length; i++){
+          // checks for valid renter and car address
+          if(renters[i].renter == msg.sender && renters[i].rented_car==carAddress){ 
+              CarDetails carObj = CarDetails(carAddress);
+              bool leftGeofence = carObj.hasLeftGeofence();
+              uint deposit = carObj.penaltyValue();
+              if(leftGeofence == false){
+                    renters[i].renter.send(deposit);
+                    owner_balance -= deposit;
+                    delete renters[i];
+              }
+          }
         }
-        
     }
     
 }

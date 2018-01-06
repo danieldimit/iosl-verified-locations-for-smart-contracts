@@ -266,6 +266,62 @@
             }
          }
       },
+      "/owner/{userAddress}/showBalance": {
+         "get": {
+            "tags": [
+               "owner"
+            ],
+            "summary": "Get the availble balance in account",
+            "description": "get the availble balance in account",
+            "operationId": "getBalance",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "userAddress",
+                  "in": "path",
+                  "description": "The user address in the blockchain",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         }
+      },
+      "/owner/{userAddress}/showRenters": {
+         "get": {
+            "tags": [
+               "owner"
+            ],
+            "summary": "Get the list of renters",
+            "description": "get the availble balance in account",
+            "operationId": "getRenters",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "userAddress",
+                  "in": "path",
+                  "description": "The user address in the blockchain",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         }
+      },
       "/owner/{userAddress}/withdrawMoney": {
          "post": {
             "tags": [
@@ -468,7 +524,7 @@
             }
          }
       },
-      "/renter/{userAddress}/{ownerContract}/{carContract}/returnCar": {
+      "/renter/{userAddress}/{ownerContract}/returnCar": {
          "post": {
             "tags": [
                "renter"
@@ -498,7 +554,7 @@
                },
                {
                   "name": "carContract",
-                  "in": "path",
+                  "in": "query",
                   "description": "The user address in the blockchain",
                   "required": true,
                   "type": "string",

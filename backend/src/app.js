@@ -32,7 +32,7 @@ app.listen(LOCAL_APP_PORT, function() {
     var accounts = global.web3.eth.accounts;
     console.log('Available ethereum accounts: ' + JSON.stringify(accounts,null,4));
     
-        Account.drop().then(function(){
+       // Account.drop().then(function(){
                     Account.sync({force: false}).then(function(){
                          console.log('Table for accounts created ... (Old table is used if it has already existed.)');
                         var body = {'account_address': ''};
@@ -42,8 +42,10 @@ app.listen(LOCAL_APP_PORT, function() {
                              Account.findOrCreate({
                                 where: body, defaults: body});
                          }
+                    }).catch(function (err){
+                        console.log("Error on updating tables"+JSON.stringify(err));
                     });
-        });
+      //  });
 });
 
 // Express middleware

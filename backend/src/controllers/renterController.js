@@ -42,27 +42,81 @@ module.exports = {
         });
     },
 
+    deployRenterContract : function (account_address, callback){
+
+        const body = {
+        'account_address': account_address
+        };
+
+        Account.findOne({ where: body }).then(data => {
+            console.log(JSON.stringify(data));
+            if(data){
+                    if(data.renter_address){
+                        var body = {
+                            Message : "You already have car renter contract", 
+                                      contract_address: data.renter_address };
+                           base.successCallback(body,callback);
+                        }
+                    else{
+                            var acccount_balance = web3.fromWei(web3.eth.getBalance(account_address), 'ether');
+                            var renter = renter_contract.new(
+                                    {
+                                        from: account_address,
+                                        data: renter_bytecode,
+                                        gas: '4700000'
+                                    }, function (e, contract){
+                                    if (typeof contract.address !== 'undefined') {
+                                        console.log('Contract mined! address: ' + contract.address +
+                                            ' transactionHash: ' + contract.transactionHash);
+                                        data.updateAttributes({renter_address : contract.address});
+                                        var res = {contractMinedAddress: contract.address , 
+                                                   transactionHash : contract.transactionHash,
+                                                   contract_balance : web3.fromWei(web3.eth.getBalance(contract.address), 'ether') + " ether",
+                                                   created: true,
+                                                   account_balance: acccount_balance + " ether"};
+                                         base.successCallback(res,callback);
+                                    }
+                            });
+                        }
+                }else{
+                    var body = { Message: "No account founc"};
+                    base.errorCallback(body,callback);
+                }   
+        }); 
+    },
+
     getOwnerContractAsRenter : function(accounts_address, callback){
             base.successCallback({Message : "Implementation is pending"},callback);
     },
 
     rentCar : function (account_address, ownercontractaddress ,car_contract_address, callback){
         //Implementation Pending as per ABI 
-
-                 var renter = renter_contract.at(data.car_owner_address);
-                        var available_cars = renter.rentCar(
-                            {from: account_address, gas: 4700000},
-                                (err, result) => {
-                                    if(err){
-                                        base.errorCallback(err,callback);
-                                    }if(result){
-                                        base.successCallback(result,callback);
-                                    }
-                                });
+      
+              var owner = renter_contract.at(ownercontractaddress);
+              var rent_car = owner.rentCar.sendTransaction(car_contract_address,
+                                { from: account_address, 
+                                gas: 4700000,
+                                  value: web3.toWei(10,'ether')},(err, result) => {
+                                                            if(err){
+                                                                base.errorCallback(err,callback);
+                                                            }if(result){
+                                                                base.successCallback(result,callback);
+                                                            }
+             });
+                
     },
 
     returnCar : function (owner_address, ownercontractaddress ,car_contract_address, callback){
         //Implementation Pending as per ABI
-            base.successCallback({Message : "Implementation is pending"},callback);
+        var owner = renter_contract.at(ownercontractaddress);
+              var rent_car = owner.returnCar(car_contract_address,
+                                { from: account_address, 
+                                gas: 4700000},(err, result) => {
+                                                            if(err){
+                                                                base.errorCallback(err,callback);
+                                                            }if(result){
+                                                                base.successCallback(result,callback);
+                                                            }
+             });
     }
 }

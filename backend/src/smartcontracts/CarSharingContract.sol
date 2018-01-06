@@ -173,7 +173,7 @@ contract Owner {
     }
     
     function Owner(bytes16 carGSMNum) {
-        Owner_address = msg.sender;
+        owner_address = msg.sender;
     }
     
 

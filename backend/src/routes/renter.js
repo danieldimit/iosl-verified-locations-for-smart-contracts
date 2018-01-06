@@ -15,15 +15,20 @@ router.get('/:address/getOwnerContractAsRenter', function (request, response) {
 	});
 });
 
+router.post('/:address/createRenterContract', function (request, response) {
+	renter.deployRenterContract(request.params.address, function (result) {
+		response.json(result);	
+	});
+});
 
-router.post('/:address/:ownercontractaddress/rentCar', function (request, response) {
-	renter.rentCar(request.param.address,request.param.ownercontractaddress,request.query.car_contract_address,function(result){
+router.post('/:address/:ownercontractaddress/:car_contract_address/rentCar', function (request, response) {
+	renter.rentCar(request.param.address,request.param.ownercontractaddress,request.param.car_contract_address,function(result){
 		response.json(result);
 	});
 });
 
-router.post('/:address/:ownercontractaddress/returnCar', function (request, response) {
-	renter.returnCar(request.param.address,request.param.ownercontractaddress,request.query.car_contract_address,function(result){
+router.post('/:address/:ownercontractaddress/:car_contract_address/returnCar', function (request, response) {
+	renter.returnCar(request.param.address,request.param.ownercontractaddress,request.param.car_contract_address,function(result){
 		response.json(result);
 	});
 });

@@ -363,6 +363,34 @@
             }
          }
       },
+      "/renter/{userAddress}/createRenterContract": {
+         "post": {
+            "tags": [
+               "renter"
+            ],
+            "summary": "Deploy Renter Contract",
+            "description": "Create and deploy a contract in the blockchain",
+            "operationId": "createRenterContract",
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "userAddress",
+                  "in": "path",
+                  "description": "The user address in the blockchain",
+                  "required": true,
+                  "type": "string",
+                  "format": "string"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "successful operation"
+               }
+            }
+         }
+      },
       "/renter/{userAddress}/getOwnerContractAsRenter": {
          "get": {
             "tags": [
@@ -394,7 +422,7 @@
             }
          }
       },
-      "/renter/{userAddress}/{ownerContract}/rentCar": {
+      "/renter/{userAddress}/{ownerContract}/{car_contract_address}/rentCar": {
          "post": {
             "tags": [
                "renter"
@@ -424,7 +452,7 @@
                },
                {
                   "name": "car_contract_address",
-                  "in": "query",
+                  "in": "path",
                   "description": "The address of the car contract of the car that gets rented",
                   "required": true,
                   "type": "string"
@@ -440,7 +468,7 @@
             }
          }
       },
-      "/renter/{userAddress}/{ownerContract}/returnCar": {
+      "/renter/{userAddress}/{ownerContract}/{carContract}/returnCar": {
          "post": {
             "tags": [
                "renter"
@@ -470,7 +498,7 @@
                },
                {
                   "name": "carContract",
-                  "in": "query",
+                  "in": "path",
                   "description": "The user address in the blockchain",
                   "required": true,
                   "type": "string",
@@ -538,10 +566,7 @@
                "type": "string"
             },
             "geofenceSuffix": {
-               "type": "string",
-               "items": {
-                  "type": "string"
-               }
+               "type": "string"
             }
          },
          "xml": {
@@ -565,10 +590,7 @@
                "type": "string"
             },
             "geofenceSuffix": {
-               "type": "array",
-               "items": {
-                  "type": "string"
-               }
+               "type": "string"
             }
          },
          "xml": {

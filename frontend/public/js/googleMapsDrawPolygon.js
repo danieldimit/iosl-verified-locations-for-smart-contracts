@@ -22,7 +22,7 @@ function initMap() {
     });
     drawingManager.setMap(map);
 
-<<<<<<< HEAD
+
     var marker = new google.maps.Marker({
         position: map.getCenter(),
         icon: {
@@ -40,8 +40,6 @@ function initMap() {
         console.log("Car at: ",event.latLng.lat(), " ",event.latLng.lng());
     }
 
-=======
->>>>>>> adc6c0c79325a13068b16770e91b53f5e0630c6e
     google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
         drawingManager.setOptions({
             drawingMode: null,

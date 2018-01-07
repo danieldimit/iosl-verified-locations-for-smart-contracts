@@ -168,9 +168,6 @@ class Owner extends Component {
                             <button onClick={this.createContract}>Create car</button>
                         </div>
                     </div>
-
-                <div id="map"></div>
-
                 </div>
             </div>
 

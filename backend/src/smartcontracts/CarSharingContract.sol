@@ -230,6 +230,12 @@ contract Owner {
             return listAvailableCars;
     }
 
+
+    function testpayable() payable returns(uint){
+      return msg.value;
+    }
+
+    
     function rentCar(address carAddress) payable returns (bool){
         bool success= false;
         for(uint i = 0; i < cars.length; i++) {

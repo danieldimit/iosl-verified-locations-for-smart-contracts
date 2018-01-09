@@ -24,7 +24,7 @@ var renter_contract = web3.eth.contract(renter_abi);
 
 
 module.exports = {
-
+    
     getAllAvailableCars: function(callback){
         Account.findAll().then(result=>{
             var availableCars = new Array();

@@ -177,6 +177,31 @@ module.exports = {
 		    	});
 	},
 
+	testPayble : function (account_address , callback){
+		console.log("Address is :"+account_address);
+				const body = {
+		        'account_address': account_address
+		    	};
+		    	Account.findOne({ where: body }).then(data => {
+		    		if(data.car_owner_address){
+		    			var car_owner = owner_contract.at(data.car_owner_address);
+		    			var car_list = car_owner.testpayable.sendTransaction(
+			    			{from: account_address, gas: 4700000},
+			                    (err, result) => {
+			                    	if(err){
+			                    		base.errorCallback(err,callback);
+			                    	}if(result){
+			                    		base.successCallback(result,callback);
+			                    	}
+			                    });
+		    		}else{
+		    			var res = { Message : "Test payble didnt worked"};
+		    			base.successCallback(res,callback);
+		    		}
+		    	});
+	},
+
+
 	showRenters : function (account_address , callback){
 				const body = {
 		        'account_address': account_address

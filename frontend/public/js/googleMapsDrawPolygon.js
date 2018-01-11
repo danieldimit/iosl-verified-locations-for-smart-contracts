@@ -22,6 +22,24 @@ function initMap() {
     });
     drawingManager.setMap(map);
 
+
+    var marker = new google.maps.Marker({
+        position: map.getCenter(),
+        icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 7
+        },
+        draggable: true,
+        map: map
+    });
+
+    marker.addListener('dragend', showNewRect);
+
+    /** @this {google.maps.Rectangle} */
+    function showNewRect(event) {
+        console.log("Car at: ",event.latLng.lat(), " ",event.latLng.lng());
+    }
+
     google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
         drawingManager.setOptions({
             drawingMode: null,

@@ -28,7 +28,7 @@ if (global.web3.isConnected()){
 }
 
 app.listen(LOCAL_APP_PORT, function() {
-	console.log("Looking for ethereum accounts on address"+ETHEREUM_CLIENT_IP);
+  console.log("Looking for ethereum accounts on address"+ETHEREUM_CLIENT_IP);
     var accounts = global.web3.eth.accounts;
     console.log('Available ethereum accounts: ' + JSON.stringify(accounts,null,4));
     
@@ -60,5 +60,5 @@ app.use('/api/v1',routes);
 
 app.get('/',function (req , res){
 res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
-	+JSON.stringify(global.web3.eth.accounts,null,4));
+  +JSON.stringify(global.web3.eth.accounts,null,4));
 });

@@ -56,11 +56,4 @@ router.post('/:address/withdrawMoney' , function(request , response){
 	});
 });
 
-router.get('/:address/testpayble', function (request, response) {
-	owner.testPayble(request.params.address,function(result){
-		response.json(result);
-	});
-});
-
-
 module.exports = router;

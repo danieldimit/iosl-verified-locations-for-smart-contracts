@@ -13,9 +13,18 @@ router.get('/', function (request, response) {
 
 
 router.get('/:address', function (request, response) {
-	accounts.getAddresses(request, function (result) {
+	accounts.getAddresses(request.params.address, function (result) {
 		response.json(result);	
 	});
 });
+
+// router.get('/set/setProvider', function (request, response) {
+// 	accounts.setProvider(request, function (result) {
+// 		response.json(result);	
+// 	});
+// });
+
+
+
 
 module.exports = router;

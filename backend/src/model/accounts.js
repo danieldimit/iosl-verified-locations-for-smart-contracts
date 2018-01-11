@@ -8,12 +8,12 @@ const PG_DATABASE = process.env.PG_DATABASE || "logging";
 const PG_PASSWORD = process.env.PG_PASSWORD || "root";
 
 global.db = new Sequelize( PG_DATABASE, PG_USER, PG_PASSWORD,{
-		   host: PG_HOST,
-		   port: PG_PORT,
-		   dialect: 'postgres',
-		   define: {
-		     underscored: true
-		   }
+       host: PG_HOST,
+       port: PG_PORT,
+       dialect: 'postgres',
+       define: {
+         underscored: true
+       }
 });
 
 
@@ -41,19 +41,31 @@ var Cars = global.db.define('cars', {
   timestamps: false
 });
 
+var Locations = global.db.define('locations', {
+   id : {
+      type : Sequelize.INTEGER,
+      autoIncrement : true,
+      primaryKey: true ,
+      allowNull:false
+    },
+   location_title : Sequelize.TEXT,
+   location_string: Sequelize.TEXT
+});
+
 
 
 
 module.exports = {
               Accounts:Accounts ,
               Cars :Cars,
+              Locations : Locations
                           };
 
 global.db.authenticate().then(function(err){
     console.log('Connection to database could be established successfully.');
     global.db.sync().done(function () {
-		console.log('DB Synced !');
-	});
+    console.log('DB Synced !');
+  });
 }).catch(function(err){
     console.error('Unable to connect to the database:', err);
 });

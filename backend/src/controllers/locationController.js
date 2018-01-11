@@ -29,11 +29,7 @@ module.exports = {
 				});
 	},
 
-<<<<<<< HEAD
 	update: function (id, locations, callback) {
-=======
-	locations: function (id, locations, callback) {
->>>>>>> c5a1e7146780f70362755e4d5fb85eb109629ca6
 		project.update(locations, {where: {id: id}}).then(function (result) {
 			base.successCallback(result, callback);
 		})

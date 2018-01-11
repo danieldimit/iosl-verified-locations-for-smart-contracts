@@ -43,22 +43,13 @@ var Cars = global.db.define('cars', {
 
 var Locations = global.db.define('locations', {
    id : {
-<<<<<<< HEAD
       type : Sequelize.INTEGER,
-=======
-      type : sequelize.INTEGER,
->>>>>>> c5a1e7146780f70362755e4d5fb85eb109629ca6
       autoIncrement : true,
       primaryKey: true ,
       allowNull:false
     },
-<<<<<<< HEAD
    location_title : Sequelize.TEXT,
    location_string: Sequelize.TEXT
-=======
-   location_title : sequelize.TEXT,
-   location_string: sequelize.TEXT
->>>>>>> c5a1e7146780f70362755e4d5fb85eb109629ca6
 });
 
 

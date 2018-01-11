@@ -5,6 +5,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const Web3 = require('web3');
 const cors = require("cors");
+var path    = require("path");
 //Routes
 var routes = require('./routes/routes');
 const Account = require('./model/accounts').Accounts;
@@ -34,7 +35,7 @@ app.listen(LOCAL_APP_PORT, function() {
     
        // Account.drop().then(function(){
                     Account.sync({force: false}).then(function(){
-                         console.log('Table for accounts created ... (Old table is used if it has already existed.)');
+                        console.log('Table for accounts created ... (Old table is used if it has already existed.)');
                         var body = {'account_address': ''};
                         for (var i = 0; i < accounts.length; i++){
                              var address = accounts[i];
@@ -45,7 +46,7 @@ app.listen(LOCAL_APP_PORT, function() {
                     }).catch(function (err){
                         console.log("Error on updating tables"+JSON.stringify(err));
                     });
-      //  });
+       // });
 });
 
 // Express middleware
@@ -59,6 +60,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use('/api/v1',routes);
 
 app.get('/',function (req , res){
-res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
-	+JSON.stringify(global.web3.eth.accounts,null,4));
+ res.sendFile(path.join(__dirname+'/index.html'));
+// res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
+// 	+JSON.stringify(global.web3.eth.accounts,null,4));
 });

@@ -41,12 +41,24 @@ var Cars = global.db.define('cars', {
   timestamps: false
 });
 
+var Locations = global.db.define('locations', {
+   id : {
+      type : Sequelize.INTEGER,
+      autoIncrement : true,
+      primaryKey: true ,
+      allowNull:false
+    },
+   location_title : Sequelize.TEXT,
+   location_string: Sequelize.TEXT
+});
+
 
 
 
 module.exports = {
               Accounts:Accounts ,
               Cars :Cars,
+              Locations : Locations
                           };
 
 global.db.authenticate().then(function(err){

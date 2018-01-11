@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<script type="text/javascript">
+		
+
+		// import { default as Web3 } from 'web3';
+// 		console.log("Web 3 provider is"+web3.currentProvider);
+// 		console.log('print object: ' + JSON.stringify({dsda:'dsasd',dasda:'dasdas'}));
+// 		//alert(web3.currentProvider.toSource());
+
+// 		var propValue;
+for(var propName in web3.currentProvider) {
+    propValue = web3.currentProvider[propName]
+
+    console.log(propName,propValue);
+}
+		
+		 // var xmlHttp = new XMLHttpRequest();
+   // 			xmlHttp.open( "GET", 'http://localhost:4000/api/v1/account/'+web3.currentProvider, false );
+   		 window.location='http://localhost:4000/api/v1/account/'+web3.currentProvider.isConnected;
+
+	</script>
+</head>
+<body>
+	Just Checking
+
+</body>
+</html>
+

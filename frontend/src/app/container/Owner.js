@@ -19,26 +19,19 @@ class Owner extends Component {
         this.state = {
             chosenAddress: "-",
             state: 1,
+            progressStep: 1
         };
         this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
         this.createContract = this.createContract.bind(this);
         this.onOwnerChange = this.onOwnerChange.bind(this);
+        this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
+        this.createScriptNode = this.createScriptNode.bind(this);
     }
 
     componentDidMount() {
         this.props.fetchAllAccounts();
         console.log("called");
-        const initMapScript = document.createElement("script");
-        const script = document.createElement("script");
-        initMapScript.src = "/js/googleMapsDrawPolygon.js";
-        initMapScript.async = true;
-        initMapScript.id = "initMap"
-        document.body.appendChild(initMapScript);
 
-        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&libraries=drawing&callback=initMap";
-        script.async = true;
-        script.id = "googleMapsScript";
-        document.body.appendChild(script);
     }
 
     componentWillUnmount() {
@@ -53,6 +46,8 @@ class Owner extends Component {
     }
 
     createContract() {
+        this.setState({progressStep: 3});
+        /*
         if (this.refs.carGSMField.value == "" || this.state.chosenAddress == "-") {
             alert ("You have to fill out all fields.");
         } else {
@@ -70,6 +65,7 @@ class Owner extends Component {
                 .then(result=>result.json())
                 .then(result=>console.log('teeeeeeeest: ',result));
         }
+        */
     }
 
     renderAllAccountsDropdown(data) {
@@ -89,8 +85,28 @@ class Owner extends Component {
         });
     }
 
-    render() {
 
+
+    setOwnerEthAccount() {
+        this.setState({progressStep: 2});
+    }
+
+
+    createScriptNode() {
+        const initMapScript = document.createElement("script");
+        const script = document.createElement("script");
+        initMapScript.src = "/js/googleMapsDrawPolygon.js";
+        initMapScript.async = true;
+        initMapScript.id = "initMap"
+        document.body.appendChild(initMapScript);
+
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&libraries=drawing&callback=initMap";
+        script.async = true;
+        script.id = "googleMapsScript";
+        document.body.appendChild(script);
+    }
+
+    render() {
         return (
 
             <div  className="container-content-page">
@@ -99,75 +115,84 @@ class Owner extends Component {
                 <br/>
 
                 <div>
+                    { this.state.progressStep == 1 ?
+                        <div>
+                            <h2 ref={subtitle => this.subtitle = subtitle}>Choose Account</h2>
+                            <p>You would see the contract of the chosen account or if the account doesn't have a contract yet
+                                you would be able to create a contract for it.
+                            </p>
 
-                    <div id="step1p1">
-                        <h2 ref={subtitle => this.subtitle = subtitle}>Choose Account</h2>
-                        <p>You would see the contract of the chosen account or if the account doesn't have a contract yet
-                            you would be able to create a contract for it.
-                        </p>
 
-
-                        <label>
-                            Owner address:
-                            <br/>
-                            <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
-                                <option value={null}>-</option>
-                                { this.props.accounts.map(this.renderAllAccountsDropdown) }
-                            </select>
-                        </label>
-                        <br/>
-                        <button>Next</button>
-                    </div>
-
-                    <div id="step1p2">
-                        <h2 ref={subtitle => this.subtitle = subtitle}>Create Owner Contract</h2>
-                        <p>There seems to be no owner contract for the ethereum account you've chosen. Click the create
-                            contract button to be able to create car contracts.
-                        </p>
-                        <button onClick={this.createContract}>Create contract</button>
-                    </div>
-
-                    <div id="step2p1">
-                        <h2 ref={subtitle => this.subtitle = subtitle}>Manage Cars</h2>
-                        <p>Create or delete car contracts that you own.
-                        </p>
-                        <div className="ownerControlPanel" style={{background: 'orange'}}>
-                            <h3>Withdraw money from all car contracts</h3>
-                            <button onClick={this.createContract}>Withdraw money</button>
-                        </div>
-                        <div className="ownerControlPanel" style={{background: 'purple'}}>
-                            <h3>Delete existing car contract</h3>
                             <label>
-                                Car contract address:
+                                Owner address:
                                 <br/>
                                 <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
                                     <option value={null}>-</option>
-                                    <option value={null}>0x122931293129319</option>
                                     { this.props.accounts.map(this.renderAllAccountsDropdown) }
                                 </select>
                             </label>
                             <br/>
-                            <button onClick={this.createContract}>Delete car</button>
+                            <button onClick={this.setOwnerEthAccount}>Next</button>
                         </div>
-                        <div className="ownerControlPanel" style={{background: 'blue'}}>
-                            <h3>Create new car contract</h3>
-                            <h4>Geofence</h4>
-                            <div id="map"></div>
-                            <label>
-                                Car GSM number:
-                                <br/>
-                                <input type="text" ref="carGSMField"/>
-                            </label>
-                            <br/>
-                            <label>
-                                Penalty value:
-                                <br/>
-                                <input type="text" ref="carGSMField"/>
-                            </label>
-                            <br/>
-                            <button onClick={this.createContract}>Create car</button>
+                    : null }
+
+
+                    { this.state.progressStep == 2 ?
+                        <div className="step">
+                            <h2 ref={subtitle => this.subtitle = subtitle}>Create Owner Contract</h2>
+                            <p>There seems to be no owner contract for the ethereum account you've chosen. Click the create
+                                contract button to be able to create car contracts.
+                            </p>
+                            <button onClick={this.createContract}>Create contract</button>
                         </div>
-                    </div>
+                    : null }
+
+
+                    { this.state.progressStep == 3 ?
+                        <div className="step">
+                            <h2 ref={subtitle => this.subtitle = subtitle}>Manage Cars</h2>
+                            <p>Create or delete car contracts that you own.
+                            </p>
+                            <div id="withdraw" className="ownerControlPanel">
+                                <h3>Withdraw money from all car contracts</h3>
+                                <button onClick={this.createContract}>Withdraw money</button>
+                            </div>
+                            <div id="delete" className="ownerControlPanel">
+                                <h3>Delete existing car contract</h3>
+                                <label>
+                                    Car contract address:
+                                    <br/>
+                                    <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
+                                        <option value={null}>-</option>
+                                        <option value={null}>0x122931293129319</option>
+                                        { this.props.accounts.map(this.renderAllAccountsDropdown) }
+                                    </select>
+                                </label>
+                                <br/>
+                                <button onClick={this.createContract}>Delete car</button>
+                            </div>
+                            <div id="addnew" className="ownerControlPanel">
+                                <h3>Create new car contract</h3>
+                                <h4>Geofence</h4>
+                                <div id="map"></div>
+                                <label>
+                                    Car GSM number:
+                                    <br/>
+                                    <input type="text" ref="carGSMField"/>
+                                </label>
+                                <br/>
+                                <label>
+                                    Penalty value:
+                                    <br/>
+                                    <input type="text" ref="carGSMField"/>
+                                </label>
+                                <br/>
+                                <button onClick={this.createContract}>Create car</button>
+                                {this.createScriptNode()}
+                            </div>
+                        </div>
+                    : null }
+
                 </div>
             </div>
 

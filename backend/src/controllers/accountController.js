@@ -8,8 +8,6 @@ const Web3 = require('web3');
 module.exports = {
 
     getAllAccounts : function (req, callback){
-
-<<<<<<< HEAD
         let provider = new Web3.providers.HttpProvider(`http://${TESTRPC_HOST}:${TESTRPC_PORT}`)        
 
 		if(global.web3.isConnected()){
@@ -19,7 +17,6 @@ module.exports = {
 			var error = {Error: "Testrpc not connceted"}
 			base.errorCallback(error , callback);
 		}
-=======
         if(global.web3.isConnected()){
               var json = JSON.stringify(global.web3.eth.accounts);
             base.successCallback(global.web3.eth.accounts,callback);
@@ -27,8 +24,6 @@ module.exports = {
             var error = {Error: "Testrpc not connceted"}
             base.errorCallback(error , callback);
         }
->>>>>>> c5a1e7146780f70362755e4d5fb85eb109629ca6
-
     },
 
     getAddresses : function (req , callback){

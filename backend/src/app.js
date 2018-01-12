@@ -29,7 +29,7 @@ if (global.web3.isConnected()){
 }
 
 app.listen(LOCAL_APP_PORT, function() {
-  console.log("Looking for ethereum accounts on address"+ETHEREUM_CLIENT_IP);
+  console.log("Looking for ethereum accounts on address "+ETHEREUM_CLIENT);
     var accounts = global.web3.eth.accounts;
     console.log('Available ethereum accounts: ' + JSON.stringify(accounts,null,4));
     

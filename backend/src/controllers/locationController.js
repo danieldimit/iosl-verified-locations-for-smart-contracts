@@ -1,5 +1,5 @@
 var locations = require('../model/accounts.js');
-var base = require('../model/base');
+var base = require('../model/callback');
 
 module.exports = {
 	geAllLocation: function (callback) {

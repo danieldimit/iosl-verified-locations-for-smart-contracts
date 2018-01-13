@@ -36,9 +36,13 @@ class Owner extends Component {
 
     componentWillUnmount() {
         var id = document.getElementById("initMap");
-        document.body.removeChild(id);
+        if (id != null) {
+            document.body.removeChild(id);
+        }
         id = document.getElementById("googleMapsScript");
-        document.body.removeChild(id);
+        if (id != null) {
+            document.body.removeChild(id);
+        }
     }
 
     onOwnerChange(e) {
@@ -164,7 +168,6 @@ class Owner extends Component {
                                     <br/>
                                     <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
                                         <option value={null}>-</option>
-                                        <option value={null}>0x122931293129319</option>
                                         { this.props.accounts.map(this.renderAllAccountsDropdown) }
                                     </select>
                                 </label>

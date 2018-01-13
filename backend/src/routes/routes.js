@@ -18,7 +18,7 @@ app.use('/account', accounts);
 
 // app.use('/renter', renter);
 
-// app.use ('/oracle' , oracle);
+app.use ('/oracle' , oracle);
 
 // app.use ('/location' , location);
 

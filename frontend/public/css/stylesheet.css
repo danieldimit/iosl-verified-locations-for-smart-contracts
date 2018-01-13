@@ -9575,6 +9575,18 @@ a {
 .ownerControlPanel {
   padding: 20px 30px 30px 30px;
 }
+.current-step {
+  display: block;
+}
+#withdraw {
+  background: #cccccc;
+}
+#delete {
+  background: #a4bfb6;
+}
+#addnew {
+  background: #668d93;
+}
 .content-block {
   margin-bottom: 30px;
 }

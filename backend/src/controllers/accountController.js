@@ -4,7 +4,7 @@ const Account = require('../model/accounts').Accounts;
 var base = require('../model/callback');
 var owner = require('./ownerController');
 const Web3 = require('web3');
-var config = require('../../config');
+var config = require('../config');
 
 module.exports = {
 

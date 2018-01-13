@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as geohash from 'latlon-geohash';
+import { fetchAllAccounts } from '../actions/index';
 
 import { oracleBackendUrl } from '../config';
 
@@ -62,14 +63,14 @@ class OracleMap extends Component {
         this.handleMarkerDragged = this.handleMarkerDragged.bind(this);
     }
 
-
     componentDidMount() {
         console.log(this.state.carPosition.lat);
         let url = oracleBackendUrl + '/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
         console.log(url);
         fetch(url)
             .then(result=>result.json())
-            .then(result=>this.giveToState(result))
+            .then(result=>this.giveToState(result));
+        this.props.fetchAllAccounts();
     }
 
     handleChange(event) {
@@ -102,43 +103,33 @@ class OracleMap extends Component {
         console.log(e.latLng.lat(), " " + e.latLng.lng());
     }
 
+    renderAllAccountsDropdown(data) {
+        return (
+            <option key={data} value={data}>{data}</option>
+        );
+    }
 
     render() {
         return (
             <div  className="container-content-page">
-
                 <h1 className="section-header">Oracle Control Panel</h1>
                 <br/>
 
-
                 <section className="row">
                     <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <h4>Oracle information</h4>
+                        <h2>Oracle information</h2>
                         <p>Oracle address:&nbsp;
                             {String(this.props.oracleAddress)}
                         </p>
                     </article>
 
                     <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <h4>Oracle policy</h4>
-                        <form onSubmit={this.handleSubmit}>
-                            Submit location to the smart contract in the block chain:
-                            <label className="oracle-policy-opt">
-                                <input type="radio" name="gender" value="asd1" onChange={this.handleChange}/>
-                                every
-                                <input type="text"></input>
-                                minutes
-                            </label>
-                            <label className="oracle-policy-opt">
-                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
-                                if the car enters another "hash"-square
-                            </label>
-                            <label className="oracle-policy-opt">
-                                <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
-                                if the car leaves the Geofence
-                            </label>
-                            <input type="submit" value="Submit" />
-                        </form>
+                        <h2>Car address</h2>
+
+                        <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
+                            <option value={null}>-</option>
+                            { this.props.accounts.map(this.renderAllAccountsDropdown) }
+                        </select>
                     </article>
                 </section>
 
@@ -157,7 +148,38 @@ class OracleMap extends Component {
 
 const mapStateToProps = store => {
     return {
-        oracleAddress: store.oracleAddress
+        oracleAddress: store.oracleAddress,
+        accounts: store.accounts
     }
 }
-export default connect(mapStateToProps)(OracleMap);
+
+export default connect(mapStateToProps, {
+    fetchAllAccounts
+})(OracleMap);
+
+
+
+
+/*
+ <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
+ <h4>Oracle policy</h4>
+ <form onSubmit={this.handleSubmit}>
+ Submit location to the smart contract in the block chain:
+ <label className="oracle-policy-opt">
+ <input type="radio" name="gender" value="asd1" onChange={this.handleChange}/>
+ every
+ <input type="text"></input>
+ minutes
+ </label>
+ <label className="oracle-policy-opt">
+ <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+ if the car enters another "hash"-square
+ </label>
+ <label className="oracle-policy-opt">
+ <input type="radio" name="gender" value="asd" onChange={this.handleChange}/>
+ if the car leaves the Geofence
+ </label>
+ <input type="submit" value="Submit" />
+ </form>
+ </article>
+ */

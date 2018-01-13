@@ -11,14 +11,14 @@ export default (state, action) => {
 
     switch (action.type) {
         case FETCH_ORACLE:
-            if(action.payload){
-                return action.payload.data;
+            if(action.payload) {
+                return action.payload.data.data.oracleAddress;
             } else {
                 return INITIAL_STATE;
             }
             break;
         case SET_ORACLE:
-            if(action.payload){
+            if(action.payload) {
                 return action.oracleAddress;
             }
         default:

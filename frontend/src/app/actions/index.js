@@ -18,6 +18,7 @@ export function fetchOracle() {
 }
 
 export function setOracle(oracleAddress) {
+    console.log("oracle address: ", oracleAddress);
     const request = axios.put(ethereumBackendUrl + '/oracle/', {oracleAddress: oracleAddress});
     return {
         type: SET_ORACLE,

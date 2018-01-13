@@ -4,11 +4,12 @@ const Account = require('../model/accounts').Accounts;
 var base = require('../model/callback');
 var owner = require('./ownerController');
 const Web3 = require('web3');
+var config = require('../../config');
 
 module.exports = {
 
     getAllAccounts : function (req, callback){
-        let provider = new Web3.providers.HttpProvider(`http://${TESTRPC_HOST}:${TESTRPC_PORT}`)        
+        let provider = new Web3.providers.HttpProvider(config.testrpcAddress)
 
 		if(global.web3.isConnected()){
 			  var json = JSON.stringify(global.web3.eth.accounts);

@@ -4,10 +4,11 @@ const fs = require('fs');
 const Web3 = require('web3');
 var base = require('../model/callback');
 const Account = require('../model/accounts').Accounts;
+var config = require('../../config');
 
 
 //Added temprory for testing else global.web3 will be used
-var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+var web3 = new Web3(new Web3.providers.HttpProvider(config.testrpcAddress));
 //car
 var contracts_input = fs.readFileSync('src/smartcontracts/CarSharingContract.sol');
 var contracts_output = solc.compile(contracts_input.toString(), 1);

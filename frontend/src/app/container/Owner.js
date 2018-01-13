@@ -124,7 +124,7 @@ class Owner extends Component {
 
 
                             <label>
-                                Owner address:
+                                Owner ethereum address:
                                 <br/>
                                 <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
                                     <option value={null}>-</option>

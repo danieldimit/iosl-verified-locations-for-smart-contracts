@@ -122,14 +122,14 @@ public class Experiment {
         List<S2Point> points = new ArrayList<>();
 
         for(double[] point : fence){
-            points.add(S2LatLng.fromDegrees(point[0], point[1]).toPoint());
+            points.add(0, S2LatLng.fromDegrees(point[0], point[1]).toPoint());
         }
 
         S2Loop loop = new S2Loop(points);
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
-        coverer.setMaxLevel(12);
+        coverer.setMaxLevel(15);
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 

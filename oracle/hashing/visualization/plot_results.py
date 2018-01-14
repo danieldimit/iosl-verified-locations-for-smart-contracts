@@ -93,4 +93,5 @@ if __name__ == "__main__":
         plot_fence(fences[x], fence_points_geohash_5[x], [2,2,3], "Geohash Precision: 5, 25bit - Hash")
         plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash")
 
-        plt.savefig("experiment-1/Test-" + str(x) + ".png")
+        #plt.savefig("experiment-1/Test-" + str(x) + ".png")
+        plt.show()

@@ -75,7 +75,7 @@ function rad2deg(rad) {
 
 function generateRandomGeofence(){
 
-    maxBearing = 45;
+    maxBearing = 15;
 
     center = [52.520007, 13.404954];
 
@@ -91,7 +91,9 @@ function generateRandomGeofence(){
         geofence.push(getNewPointFromDistanceBearing(center, distance, newBearing));
         bearing = newBearing;
     }
-    return geofence;
+    geofence.push(geofence[0]);
+
+    var s = fs.createWriteStream("output/fences.txt", {'flags': 'a'});s.write(geofence + "\n");s.close();
 }
 
 function getPointsFromHash(hashes) {
@@ -184,12 +186,14 @@ function findCompressedCells(hashes) {
         for(j = 0; j < hashes.length; j++){
             hash = hashes[j];
             if(hash.substring(0, compressed.length) == compressed){
-                removable.push(j);
+                removable.push(hash);
             }
         }
+        hashes.push(compressed);
     }
-    for(j = 0; j < removable.length; j++){
-        hashes.splice(j, 1);
+    for(i = 0; i < removable.length; i++){
+        const index = hashes.indexOf(removable[i]);
+        hashes.splice(index, 1);
     }
     return hashes;
 }
@@ -204,7 +208,7 @@ function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash
 
     geofence_area = calculateArea(poly);
     var geohash_geofence = poly;
-    geohash_geofence.push(geohash_geofence[0]);
+    //geohash_geofence.push(geohash_geofence[0]);
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
@@ -221,10 +225,6 @@ function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash
                 stream_hashed.write(hashes + "\n");
                 stream_hashed.end();
             });
-            /*stream.once('open', function(fd) {
-                stream.write(poly + "\n");
-            });*/
-
             var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
             stream_points.once('open', function(fd) {
                 stream_points.write(getPointsFromHash(hashes) + "\n");
@@ -257,10 +257,6 @@ function main() {
     geohash_cells = [];
     geohash_area_diffs = [];
     geohash_area = [];
-    //var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
-    //var stream = fs.createWriteStream("output/fences.txt", {'flags': 'a'});
-    //var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
-
 
     var rd = readline.createInterface({
         input: fs.createReadStream('output/fences.txt'),
@@ -280,13 +276,14 @@ function main() {
         }
         geohash_polygon = hashToString(new_fence, num_geofences, geohash_cells, geohash_area_diffs, geohash_area);
     });
+}
 
-    /*
-    for(i = 0; i < num_geofences; i++){
-        geofence = generateRandomGeofence();
+function createNewFrences(num_geofences){
 
-        geohash_polygon = hashToString(geofence, num_geofences, geohash_cells, geohash_area_diffs, geohash_area, stream, stream_hashed, stream_points);
-    }*/
+    for(c = 0; c < 100; c++){
+        generateRandomGeofence();
+    }
 }
 
 main();
+//createNewFrences(100);

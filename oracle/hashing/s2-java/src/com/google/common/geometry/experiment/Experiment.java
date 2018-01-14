@@ -122,14 +122,15 @@ public class Experiment {
         List<S2Point> points = new ArrayList<>();
 
         for(double[] point : fence){
-            points.add(0, S2LatLng.fromDegrees(point[0], point[1]).toPoint());
+            //points.add(0, S2LatLng.fromDegrees(point[0], point[1]).toPoint());
+            points.add(S2LatLng.fromDegrees(point[0], point[1]).toPoint());
         }
 
         S2Loop loop = new S2Loop(points);
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
-        coverer.setMaxLevel(13);
+        coverer.setMaxLevel(15);
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 
@@ -195,8 +196,8 @@ public class Experiment {
 
     public static void main(String[] args) throws IOException {
 
-        cellArea();
-        //readFromFile("fences.txt");
+        //cellArea();
+        readFromFile("fences.txt");
         /*for(int i =0; i < 100; i++){
             findCover(generateRandomGeofence());
         }*/

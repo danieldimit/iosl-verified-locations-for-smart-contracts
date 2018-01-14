@@ -2,6 +2,7 @@ import cartopy.crs as ccrs
 import cartopy.io.img_tiles as cimgt
 import matplotlib.pyplot as plt
 import cartopy
+import cartopy.io.shapereader as shpreader
 
 from shapely .geometry import Polygon
 
@@ -50,6 +51,7 @@ def read_fences_point(path):
     return fences
 
 def plot_fence(fence, fence_points, subplot, title):
+
     proj = cimgt.MapQuestOSM()
     ax = plt.subplot(subplot[0], subplot[1], subplot[2], projection=proj.crs)
 
@@ -58,8 +60,7 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([12.7, 14, 52, 53])
-
+    ax.set_extent([4, 16, 47, 55])
     geoms = []
     geo = Polygon(fence)
     geoms.append(geo)
@@ -79,9 +80,8 @@ def plot_fence(fence, fence_points, subplot, title):
 if __name__ == "__main__":
 
     fences = read_fences()
-    fence_points_S2_12 = read_fences_point("s2-12/fences_points.txt")
+    fence_points_S2_12 = read_fences_point("s2-13/fences_points.txt")
     fence_points_S2_15 = read_fences_point("s2-15/fences_points.txt")
-    fence_points_geohash_5 = read_fences_point("geohash-5/fences_points.txt")
     fence_points_geohash_6 = read_fences_point("geohash-6/fences_points.txt")
 
     for x in range(0, len(fences) - 1):

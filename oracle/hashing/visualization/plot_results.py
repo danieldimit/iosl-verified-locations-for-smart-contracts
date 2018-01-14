@@ -16,7 +16,6 @@ def read_fences():
         cords = x.split(",")
         latlon = list()
         for i in range(0, len(cords), 2):
-            print [cords[i], cords[i+1]]
             latlon.append([float(cords[i]), float(cords[i+1])])
         fences.append(latlon)
     return fences
@@ -88,10 +87,9 @@ if __name__ == "__main__":
     for x in range(0, len(fences) - 1):
         plt.figure(figsize=(20, 20))
 
-        plot_fence(fences[x], fence_points_S2_12[x], [2,2,1], "S2 Max Precision: 12, 25bit - Hash")
-        plot_fence(fences[x], fence_points_S2_15[x], [2,2,2], "S2 Max Precision: 15, 29bit - Hash")
-        plot_fence(fences[x], fence_points_geohash_5[x], [2,2,3], "Geohash Precision: 5, 25bit - Hash")
-        plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash")
+        plot_fence(fences[x], fence_points_S2_12[x], [2,2,1], "S2 Max Precision: 13, 25bit - Hash, Max precision - 0.32 km2")
+        plot_fence(fences[x], fence_points_S2_15[x], [2,2,2], "S2 Max Precision: 15, 29bit - Hash, Max precision - 0.08 km2")
+        plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
 
         #plt.savefig("experiment-1/Test-" + str(x) + ".png")
         plt.show()

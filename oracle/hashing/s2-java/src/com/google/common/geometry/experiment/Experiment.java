@@ -150,7 +150,7 @@ public class Experiment {
                 fence_points = fence_points.concat(p.toDegreesString() + ",");
             }
         }
-        log.info(String.valueOf(sum));
+        //log.info(String.valueOf(sum));
         //writer_fences.write(fenceToString(fence));
         //writer_fences.newLine();
         //writer_fences.close();
@@ -180,9 +180,23 @@ public class Experiment {
         }
     }
 
+    private static void cellArea(){
+
+        // http://s2geometry.io/resources/s2cell_statistics.html
+
+        S2LatLng latlng = S2LatLng.fromDegrees(-30.043, -51.140);
+        S2CellId cellId = S2CellId.fromLatLng(latlng);
+        cellId = cellId.parent(15);
+        S2Cell cell = new S2Cell(cellId);
+
+        log.info(String.valueOf(cell.level()));
+        log.info(String.valueOf(cell.exactArea()));
+    }
+
     public static void main(String[] args) throws IOException {
 
-        readFromFile("fences.txt");
+        cellArea();
+        //readFromFile("fences.txt");
         /*for(int i =0; i < 100; i++){
             findCover(generateRandomGeofence());
         }*/

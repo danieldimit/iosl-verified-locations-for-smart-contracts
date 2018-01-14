@@ -129,7 +129,7 @@ public class Experiment {
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
-        coverer.setMaxLevel(15);
+        coverer.setMaxLevel(13);
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 

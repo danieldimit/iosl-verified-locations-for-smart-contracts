@@ -156,9 +156,9 @@ function findCompressedCells(hashes) {
     commonPrefix = findCommonPrefix(hashes);
     rest = 6 - commonPrefix.length;
     base32chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'j', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5', '6', '7'];
+        'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
-    for(j = 0; j < 32; j++){
+    for(j = 0; j < 36; j++){
         checkprefix = commonPrefix + base32chars[j];
         c = findWithPrefix(hashes, checkprefix);
         prefix_length = checkprefix.length;
@@ -168,7 +168,7 @@ function findCompressedCells(hashes) {
             compressedCells.push(checkprefix)
         }
         else{
-            for(m = 0; m < 32; m++){
+            for(m = 0; m < 36; m++){
                 new_prefix = checkprefix + base32chars[m];
                 c = findWithPrefix(hashes, new_prefix);
 

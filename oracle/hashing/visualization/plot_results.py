@@ -76,7 +76,6 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_geometries(geoms2, ccrs.PlateCarree(), facecolor='orange',
                       edgecolor='black', alpha=0.2)
 
-
 if __name__ == "__main__":
 
     fences = read_fences()

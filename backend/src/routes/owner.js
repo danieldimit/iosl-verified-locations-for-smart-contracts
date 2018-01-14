@@ -38,4 +38,22 @@ router.get('/:address/getCarContracts', function (request, response){
 	});
 }); 
 
+router.get('/:address/showBalance', function (request, response){
+	owner.showBalance(request.params.address,function (result){
+		response.json(result);
+	});
+}); 
+
+router.get('/:address/showRenters', function (request, response){
+	owner.showRenters(request.params.address,function (result){
+		response.json(result);
+	});
+}); 
+
+router.post('/:address/withdrawMoney' , function(request , response){
+	owner.withdrawMoney(request.params.address , function (result){
+		response.json(result);
+	});
+});
+
 module.exports = router;

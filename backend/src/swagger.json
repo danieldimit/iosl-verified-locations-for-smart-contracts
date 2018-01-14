@@ -1,236 +1,702 @@
 {
-   "swagger": "2.0",
-   "info": {
-      "description": "Blockchain IOSL - Proof of Location",
-      "version": "1.0.0",
-      "title": "BLOCKHAIN IOSL",
-      "termsOfService": "",
-      "contact": {
-         "email": "singh.1@campus.tu-berlin.de"
+  "swagger": "2.0",
+  "info": {
+    "description": "Blockchain IOSL - Proof of Location",
+    "version": "1.0.0",
+    "title": "BLOCKHAIN IOSL",
+    "termsOfService": "",
+    "contact": {
+      "email": "singh.1@campus.tu-berlin.de"
+    }
+  },
+  "host": "localhost:4000",
+  "basePath": "/api/v1",
+  "tags": [
+    {
+      "name": "accounts",
+      "description": "Everything about your account"
+    },
+    {
+      "name": "owner",
+      "description": "Access to owner APIs"
+    },
+    {
+      "name": "renter",
+      "description": "Access to renter APIs"
+    },
+    {
+      "name": "oracle",
+      "description": "Access to oracle APIs"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/account/": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Get All the accounts in blockchain",
+        "description": "",
+        "operationId": "getAccounts",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            }
+          }
+        }
       }
-   },
-   "host": "localhost:4000",
-   "basePath": "/api/v1",
-   "tags": [
-      {
-         "name": "account",
-         "description": "Everything about your account"
-      },
-      {
-         "name": "owner",
-         "description": "Access to owner APIs"
-      },
-      {
-         "name": "renter",
-         "description": "Access to renter APIs"
+    },
+    "/account/{address}": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "Get associated address to the accounts in blockchain",
+        "description": "",
+        "operationId": "getAccountDetails",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "address",
+            "in": "path",
+            "description": "address",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
       }
-   ],
-   "schemes": [
-      "http"
-   ],
-   "paths": {
-      "/account/": {
-         "get": {
-            "tags": [
-               "account"
-            ],
-            "summary": "Get All the accounts in blockchain",
-            "description": "",
-            "operationId": "getAccounts",
-            "produces": [
-               "application/json"
-            ],
-            "responses": {
-               "200": {
-                  "description": "successful operation"
-               }
+    },
+    "/oracle/": {
+      "get": {
+        "tags": [
+          "oracle"
+        ],
+        "summary": "Get the oracle saved in the server",
+        "description": "",
+        "operationId": "getOracleAddress",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Oracle"
             }
-         }
+          }
+        }
       },
-      "/account/{address}": {
-         "get": {
-            "tags": [
-               "account"
-            ],
-            "summary": "Get associated address to the accounts in blockchain",
-            "description": "",
-            "operationId": "getAccountDetails",
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "address",
-                  "in": "path",
-                  "description": "address",
-                  "required": true,
-                  "type": "string",
-                  "format": "string"
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "successful operation"
-               }
+      "put": {
+        "tags": [
+          "oracle"
+        ],
+        "summary": "Set the ethereum address of the oracle",
+        "description": "",
+        "operationId": "setOracleAddress",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "oracleAddress",
+            "in": "query",
+            "description": "The ethereum address of the oracle",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Oracle"
             }
-         }
-      },
-      "/owner/{address}": {
-         "get": {
-            "tags": [
-               "owner"
-            ],
-            "summary": "Deploy Owener Contract",
-            "description": "",
-            "operationId": "deployContract",
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "address",
-                  "in": "path",
-                  "description": "address",
-                  "required": true,
-                  "type": "string",
-                  "format": "string"
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "successful operation"
-               }
-            }
-         },
-         "post": {
-            "tags": [
-               "owner"
-            ],
-            "summary": "Add a New Car",
-            "description": "",
-            "operationId": "addNewCar",
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "address",
-                  "in": "path",
-                  "description": "address",
-                  "required": true,
-                  "type": "string",
-                  "format": "string"
-               },
-               {
-                  "in": "body",
-                  "name": "body",
-                  "description": "Add a New Car",
-                  "required": true,
-                  "schema": {
-                     "$ref": "#/components/schemas/addmewcar"
-                  }
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "successful operation"
-               }
-            }
-         },
-         "delete": {
-            "tags": [
-               "owner"
-            ],
-            "summary": "Delete a Car from the contract",
-            "description": "",
-            "operationId": "deleteCar",
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "address",
-                  "in": "path",
-                  "description": "address",
-                  "required": true,
-                  "type": "string",
-                  "format": "string"
-               },
-               {
-                  "in": "body",
-                  "name": "body",
-                  "description": "Delete a  Car",
-                  "required": true,
-                  "schema": {
-                     "$ref": "#/components/schemas/deletecar"
-                  }
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "successful operation"
-               }
-            }
-         }
-      },
-      "/owner/getcars/{address}": {
-         "get": {
-            "tags": [
-               "owner"
-            ],
-            "summary": "get all the cars of the owner",
-            "description": "",
-            "operationId": "getAllCars",
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "address",
-                  "in": "path",
-                  "description": "address",
-                  "required": true,
-                  "type": "string",
-                  "format": "string"
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "successful operation"
-               }
-            }
-         }
-      },
-      "/renter/": {}
-   },
-   "components": {
-      "schemas": {
-         "addmewcar": {
-            "title": "Adding a new car",
-            "type": "object",
-            "properties": {
-               "cargsm": {
-                  "type": "string",
-                  "description": "cargsm id"
-               }
-            },
-            "required": [
-               "cargsm"
-            ]
-         },
-         "deletecar": {
-            "title": "delete a car",
-            "type": "object",
-            "properties": {
-               "caraddress": {
-                  "type": "string",
-                  "description": "Address of car"
-               }
-            },
-            "required": [
-               "caraddress"
-            ]
-         }
+          }
+        }
       }
-   }
+    },
+    "/oracle/getRentedCarsContracts": {
+      "get": {
+        "tags": [
+          "oracle"
+        ],
+        "summary": "Get the addresses of the car contracts of all actively rented cars",
+        "description": "Get all actively rented cars, that have to be watched by the oracle",
+        "operationId": "getRentedCarsContracts",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CarContractInfo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/oracle/updatePosition": {
+      "put": {
+        "tags": [
+          "oracle"
+        ],
+        "summary": "Update position of a certain car in a car contract",
+        "description": "Update the position of a car in a given car contract",
+        "operationId": "updatePet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "carContractAddress",
+            "in": "query",
+            "description": "The address of the car contract",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "geohashPosition",
+            "in": "query",
+            "description": "The geohashed position of the car",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "Pet not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/createOwnerContract": {
+      "post": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Deploy Owner Contract",
+        "description": "Create and deploy a contract in the blockchain",
+        "operationId": "createOwnerContract",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/createCarContract": {
+      "post": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Add new car by owner address",
+        "description": "",
+        "operationId": "createCarContract",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CarContractConstructor"
+            }
+          },
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/getCarContracts": {
+      "get": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Get all car contracts of a given car owner",
+        "description": "Create and deploy a contract in the blockchain",
+        "operationId": "getCarContracts",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/showBalance": {
+      "get": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Get the availble balance in account",
+        "description": "get the availble balance in account",
+        "operationId": "getBalance",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/showRenters": {
+      "get": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Get the list of renters",
+        "description": "get the availble balance in account",
+        "operationId": "getRenters",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/withdrawMoney": {
+      "post": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Withdraw all money that were saved in the owner contract",
+        "description": "",
+        "operationId": "withdrawMoney",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Pet object that needs to be added to the store",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CarContractConstructor"
+            }
+          },
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/{caraddress}": {
+      "delete": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Delete a Car from the contract",
+        "description": "",
+        "operationId": "deleteCar",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "address",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          },
+          {
+            "name": "caraddress",
+            "in": "path",
+            "description": "car contract address",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/renter/getAllAvailableCars": {
+      "get": {
+        "tags": [
+          "renter"
+        ],
+        "summary": "Get all cars available in the blockchain",
+        "description": "Goes through all owner contracts and gathers all owner contracts that have a available car in them. Return owner contracts and their car contracts.",
+        "operationId": "getAllAvailableCars",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/OwnerAndHisAvailableCars"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/renter/{userAddress}/createRenterContract": {
+      "post": {
+        "tags": [
+          "renter"
+        ],
+        "summary": "Deploy Renter Contract",
+        "description": "Create and deploy a contract in the blockchain",
+        "operationId": "createRenterContract",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/renter/{userAddress}/getOwnerContractAsRenter": {
+      "get": {
+        "tags": [
+          "renter"
+        ],
+        "summary": "Get an owner contract in which a user with given address is a renter",
+        "description": "Returns owner contract in which the user with userAddress is in the array of renters",
+        "operationId": "getOwnerContractsOfRenter",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "/renter/{userAddress}/{ownerContract}/{car_contract_address}/rentCar": {
+      "post": {
+        "tags": [
+          "renter"
+        ],
+        "summary": "Rent car",
+        "description": "Rent a car",
+        "operationId": "rentCar",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          },
+          {
+            "name": "ownerContract",
+            "in": "path",
+            "description": "The ower contract address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          },
+          {
+            "name": "car_contract_address",
+            "in": "path",
+            "description": "The address of the car contract of the car that gets rented",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      }
+    },
+    "/renter/{userAddress}/{ownerContract}/returnCar": {
+      "post": {
+        "tags": [
+          "renter"
+        ],
+        "summary": "Return car",
+        "description": "Returns owner contracts in which the user with userAddress is a renter",
+        "operationId": "returnCar",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          },
+          {
+            "name": "ownerContract",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          },
+          {
+            "name": "carContract",
+            "in": "query",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Address"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Oracle": {
+      "type": "object",
+      "properties": {
+        "oracleAddress": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Oracle"
+      }
+    },
+    "CarContractInfo": {
+      "type": "object",
+      "properties": {
+        "carContractAddress": {
+          "type": "string",
+          "format": "hex-address"
+        },
+        "ownerAddress": {
+          "type": "string",
+          "format": "hex-address"
+        },
+        "penaltyValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "leftGeofence": {
+          "type": "boolean"
+        },
+        "avialability": {
+          "type": "boolean"
+        },
+        "submittedMoney": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "carGSMNum": {
+          "type": "string"
+        },
+        "geohashLastPostion": {
+          "type": "string"
+        },
+        "geofencePrefix": {
+          "type": "string"
+        },
+        "geofenceSuffix": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Contract"
+      }
+    },
+    "CarContractConstructor": {
+      "type": "object",
+      "properties": {
+        "carGSMNum": {
+          "type": "string"
+        },
+        "penaltyValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "position": {
+          "type": "string"
+        },
+        "geofencePrefix": {
+          "type": "string"
+        },
+        "geofenceSuffix": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Contract"
+      }
+    },
+    "OwnerAndHisAvailableCars": {
+      "type": "object",
+      "properties": {
+        "ownerContract": {
+          "type": "string"
+        },
+        "availableCarContract": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Address": {
+      "type": "string"
+    }
+  }
 }

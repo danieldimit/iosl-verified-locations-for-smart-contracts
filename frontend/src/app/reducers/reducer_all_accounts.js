@@ -13,7 +13,7 @@ export default function(state, action) {
     switch (action.type) {
         case FETCH_ALL_ACCOUNTS:
             if(action.payload){
-                return action.payload.data;
+                return action.payload.data.data;
             } else {
                 return INITIAL_STATE;
             }

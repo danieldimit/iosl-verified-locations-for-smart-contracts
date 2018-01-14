@@ -4,28 +4,32 @@ contract CarDetails {
     
       address public owner;
       bytes16 public carGSMNum;
-      uint public penaltyValue = 100;
+      //uint public penaltyValue = 100;
+      uint public penaltyValue;
       bool availability = true;
       bool leftGeofence = false;
       string position = "";
-      string geofence_prefix= "u33";
+      //string geofence_prefix= "u33";
+      string geofence_prefix;
       string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f","1","3","9","c"];
       int128[] geofenceInt= [855152, 855154, 855160, 855162, 855141, 855143, 855149,855151, 855140, 855142, 855148, 855150, 855137, 855139, 855145, 855147];
       int128 positionInt = 0;
-      address constant oracle = 0x8ead2d9305536ebdde184cea020063d2de3665c7;
+      //address constant oracle = 0x8ead2d9305536ebdde184cea020063d2de3665c7;
+      address oracle;
       uint pendingWithdrawals = 0;
       
-       modifier onlyOwner() {
+      modifier onlyOwner() {
         require(msg.sender == owner);
         _;
-       }
+      }
        
-       modifier onlyOracle {
+      modifier onlyOracle {
         require(msg.sender == oracle);
         _;
       }
 
-      event TraceLocation(bytes16 number);
+      //event TraceLocation(bytes16 number);
+      event CarRenterSatus(address renter, address car , bool status);
       
       
 
@@ -33,10 +37,12 @@ contract CarDetails {
       //            Functions 
       /////////////////////////////////////
       
-      function CarDetails(bytes16 carGSMNum)  {
-        carGSMNum = carGSMNum;
+      function CarDetails(bytes16 _carGSMNum, uint _penaltyValue, string _position, string _geofencePrefix, string _geofenceSuffix)  {
+        carGSMNum = _carGSMNum;
         owner= msg.sender;
-        //penaltyValue = 100;
+        penaltyValue = _penaltyValue;
+        position = _position;
+        geofence_prefix =_geofencePrefix;
       }
     
       //Check if "curPos" hash is within the geofence defined in the "geofence" array 
@@ -82,7 +88,7 @@ contract CarDetails {
             }
         }
         leftGeofence = !inside;
-    }
+      }
 
       /////////////////////////////////////
       // Functions called by car itself 
@@ -103,15 +109,26 @@ contract CarDetails {
         selfdestruct(owner);
       }
     
+      /*
       function MonitorCarLocation(bytes16 _carGSMNum){
             // TODO: trigger oracle event
             TraceLocation(_carGSMNum);
             availability=false;
             position ="u33a";
             checkPositionInGeofenceGeohash();
-        }
+      }
+      */
+
+      function SetCarStatus(address renter,bool status){
+            //TraceLocation(_carGSMNum);
+            CarRenterSatus(renter, address(this),status);
+            availability=status;
+      }
     
-   
+      function setOracleAddress(address _oracle) onlyOwner{
+          oracle=_oracle;
+      }
+      
       /////////////////////////////////////
       // Functions called by the oracle 
       /////////////////////////////////////
@@ -125,18 +142,21 @@ contract CarDetails {
           return position;
       }
       
-    
 }
 
-contract SmartCarSharing{
+contract Owner {
 
+    /* for simplicity following assumptions have been taken:
+    * 1. Renter can rent only one car
+    * 2. Owner can have multiple renters.
+    *
+    */
     struct Renter{
         address renter;
         address rented_car;
         uint moneyForcar; //rent + deposit
     }
-
-    //renter can take multiple cars and there exist multiple renter
+    
     Renter[] renters; 
 
 
@@ -152,12 +172,8 @@ contract SmartCarSharing{
         _;
     }
     
-    function SmartCarSharing(bytes16 carGSMNum) {
-
-     // initially the car owner will start with 1 car and later he can increase it
+    function Owner(bytes16 carGSMNum) {
         owner_address = msg.sender;
-        address carContract = new CarDetails(carGSMNum);
-        cars.push(carContract);
     }
     
 
@@ -165,8 +181,8 @@ contract SmartCarSharing{
     // Functions called by owner
     /////////////////////////////////////
 
-     function addNewCar(bytes16 _carGSMNum) onlyOwner returns (address){
-        address carContract = new CarDetails(_carGSMNum);
+     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, string _position, string _geofencePrefix, string _geofenceSuffix) onlyOwner returns (address){
+        address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
         cars.push(carContract);
         return carContract;
     }
@@ -185,6 +201,14 @@ contract SmartCarSharing{
     
     function showCars() onlyOwner constant returns(address[]){
         return cars;
+    }
+
+    function showBalance() onlyOwner constant returns(uint){
+        return owner_balance;
+    }
+
+    function showRenters() onlyOwner constant returns(Renter[]){
+        return renters;
     }
 
 
@@ -206,21 +230,29 @@ contract SmartCarSharing{
             return listAvailableCars;
     }
 
+
+    function testpayable() payable returns(uint){
+      return msg.value;
+    }
+
+    
     function rentCar(address carAddress) payable returns (bool){
+        bool success= false;
         for(uint i = 0; i < cars.length; i++) {
             CarDetails carObj = CarDetails(cars[i]);
             bool isCarAvailable = carObj.isAvailable();
             if(cars[i] == carAddress && isCarAvailable){
                  renters.push(Renter(msg.sender, carAddress, msg.value));
-                 carObj.MonitorCarLocation(carObj.carGSMNum());
+                 carObj.SetCarStatus(msg.sender,false);
                  owner_balance += msg.value;
+                 success= true;
             }
         }
-        
+        return success;
     }
 
-    function returnCar(address renter, address carAddress, bytes12 _curPos) {
-        for(uint k = 0; k < cars.length; k++) {
+    function returnCar(address carAddress) returns (bool){
+      /*  for(uint k = 0; k < cars.length; k++) {
             CarDetails carObj = CarDetails(cars[k]);
             bool leftGeofence = carObj.hasLeftGeofence();
             uint deposit = carObj.penaltyValue();
@@ -233,8 +265,26 @@ contract SmartCarSharing{
                     delete renters[i];
                 }
             }
+        }*/
+
+        bool success= false;
+        for(uint i=0;i<renters.length; i++){
+          // checks for valid renter and car address
+          if(renters[i].renter == msg.sender && renters[i].rented_car==carAddress){ 
+              CarDetails carObj = CarDetails(carAddress);
+              bool leftGeofence = carObj.hasLeftGeofence();
+              uint deposit = carObj.penaltyValue();
+              if(leftGeofence == false){
+                    renters[i].renter.send(deposit); // send returns false on failure
+                    owner_balance -= deposit;
+                    //delete renters[i];
+              }
+              delete renters[i];
+              carObj.SetCarStatus(msg.sender,true);
+              success= true;
+          }
         }
-        
+        return success;
     }
     
 }

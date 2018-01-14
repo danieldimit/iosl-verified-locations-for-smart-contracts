@@ -5,6 +5,7 @@ import { fetchOracle } from '../../actions/index';
 import Header from '../Header';
 import Footer from '../Footer';
 import ModalOracle from '../../container/ModalOracle';
+import Renter from '../../container/Renter';
 
 class RenterView extends Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class RenterView extends Component {
             <div>
                 <Header />
                 {this.props.oracleAddress == null ? <ModalOracle /> : null}
-                <div>Renter</div>
+                <Renter />
                 <Footer />
             </div>
         );

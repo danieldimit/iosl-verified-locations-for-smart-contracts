@@ -73,9 +73,9 @@ function rad2deg(rad) {
 }
 
 
-function generateRandomGeofence(){
+function generateRandomGeofence(mBearing, randomDistance, baseDistance){
 
-    maxBearing = 15;
+    maxBearing = mBearing;
 
     center = [52.520007, 13.404954];
 
@@ -87,7 +87,7 @@ function generateRandomGeofence(){
         while(newBearing > 360) {
             newBearing = Math.floor(Math.random() * maxBearing) + bearing;
         }
-        distance = Math.floor(Math.random() * 10) + 10;
+        distance = Math.floor(Math.random() * randomDistance) + baseDistance;
         geofence.push(getNewPointFromDistanceBearing(center, distance, newBearing));
         bearing = newBearing;
     }
@@ -280,9 +280,21 @@ function main() {
 
 function createNewFrences(num_geofences){
 
-    for(c = 0; c < 100; c++){
+    /*for(c = 0; c < 100; c++){
         generateRandomGeofence();
-    }
+    }*/
+
+    generateRandomGeofence(45, 10, 10);
+    generateRandomGeofence(30, 10, 10);
+    generateRandomGeofence(15, 10, 10);
+    generateRandomGeofence(7.5, 10, 10);
+    generateRandomGeofence(3.75, 10, 10);
+
+    generateRandomGeofence(45, 20, 20);
+    generateRandomGeofence(30, 20, 20);
+    generateRandomGeofence(15, 20, 20);
+    generateRandomGeofence(7.5, 20, 20);
+    generateRandomGeofence(3.75, 20, 20);
 }
 
 main();

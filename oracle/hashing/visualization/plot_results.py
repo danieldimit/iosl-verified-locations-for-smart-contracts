@@ -11,11 +11,12 @@ def read_fences():
     f = open("fences.txt", "r")
 
     fences = list()
-    for i in range(0, 100):
+    for i in range(0, 10):
         x = f.readline()
         cords = x.split(",")
         latlon = list()
         for i in range(0, len(cords), 2):
+            print [cords[i], cords[i+1]]
             latlon.append([float(cords[i]), float(cords[i+1])])
         fences.append(latlon)
     return fences
@@ -58,7 +59,7 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([13, 13.8, 52.3, 52.7])
+    ax.set_extent([12.7, 14, 52, 53])
 
     geoms = []
     geo = Polygon(fence)

@@ -113,12 +113,94 @@ function getPointsFromHash(hashes) {
     return points
 }
 
+function findCommonPrefix(hashes, length) {
+    prefix = "";
+    minLength = hashes[0].length;
+    for(i = 0; i < hashes.length; i++){
+        if(minLength < hashes[i].length){
+            minLength = hashes[i].length
+        }
+    }
+
+    for (j = 0; j < minLength; j++) {
+        newPrefix = true;
+        for(i = 0; i < hashes.length - 1; i++){
+            if (hashes[i].charAt(j) != hashes[i + 1].charAt(j)) {
+                newPrefix = false;
+            }
+        }
+        if(newPrefix) prefix = hashes[0].substring(0, j+1);
+    }
+
+    return prefix;
+}
+
+function findWithPrefix(hashes, prefix) {
+
+    prefixLenght = prefix.length;
+    count = 0;
+    for(i = 0; i < hashes.length; i++){
+       if(hashes[i].substring(0, prefixLenght) == prefix){
+           count += 1;
+       }
+    }
+    return count;
+}
+
+function findCompressedCells(hashes) {
+
+    compressedCells = [];
+
+    commonPrefix = findCommonPrefix(hashes);
+    rest = 6 - commonPrefix.length;
+    base32chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'j', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5', '6', '7'];
+
+    for(j = 0; j < 32; j++){
+        checkprefix = commonPrefix + base32chars[j];
+        c = findWithPrefix(hashes, checkprefix);
+        prefix_length = checkprefix.length;
+        diff = hashes[0].length - prefix_length - 1;
+
+        if(c == Math.pow(32, diff)){
+            compressedCells.push(checkprefix)
+        }
+        else{
+            for(m = 0; m < 32; m++){
+                new_prefix = checkprefix + base32chars[m];
+                c = findWithPrefix(hashes, new_prefix);
+
+                diff = hashes[0].length - prefix_length - 1;
+                if(c == Math.pow(32, diff)){
+                    compressedCells.push(new_prefix);
+                }
+            }
+        }
+    }
+
+    removable = [];
+    for(i = 0; i < compressedCells.length; i++){
+        compressed = compressedCells[i];
+        for(j = 0; j < hashes.length; j++){
+            hash = hashes[j];
+            if(hash.substring(0, compressed.length) == compressed){
+                removable.push(j);
+            }
+        }
+    }
+    for(j = 0; j < removable.length; j++){
+        hashes.splice(j, 1);
+    }
+    return hashes;
+}
+
+var sync = require("sync");
 
 /*
 * GeoHash FUNCTIONS
  */
 
-function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash_area, stream_hashed, stream_points) {
+function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash_area, stream_points) {
 
     geofence_area = calculateArea(poly);
     var geohash_geofence = poly;
@@ -127,21 +209,27 @@ function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash
     if(g_final.push(geohash_geofence)){
 
         geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
-            console.log(hashes);
+            hashes = findCompressedCells(hashes);
+
             geohash_cells.push(hashes.length);
             geohash_diffs.push(geofence_area - hashes.length * 0.72);
             geohash_area.push(geofence_area);
 
+
+            var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
             stream_hashed.once('open', function(fd) {
                 stream_hashed.write(hashes + "\n");
+                stream_hashed.end();
             });
             /*stream.once('open', function(fd) {
                 stream.write(poly + "\n");
             });*/
+
+            var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
             stream_points.once('open', function(fd) {
                 stream_points.write(getPointsFromHash(hashes) + "\n");
+                stream_points.end();
             });
-
 
             if(geohash_cells.length == num_geofences){
                 console.log("Number of cells " + geohash_cells.reduce(function(a, b) {
@@ -153,20 +241,6 @@ function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash
                 console.log("Mean area " + geohash_area.reduce(function(a, b) {
                     return a + b;
                 }, 0) / num_geofences);
-
-                stream_hashed.once('open', function(fd) {
-                    //stream.write(hashes + "\n");
-                    stream_hashed.end();
-                });
-                /*stream.once('open', function(fd) {
-                    //stream.write(hashes + "\n");
-                    stream.end();
-                });*/
-
-                stream_points.once('open', function(fd) {
-                    //stream.write(hashes + "\n");
-                    stream_points.end();
-                });
             }
         });
     }
@@ -183,9 +257,9 @@ function main() {
     geohash_cells = [];
     geohash_area_diffs = [];
     geohash_area = [];
-    var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
+    //var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
     //var stream = fs.createWriteStream("output/fences.txt", {'flags': 'a'});
-    var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
+    //var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
 
 
     var rd = readline.createInterface({
@@ -204,7 +278,7 @@ function main() {
         for(i = 0; i < cords.length; i += 2){
             new_fence.push([cords[i], cords[i+1]])
         }
-        geohash_polygon = hashToString(new_fence, num_geofences, geohash_cells, geohash_area_diffs, geohash_area, stream_hashed, stream_points);
+        geohash_polygon = hashToString(new_fence, num_geofences, geohash_cells, geohash_area_diffs, geohash_area);
     });
 
     /*

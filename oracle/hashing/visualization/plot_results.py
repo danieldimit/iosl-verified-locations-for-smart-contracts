@@ -60,7 +60,7 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([4, 16, 47, 55])
+    ax.set_extent([13, 13.8, 52.3, 52.7])
     geoms = []
     geo = Polygon(fence)
     geoms.append(geo)
@@ -80,15 +80,17 @@ def plot_fence(fence, fence_points, subplot, title):
 if __name__ == "__main__":
 
     fences = read_fences()
-    fence_points_S2_12 = read_fences_point("s2-13/fences_points.txt")
+    fence_points_S2_13 = read_fences_point("s2-13/fences_points.txt")
+    fence_points_S2_14 = read_fences_point("s2-14/fences_points.txt")
     fence_points_S2_15 = read_fences_point("s2-15/fences_points.txt")
     fence_points_geohash_6 = read_fences_point("geohash-6/fences_points.txt")
 
     for x in range(0, len(fences) - 1):
         plt.figure(figsize=(20, 20))
 
-        plot_fence(fences[x], fence_points_S2_12[x], [2,2,1], "S2 Max Precision: 13, 25bit - Hash, Max precision - 0.32 km2")
-        plot_fence(fences[x], fence_points_S2_15[x], [2,2,2], "S2 Max Precision: 15, 29bit - Hash, Max precision - 0.08 km2")
+        plot_fence(fences[x], fence_points_S2_13[x], [2,2,1], "S2 Max Precision: 13, Max precision - 1.37 km2")
+        plot_fence(fences[x], fence_points_S2_14[x], [2,2,2], "S2 Max Precision: 14, Max precision - 0.32 km2")
+        plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
         plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
 
         #plt.savefig("experiment-1/Test-" + str(x) + ".png")

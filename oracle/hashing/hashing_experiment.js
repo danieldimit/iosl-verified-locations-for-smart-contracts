@@ -5,11 +5,6 @@ var fs = require("fs");
 var geohash = require("latlon-geohash");
 var readline = require('readline');
 
-/*
-* GENERATE RANDOM GEOFENCES
-*
- */
-
 function getDistanceFromLatLonInKm(location1, location2) {
     lat1 = location1[0];
     lon1 = location1[1];
@@ -41,59 +36,12 @@ function calculateArea(geofence_normal){
     return geoarea(polygon) / 1000000;
 }
 
-function getNewPointFromDistanceBearing(a, distance, bearing) {
-
-    var lat = a[0];
-    var lon = a[1];
-    var dist = distance / 6371;
-    var brng = deg2rad(bearing);
-
-    var lat1 = deg2rad(lat);
-    var lon1 = deg2rad(lon);
-
-    var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) +
-        Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
-
-    var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) *
-        Math.cos(lat1),
-        Math.cos(dist) - Math.sin(lat1) *
-        Math.sin(lat2));
-
-    if (isNaN(lat2) || isNaN(lon2)) return null;
-
-    return [rad2deg(lon2), rad2deg(lat2)];
-}
-
 function deg2rad(deg) {
     return deg * (Math.PI/180);
 }
 
 function rad2deg(rad) {
     return rad * 180 / Math.PI;
-}
-
-
-function generateRandomGeofence(mBearing, randomDistance, baseDistance){
-
-    maxBearing = mBearing;
-
-    center = [52.520007, 13.404954];
-
-    geofence = [];
-    var bearing = 0;
-
-    while(bearing < 360 - maxBearing){
-        var newBearing = Math.floor(Math.random() * maxBearing) + bearing;
-        while(newBearing > 360) {
-            newBearing = Math.floor(Math.random() * maxBearing) + bearing;
-        }
-        distance = Math.floor(Math.random() * randomDistance) + baseDistance;
-        geofence.push(getNewPointFromDistanceBearing(center, distance, newBearing));
-        bearing = newBearing;
-    }
-    geofence.push(geofence[0]);
-
-    var s = fs.createWriteStream("output/fences.txt", {'flags': 'a'});s.write(geofence + "\n");s.close();
 }
 
 function getPointsFromHash(hashes) {
@@ -116,6 +64,8 @@ function getPointsFromHash(hashes) {
 }
 
 function findCommonPrefix(hashes, length) {
+
+    if(hashes[0] == undefined) return "";
     prefix = "";
     minLength = hashes[0].length;
     for(i = 0; i < hashes.length; i++){
@@ -151,6 +101,7 @@ function findWithPrefix(hashes, prefix) {
 
 function findCompressedCells(hashes) {
 
+    if(hashes[0] == undefined) return hashes;
     compressedCells = [];
 
     commonPrefix = findCommonPrefix(hashes);
@@ -195,7 +146,7 @@ function findCompressedCells(hashes) {
         const index = hashes.indexOf(removable[i]);
         hashes.splice(index, 1);
     }
-    return hashes;
+    return [hashes, compressedCells.length];
 }
 
 var sync = require("sync");
@@ -204,44 +155,45 @@ var sync = require("sync");
 * GeoHash FUNCTIONS
  */
 
-function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash_area, stream_points) {
+function hashToString(poly) {
 
     geofence_area = calculateArea(poly);
     var geohash_geofence = poly;
-    //geohash_geofence.push(geohash_geofence[0]);
+    geohash_geofence.push(geohash_geofence[0]);
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
         geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
-            hashes = findCompressedCells(hashes);
+            o = findCompressedCells(hashes);
+            hashes = o[0];
+            compressed_count = o[1];
 
-            geohash_cells.push(hashes.length);
-            geohash_diffs.push(geofence_area - hashes.length * 0.72);
-            geohash_area.push(geofence_area);
+            hashes_count = hashes.length;
+            area_covered = (hashes.length - compressed_count) * 0.72 + compressed_count * 23.04;
+            bits_needed = (hashes.length - compressed_count) * 24 + compressed_count * 20;
 
-
-            var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
+            /*var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
             stream_hashed.once('open', function(fd) {
                 stream_hashed.write(hashes + "\n");
                 stream_hashed.end();
-            });
+            });*/
+
             var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
             stream_points.once('open', function(fd) {
                 stream_points.write(getPointsFromHash(hashes) + "\n");
                 stream_points.end();
             });
 
-            if(geohash_cells.length == num_geofences){
-                console.log("Number of cells " + geohash_cells.reduce(function(a, b) {
-                    return a + b;
-                }, 0) / num_geofences);
-                console.log("Area not covered " + geohash_diffs.reduce(function(a, b) {
-                    return a + b;
-                }, 0) / num_geofences);
-                console.log("Mean area " + geohash_area.reduce(function(a, b) {
-                    return a + b;
-                }, 0) / num_geofences);
-            }
+            var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
+            stream_info.once('open', function(fd) {
+                stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed + "\n");
+                stream_info.end();
+            });
+
+            console.log("Number of cells " + hashes_count + "\n");
+            console.log("Area covered " + area_covered + "\n");
+            console.log("Bits needed " + bits_needed + "\n");
+            //console.log("Real Area covered " + geofence_area + "\n");
         });
     }
 }
@@ -252,7 +204,7 @@ function hashToString(poly, num_geofences, geohash_cells, geohash_diffs, geohash
 
 function main() {
 
-    num_geofences = 100;
+    num_geofences = 10;
 
     geohash_cells = [];
     geohash_area_diffs = [];
@@ -278,24 +230,4 @@ function main() {
     });
 }
 
-function createNewFrences(num_geofences){
-
-    /*for(c = 0; c < 100; c++){
-        generateRandomGeofence();
-    }*/
-
-    generateRandomGeofence(45, 10, 10);
-    generateRandomGeofence(30, 10, 10);
-    generateRandomGeofence(15, 10, 10);
-    generateRandomGeofence(7.5, 10, 10);
-    generateRandomGeofence(3.75, 10, 10);
-
-    generateRandomGeofence(45, 20, 20);
-    generateRandomGeofence(30, 20, 20);
-    generateRandomGeofence(15, 20, 20);
-    generateRandomGeofence(7.5, 20, 20);
-    generateRandomGeofence(3.75, 20, 20);
-}
-
 main();
-//createNewFrences(100);

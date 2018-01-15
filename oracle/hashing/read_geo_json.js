@@ -19,7 +19,7 @@ function readJson(path, cb) {
 }
 
 
-readJson("germany/admin_level_6.geojson", function(json) {
+readJson("germany-geojson/admin_level_4.geojson", function(json) {
     readGeoJson(json, {
         eachMultiPolygon: function(polygon, feature, featureCollection) {
 

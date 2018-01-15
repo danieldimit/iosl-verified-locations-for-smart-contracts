@@ -142,6 +142,7 @@ public class Experiment {
 
         //BufferedWriter writer_fences_hashed = new BufferedWriter(new FileWriter( "fences_hashed.txt", true));
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
+        BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info.txt", true));
 
         List<Long> ids = new ArrayList<Long>();
         String fence_points = "";
@@ -175,6 +176,10 @@ public class Experiment {
         writer_fences_points.write(fence_points);
         writer_fences_points.newLine();
         writer_fences_points.close();
+
+        write_fences_info.write(cellCount + ", " + areaCovered + ", " + bitsCount + "\n");
+        write_fences_info.newLine();
+        write_fences_info.close();
 
         return union.size();
     }

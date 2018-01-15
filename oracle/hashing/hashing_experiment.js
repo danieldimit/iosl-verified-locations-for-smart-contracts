@@ -157,7 +157,6 @@ var sync = require("sync");
 
 function hashToString(poly) {
 
-    geofence_area = calculateArea(poly);
     var geohash_geofence = poly;
     geohash_geofence.push(geohash_geofence[0]);
     var g_final = [];
@@ -168,6 +167,7 @@ function hashToString(poly) {
             hashes = o[0];
             compressed_count = o[1];
 
+            geofence_area = calculateArea(poly);
             hashes_count = hashes.length;
             area_covered = (hashes.length - compressed_count) * 0.72 + compressed_count * 23.04;
             bits_needed = (hashes.length - compressed_count) * 24 + compressed_count * 20;
@@ -185,15 +185,14 @@ function hashToString(poly) {
             });
 
             var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
-            stream_info.once('open', function(fd) {
-                stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed + "\n");
+            stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed +
+                    ", " + geofence_area + "\n");
                 stream_info.end();
-            });
 
             console.log("Number of cells " + hashes_count + "\n");
             console.log("Area covered " + area_covered + "\n");
             console.log("Bits needed " + bits_needed + "\n");
-            //console.log("Real Area covered " + geofence_area + "\n");
+            console.log("Real Area covered " + geofence_area + "\n");
         });
     }
 }

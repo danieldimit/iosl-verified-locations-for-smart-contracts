@@ -77,7 +77,54 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_geometries(geoms2, ccrs.PlateCarree(), facecolor='orange',
                       edgecolor='black', alpha=0.2)
 
+def plot_fence_info():
+
+    fence_edges = []
+    bits_geohash = []
+    bits_s2_14 = []
+    bits_s2_15 = []
+
+    f = open("fences_info/fences_info.txt", "r")
+
+    for i in range(0, 10):
+        x = f.readline()
+        x = x.rstrip()
+        x = x.replace(" ", "")
+        x = x.split(",")
+
+        if len(x) > 1:
+            fence_edges.append(float(x[4]))
+            bits_geohash.append(float(x[2]))
+
+    f = open("fences_info/fences_info_s2_14.txt", "r")
+
+    for i in range(0, 10):
+        x = f.readline()
+        x = x.rstrip()
+        x = x.replace(" ", "")
+        x = x.split(",")
+
+        if len(x) > 1:
+            bits_s2_14.append(float(x[2]))
+
+    f = open("fences_info/fences_info_s2_15.txt", "r")
+
+    for i in range(0, 10):
+        x = f.readline()
+        x = x.rstrip()
+        x = x.replace(" ", "")
+        x = x.split(",")
+
+        if len(x) > 1:
+            bits_s2_15.append(float(x[2]))
+
+    plt.plot(fence_edges[:6], bits_geohash[:6], "r", fence_edges[:6], bits_s2_14[:6], "b", fence_edges[:6], bits_s2_15[:6], "g")
+    plt.show()
+
+
 if __name__ == "__main__":
+
+    plot_fence_info()
 
     fences = read_fences()
     fence_points_S2_13 = read_fences_point("s2-13/fences_points.txt")

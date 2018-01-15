@@ -117,7 +117,7 @@ public class Experiment {
     }
 
 
-    private static int findCover(List<double[]> fence) throws IOException {
+    private static int findCover(List<double[]> fence, int maxLevel) throws IOException {
 
         double[] cellArea = {81.07, 20.27, 5.07, 1.27, 0.32, 0.8};
 
@@ -136,13 +136,13 @@ public class Experiment {
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
-        coverer.setMaxLevel(14);
+        coverer.setMaxLevel(maxLevel);
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 
         //BufferedWriter writer_fences_hashed = new BufferedWriter(new FileWriter( "fences_hashed.txt", true));
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
-        BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info.txt", true));
+        BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info_s2_" + maxLevel + ".txt", true));
 
         List<Long> ids = new ArrayList<Long>();
         String fence_points = "";
@@ -177,7 +177,7 @@ public class Experiment {
         writer_fences_points.newLine();
         writer_fences_points.close();
 
-        write_fences_info.write(cellCount + ", " + areaCovered + ", " + bitsCount + "\n");
+        write_fences_info.write(cellCount + ", " + areaCovered + ", " + bitsCount);
         write_fences_info.newLine();
         write_fences_info.close();
 
@@ -194,7 +194,7 @@ public class Experiment {
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-            findCover(fence);
+            findCover(fence, 14);
         }
     }
 

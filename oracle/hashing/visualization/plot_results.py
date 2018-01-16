@@ -12,7 +12,7 @@ def read_fences():
     f = open("fences.txt", "r")
 
     fences = list()
-    for i in range(0, 10):
+    for i in range(0, 8):
         x = f.readline()
         cords = x.split(",")
         latlon = list()
@@ -84,6 +84,15 @@ def plot_fence_info():
     bits_s2_14 = []
     bits_s2_15 = []
 
+    geofence_area = []
+    geohash_area = []
+    s2_14_area = []
+    s2_15_area = []
+
+    geohash_hashes = []
+    s2_14_hashes = []
+    s2_15_hashes = []
+
     f = open("fences_info/fences_info.txt", "r")
 
     for i in range(0, 10):
@@ -95,6 +104,10 @@ def plot_fence_info():
         if len(x) > 1:
             fence_edges.append(float(x[4]))
             bits_geohash.append(float(x[2]))
+            geohash_hashes.append(float(x[0]))
+
+            geofence_area.append(float(x[3]))
+            geohash_area.append(float(x[1]))
 
     f = open("fences_info/fences_info_s2_14.txt", "r")
 
@@ -106,6 +119,8 @@ def plot_fence_info():
 
         if len(x) > 1:
             bits_s2_14.append(float(x[2]))
+            s2_14_area.append(float(x[1]))
+            s2_14_hashes.append(float(x[0]))
 
     f = open("fences_info/fences_info_s2_15.txt", "r")
 
@@ -117,8 +132,39 @@ def plot_fence_info():
 
         if len(x) > 1:
             bits_s2_15.append(float(x[2]))
+            s2_15_area.append(float(x[1]))
+            s2_15_hashes.append(float(x[0]))
 
-    plt.plot(fence_edges[:6], bits_geohash[:6], "r", fence_edges[:6], bits_s2_14[:6], "b", fence_edges[:6], bits_s2_15[:6], "g")
+    plt.title("Overall bits needed in comparison to the fence points")
+    plt.xlabel("Fence Points")
+    plt.ylabel("Bits needed")
+    plt.plot(fence_edges[:6], bits_geohash[:6], "r", label="geohash")
+    plt.plot(fence_edges[:6], bits_s2_14[:6], "b", label="s2 14")
+    plt.plot(fence_edges[:6], bits_s2_15[:6], "g", label="s2 15")
+    plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
+    plt.show()
+
+    plt.title("Overall hashes needed in comparison to the fence points")
+    plt.xlabel("Fence Points")
+    plt.ylabel("Hashes needed")
+    plt.plot(fence_edges[:6], geohash_hashes[:6], "r", label="geohash")
+    plt.plot(fence_edges[:6], s2_14_hashes[:6], "b", label="s2 14")
+    plt.plot(fence_edges[:6],s2_15_hashes[:6], "g", label="s2 15")
+    plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
+    plt.show()
+
+    for i in range(0, len(geofence_area)):
+        geohash_area[i] = geohash_area[i] / geofence_area[i] * 100
+        s2_14_area[i] = s2_14_area[i] / geofence_area[i] * 100
+        s2_15_area[i] = s2_15_area[i] / geofence_area[i] * 100
+
+    plt.title("Area covered")
+    plt.xlabel("Fence Points")
+    plt.ylabel("Hashes needed")
+    plt.plot(fence_edges[:6], geohash_area[:6], "r", label="geohash")
+    plt.plot(fence_edges[:6], s2_14_area[:6], "b", label="s2 14")
+    plt.plot(fence_edges[:6], s2_15_area[:6], "g", label="s2 15")
+    plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
     plt.show()
 
 

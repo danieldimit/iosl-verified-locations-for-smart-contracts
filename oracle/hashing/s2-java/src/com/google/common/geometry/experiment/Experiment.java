@@ -4,6 +4,7 @@ import com.google.common.geometry.*;
 import com.sun.deploy.util.StringUtils;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -119,7 +120,7 @@ public class Experiment {
 
     private static int findCover(List<double[]> fence, int maxLevel) throws IOException {
 
-        double[] cellArea = {81.07, 20.27, 5.07, 1.27, 0.32, 0.8};
+        double[] cellArea = {1297.17, 324.29, 81.07, 20.27, 5.07, 1.27, 0.32, 0.08};
 
         Double areaCovered = 0.0;
         long bitsCount = 0;
@@ -156,8 +157,11 @@ public class Experiment {
 
             int lvl = id.level();
             bitsCount += (4 + 2*lvl);
-            if(lvl > 10)
-             areaCovered += cellArea[lvl - 10];
+            if(lvl > 7){
+                double perc = s2Cell.approxArea() / s2Cell.averageArea();
+                areaCovered += perc * cellArea[lvl - 8];
+            }
+            else log.info(String.valueOf(lvl));
 
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
@@ -165,13 +169,12 @@ public class Experiment {
             }
         }
 
-        log.info("Bits count: " + bitsCount);
-        log.info("Cell count: " + cellCount);
-        log.info("Area covered: " + areaCovered);
+        areaCovered += cellArea[0];
 
-        //writer_fences_hashed.write(convertToString(ids));
-        //writer_fences_hashed.newLine();
-        //writer_fences_hashed.close();
+        //log.info(String.valueOf(areaCovered));
+        //log.info("Bits count: " + bitsCount);
+        //log.info("Cell count: " + cellCount);
+        //log.info("Area covered: " + areaCovered);
 
         writer_fences_points.write(fence_points);
         writer_fences_points.newLine();

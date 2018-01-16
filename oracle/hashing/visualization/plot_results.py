@@ -60,7 +60,7 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([13, 13.8, 52.3, 52.7])
+    ax.set_extent([12.9, 13.9, 52.2, 52.8])
     geoms = []
     geo = Polygon(fence)
     geoms.append(geo)
@@ -138,19 +138,21 @@ def plot_fence_info():
     plt.title("Overall bits needed in comparison to the fence points")
     plt.xlabel("Fence Points")
     plt.ylabel("Bits needed")
-    plt.plot(fence_edges[:6], bits_geohash[:6], "r", label="geohash")
-    plt.plot(fence_edges[:6], bits_s2_14[:6], "b", label="s2 14")
-    plt.plot(fence_edges[:6], bits_s2_15[:6], "g", label="s2 15")
+    plt.plot(fence_edges[:7], bits_geohash[:7], "r", label="geohash")
+    plt.plot(fence_edges[:7], bits_s2_14[:7], "b", label="s2 14")
+    plt.plot(fence_edges[:7], bits_s2_15[:7], "g", label="s2 15")
     plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
+    plt.savefig("experiment-1/bits.png")
     plt.show()
 
     plt.title("Overall hashes needed in comparison to the fence points")
     plt.xlabel("Fence Points")
     plt.ylabel("Hashes needed")
-    plt.plot(fence_edges[:6], geohash_hashes[:6], "r", label="geohash")
-    plt.plot(fence_edges[:6], s2_14_hashes[:6], "b", label="s2 14")
-    plt.plot(fence_edges[:6],s2_15_hashes[:6], "g", label="s2 15")
+    plt.plot(fence_edges[:7], geohash_hashes[:7], "r", label="geohash")
+    plt.plot(fence_edges[:7], s2_14_hashes[:7], "b", label="s2 14")
+    plt.plot(fence_edges[:7],s2_15_hashes[:7], "g", label="s2 15")
     plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
+    plt.savefig("experiment-1/hashes.png")
     plt.show()
 
     for i in range(0, len(geofence_area)):
@@ -160,11 +162,12 @@ def plot_fence_info():
 
     plt.title("Area covered")
     plt.xlabel("Fence Points")
-    plt.ylabel("Hashes needed")
-    plt.plot(fence_edges[:6], geohash_area[:6], "r", label="geohash")
-    plt.plot(fence_edges[:6], s2_14_area[:6], "b", label="s2 14")
-    plt.plot(fence_edges[:6], s2_15_area[:6], "g", label="s2 15")
+    plt.ylabel("% of Area covered")
+    plt.plot(fence_edges[:7], geohash_area[:7], "r", label="geohash")
+    plt.plot(fence_edges[:7], s2_14_area[:7], "b", label="s2 14")
+    plt.plot(fence_edges[:7], s2_15_area[:7], "g", label="s2 15")
     plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
+    plt.savefig("experiment-1/area.png")
     plt.show()
 
 
@@ -186,5 +189,5 @@ if __name__ == "__main__":
         plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
         plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
 
-        #plt.savefig("experiment-1/Test-" + str(x) + ".png")
-        plt.show()
+        plt.savefig("experiment-1/Test-" + str(x) + ".png")
+        #plt.show()

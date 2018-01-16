@@ -197,7 +197,7 @@ public class Experiment {
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-            findCover(fence, 14);
+            findCover(fence, 13);
         }
     }
 

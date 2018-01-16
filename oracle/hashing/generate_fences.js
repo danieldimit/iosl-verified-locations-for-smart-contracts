@@ -75,6 +75,7 @@ function main(){
     generateRandomGeofence(15, 20, 20);
     generateRandomGeofence(7.5, 20, 20);
     generateRandomGeofence(3.75, 20, 20);
+    generateRandomGeofence(1.875, 20, 20);
 }
 
 main();

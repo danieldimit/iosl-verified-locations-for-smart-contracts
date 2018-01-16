@@ -67,15 +67,15 @@ function generateRandomGeofence(mBearing, randomDistance, baseDistance){
 
 function main(){
 
-    generateRandomGeofence(90, 20, 20);
-    generateRandomGeofence(75, 20, 20);
-    generateRandomGeofence(60, 20, 20);
-    generateRandomGeofence(45, 20, 20);
-    generateRandomGeofence(30, 20, 20);
-    generateRandomGeofence(15, 20, 20);
-    generateRandomGeofence(7.5, 20, 20);
-    generateRandomGeofence(3.75, 20, 20);
-    generateRandomGeofence(1.875, 20, 20);
+    generateRandomGeofence(90, 10, 20);
+    generateRandomGeofence(75, 10, 20);
+    generateRandomGeofence(60, 10, 20);
+    generateRandomGeofence(45, 10, 20);
+    generateRandomGeofence(30, 10, 20);
+    generateRandomGeofence(15, 10, 20);
+    generateRandomGeofence(7.5, 10, 20);
+    generateRandomGeofence(3.75, 10, 20);
+    generateRandomGeofence(1.875, 10, 20);
 }
 
 main();

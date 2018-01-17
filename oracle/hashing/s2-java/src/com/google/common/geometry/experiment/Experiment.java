@@ -141,7 +141,6 @@ public class Experiment {
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 
-        //BufferedWriter writer_fences_hashed = new BufferedWriter(new FileWriter( "fences_hashed.txt", true));
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
         BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info_s2_" + maxLevel + ".txt", true));
 
@@ -157,25 +156,21 @@ public class Experiment {
 
             int lvl = id.level();
             bitsCount += (4 + 2*lvl);
-            if(lvl > 7){
+            /*if(lvl > 7){
                 double perc = s2Cell.approxArea() / s2Cell.averageArea();
                 areaCovered += perc * cellArea[lvl - 8];
             }
-            else log.info(String.valueOf(lvl));
+            else log.info(String.valueOf(lvl));*/
+            double x = s2Cell.exactArea() / 12.56637 * 510072000;
+
+            if(id.level() == 8) log.info(String.valueOf(x));
+            areaCovered += x;
 
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
                 fence_points = fence_points.concat(p.toDegreesString() + ",");
             }
         }
-
-        areaCovered += cellArea[0];
-
-        //log.info(String.valueOf(areaCovered));
-        //log.info("Bits count: " + bitsCount);
-        //log.info("Cell count: " + cellCount);
-        //log.info("Area covered: " + areaCovered);
-
         writer_fences_points.write(fence_points);
         writer_fences_points.newLine();
         writer_fences_points.close();
@@ -197,7 +192,7 @@ public class Experiment {
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-            findCover(fence, 13);
+            findCover(fence, 14);
         }
     }
 

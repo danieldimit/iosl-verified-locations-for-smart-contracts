@@ -24,6 +24,15 @@ function getDistanceFromLatLonInKm(location1, location2) {
     return d;
 }
 
+function calculateAreaOfCell(lat1, lon1, lat2, lon2) {
+    l1 = [lat1, lon1];
+    l2 = [lat1, lon2];
+    l3 = [lat2, lon1];
+    a = getDistanceFromLatLonInKm(l1, l2);
+    b = getDistanceFromLatLonInKm(l1, l3);
+    return a*b;
+}
+
 function calculateArea(geofence_normal){
     //calculate area for irregular polygon
     var geofence = geofence_normal.reverse();
@@ -31,7 +40,7 @@ function calculateArea(geofence_normal){
     var polygon = [];
     for (var t = 0; t < geofence.length; t++) {
 
-        polygon.push({lng: geofence[t][1], lat: geofence[t][0]});
+        polygon.push({lng: geofence[t][0], lat: geofence[t][1]});
     }
     return geoarea(polygon) / 1000000;
 }
@@ -46,6 +55,7 @@ function rad2deg(rad) {
 
 function getPointsFromHash(hashes) {
     points = [];
+    area = 0.0;
 
     for(i=0; i < hashes.length; i++){
 
@@ -57,10 +67,12 @@ function getPointsFromHash(hashes) {
 
         points.push(lat1);points.push(lon1);points.push(lat2);points.push(lon1);
         points.push(lat2);points.push(lon2);points.push(lat1);points.push(lon2);
+
+        area += calculateAreaOfCell(lat1, lon1, lat2, lon2);
     }
 
 
-    return points
+    return [area, points]
 }
 
 function findCommonPrefix(hashes, length) {
@@ -169,7 +181,6 @@ function hashToString(poly) {
 
             geofence_area = calculateArea(poly);
             hashes_count = hashes.length;
-            area_covered = (hashes.length - compressed_count) * 0.72 + compressed_count * 23.04;
             bits_needed = (hashes.length - compressed_count) * 24 + compressed_count * 20;
             fence_edges = poly.length;
 
@@ -179,9 +190,12 @@ function hashToString(poly) {
                 stream_hashed.end();
             });*/
 
+            calc = getPointsFromHash(hashes);
+            area_covered = calc[0];
+
             var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
             stream_points.once('open', function(fd) {
-                stream_points.write(getPointsFromHash(hashes) + "\n");
+                stream_points.write(calc[1] + "\n");
                 stream_points.end();
             });
 

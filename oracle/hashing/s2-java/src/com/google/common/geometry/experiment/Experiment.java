@@ -120,9 +120,7 @@ public class Experiment {
 
     private static int findCover(List<double[]> fence, int maxLevel) throws IOException {
 
-        double[] cellArea = {1297.17, 324.29, 81.07, 20.27, 5.07, 1.27, 0.32, 0.08};
 
-        Double areaCovered = 0.0;
         long bitsCount = 0;
         int cellCount = 0;
 
@@ -141,36 +139,31 @@ public class Experiment {
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 
+
+
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
         BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info_s2_" + maxLevel + ".txt", true));
 
         List<Long> ids = new ArrayList<Long>();
         String fence_points = "";
-        double sum = 0;
         cellCount = union.cellIds().size();
 
         for(S2CellId id : union.cellIds()){
             S2Cell s2Cell = new S2Cell(id);
-            sum += s2Cell.approxArea();
             ids.add(removeZeros(id.id()));
 
             int lvl = id.level();
             bitsCount += (4 + 2*lvl);
-            /*if(lvl > 7){
-                double perc = s2Cell.approxArea() / s2Cell.averageArea();
-                areaCovered += perc * cellArea[lvl - 8];
-            }
-            else log.info(String.valueOf(lvl));*/
-            double x = s2Cell.exactArea() / 12.56637 * 510072000;
-
-            if(id.level() == 8) log.info(String.valueOf(x));
-            areaCovered += x;
 
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
                 fence_points = fence_points.concat(p.toDegreesString() + ",");
             }
         }
+
+        Double areaCovered = union.exactArea() * 6371 * 6371;
+        log.info(String.valueOf(areaCovered));
+
         writer_fences_points.write(fence_points);
         writer_fences_points.newLine();
         writer_fences_points.close();

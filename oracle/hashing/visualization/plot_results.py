@@ -71,7 +71,7 @@ def plot_fence(fence, fence_points, subplot, title):
         geoms2.append(g)
 
     ax.title.set_text(title + "\nNumber of hashes: " + str(len(geoms2)))
-    ax.add_geometries(geoms, ccrs.PlateCarree(), facecolor='red',
+    ax.add_geometries(geoms, ccrs.PlateCarree(), facecolor='white',
                       edgecolor='black', alpha=1)
 
     ax.add_geometries(geoms2, ccrs.PlateCarree(), facecolor='orange',
@@ -173,7 +173,7 @@ def plot_fence_info():
 
 if __name__ == "__main__":
 
-    plot_fence_info()
+    #plot_fence_info()
 
     fences = read_fences()
     fence_points_S2_13 = read_fences_point("s2-13/fences_points.txt")
@@ -189,5 +189,5 @@ if __name__ == "__main__":
         plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
         plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
 
-        plt.savefig("experiment-1/Test-" + str(x) + ".png")
-        #plt.show()
+        #plt.savefig("experiment-1/Test-" + str(x) + ".png")
+        plt.show()

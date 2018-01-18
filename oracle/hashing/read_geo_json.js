@@ -19,14 +19,18 @@ function readJson(path, cb) {
 }
 
 
-readJson("germany-geojson/admin_level_4.geojson", function(json) {
+readJson("germany-geojson/plz1.geojson", function(json) {
+    count = 0;
     readGeoJson(json, {
-        eachMultiPolygon: function(polygon, feature, featureCollection) {
+
+        eachPolygon: function(polygon, feature, featureCollection) {
 
             coords = polygon["coordinates"];
             for(i = 0; i < coords.length; i++){
-                var s = fs.createWriteStream("germany/fences.txt", {'flags': 'a'});s.write(coords[0] + "\n");s.close();
+                var s = fs.createWriteStream("germany-geojson/fences.txt", {'flags': 'a'});s.write(coords[0] + "\n");s.close();
             }
+            count +=1
         }
     });
+    console.log(count)
 });

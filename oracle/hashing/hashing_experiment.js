@@ -175,41 +175,44 @@ function hashToString(poly) {
     if(g_final.push(geohash_geofence)){
 
         geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
-            o = findCompressedCells(hashes);
-            hashes = o[0];
-            compressed_count = o[1];
+            if(hashes && hashes.length) {
+                console.log(hashes.length)
+                o = findCompressedCells(hashes);
+                hashes = o[0];
+                compressed_count = o[1];
 
-            geofence_area = calculateArea(poly);
-            hashes_count = hashes.length;
-            bits_needed = (hashes.length - compressed_count) * 24 + compressed_count * 20;
-            fence_edges = poly.length;
+                geofence_area = calculateArea(poly);
+                hashes_count = hashes.length;
+                bits_needed = (hashes.length - compressed_count) * 24 + compressed_count * 20;
+                fence_edges = poly.length;
 
-            /*var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
-            stream_hashed.once('open', function(fd) {
-                stream_hashed.write(hashes + "\n");
-                stream_hashed.end();
-            });*/
+                /*var stream_hashed = fs.createWriteStream("output/hashed_fences.txt", {'flags': 'a'});
+                stream_hashed.once('open', function(fd) {
+                    stream_hashed.write(hashes + "\n");
+                    stream_hashed.end();
+                });*/
 
-            calc = getPointsFromHash(hashes);
-            area_covered = calc[0];
+                calc = getPointsFromHash(hashes);
+                area_covered = calc[0];
 
-            var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
-            stream_points.once('open', function(fd) {
-                stream_points.write(calc[1] + "\n");
-                stream_points.end();
-            });
+                var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
+                stream_points.once('open', function (fd) {
+                    stream_points.write(calc[1] + "\n");
+                    stream_points.end();
+                });
 
-            var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
-            stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed +
+                var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
+                stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed +
                     ", " + geofence_area + ", " + fence_edges + "\n");
                 stream_info.end();
 
-            console.log("Number of cells " + hashes_count);
-            console.log("Area covered " + area_covered);
-            console.log("Bits needed " + bits_needed);
-            console.log("Real Area covered " + geofence_area);
-            console.log("Fence Edges " + fence_edges);
-        });
+                console.log("Number of cells " + hashes_count);
+                console.log("Area covered " + area_covered);
+                console.log("Bits needed " + bits_needed);
+                console.log("Real Area covered " + geofence_area);
+                console.log("Fence Edges " + fence_edges);
+            }
+            });
     }
 }
 

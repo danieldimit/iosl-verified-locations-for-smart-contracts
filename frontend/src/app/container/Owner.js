@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import CreateCar from './CreateCar';
+import DeleteCar from './DeleteCar';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
-
-
-
-const markers = [{info:' Marker1',icon:'image/icon.jpg', label:'A',
-    latLng:{lng:2.13815342634916,lat:41.39485570794}},
-    {info:' Marker2', label:'B',latLng:{lng:2.13815342634926,lat:41.39485570795}}];
-
-
 
 
 class Owner extends Component {
@@ -17,59 +11,41 @@ class Owner extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            chosenAddress: "-",
+            ownerEthereumAddress: "-",
+            ownerContractAddress: null,
+            etherInContract: null,
+            carAddresses: [],
+            selectedCar: "-",
             state: 1,
             progressStep: 1
         };
         this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
         this.createContract = this.createContract.bind(this);
         this.onOwnerChange = this.onOwnerChange.bind(this);
-        this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
-        this.createScriptNode = this.createScriptNode.bind(this);
+        this.setOwnerEthAccountAndCheckOwnerContract = this.setOwnerEthAccountAndCheckOwnerContract.bind(this);
+        this.decideNextStep = this.decideNextStep.bind(this);
+        this.withdrawEthereum = this.withdrawEthereum.bind(this);
+        this.getEthereumBalanceOfContract = this.getEthereumBalanceOfContract.bind(this);
+        this.moveToNextStepAndSaveContractHash = this.moveToNextStepAndSaveContractHash.bind(this);
+        this.handleWithdrawMoneyResponse = this.handleWithdrawMoneyResponse.bind(this);
+        this.getCarContracts = this.getCarContracts.bind(this);
+        this.onSelectedCarChange = this.onSelectedCarChange.bind(this);
     }
 
     componentDidMount() {
         this.props.fetchAllAccounts();
-        console.log("called");
-
     }
 
-    componentWillUnmount() {
-        var id = document.getElementById("initMap");
-        if (id != null) {
-            document.body.removeChild(id);
-        }
-        id = document.getElementById("googleMapsScript");
-        if (id != null) {
-            document.body.removeChild(id);
-        }
-    }
+    /**
+     * DROPDOWN MENUS
+     */
 
     onOwnerChange(e) {
-        this.setState({chosenAddress: e.target.value});
+        this.setState({ownerEthereumAddress: e.target.value});
     }
 
-    createContract() {
-        this.setState({progressStep: 3});
-        /*
-        if (this.refs.carGSMField.value == "" || this.state.chosenAddress == "-") {
-            alert ("You have to fill out all fields.");
-        } else {
-            let url = ethereumBackendUrl + '/owner/' + this.state.chosenAddress + '/create_contract';
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    carGSMNumber: this.refs.carGSMField.value
-                })
-            })
-                .then(result=>result.json())
-                .then(result=>console.log('teeeeeeeest: ',result));
-        }
-        */
+    onSelectedCarChange(e) {
+        this.setState({selectedCar: e.target.value});
     }
 
     renderAllAccountsDropdown(data) {
@@ -83,32 +59,88 @@ class Owner extends Component {
         }
     }
 
-    handleReturnedMarkers(markers) {
+
+    decideNextStep(response) {
+        if (response.success == false) {
+            this.setState({progressStep: 2});
+        } else {
+            this.setState({
+                progressStep: 3,
+                ownerContractAddress: response.data.contractMinedAddress
+            })
+            this.getEthereumBalanceOfContract();
+            this.getCarContracts();
+        }
+    }
+
+    moveToNextStepAndSaveContractHash(result) {
         this.setState({
-            activeMarkers: markers
+            progressStep: 3,
+            ownerContractAddress: result.data.contractMinedAddress
         });
     }
 
+    getEthereumBalanceOfContract() {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/showBalance';
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.setState({etherInContract: result.data}));
+    }
 
+    getCarContracts() {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/getCarContracts';
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.setState({carAddresses: result.data}));
+    }
 
-    setOwnerEthAccount() {
-        this.setState({progressStep: 2});
+    handleWithdrawMoneyResponse(response) {
+        if (response == true) {
+            this.setState({etherInContract: 0});
+        }
     }
 
 
-    createScriptNode() {
-        const initMapScript = document.createElement("script");
-        const script = document.createElement("script");
-        initMapScript.src = "/js/googleMapsDrawPolygon.js";
-        initMapScript.async = true;
-        initMapScript.id = "initMap"
-        document.body.appendChild(initMapScript);
+    /**
+     * BUTTON METHODS
+     */
 
-        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&libraries=drawing&callback=initMap";
-        script.async = true;
-        script.id = "googleMapsScript";
-        document.body.appendChild(script);
+    setOwnerEthAccountAndCheckOwnerContract() {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress;
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.decideNextStep(result));
     }
+
+    createContract() {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/createOwnerContract';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(result=>result.json())
+            .then(result=>this.moveToNextStepAndSaveContractHash(result))
+            .then(result=>this.getEthereumBalanceOfContract())
+            .then(result=>this.getCarContracts());
+    }
+
+    withdrawEthereum() {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/withdrawMoney';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(result=>result.json())
+            .then(result=>this.handleWithdrawMoneyResponse(result));
+    }
+
+
 
     render() {
         return (
@@ -130,13 +162,13 @@ class Owner extends Component {
                             <label>
                                 Owner ethereum address:
                                 <br/>
-                                <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
+                                <select style={{float: 'left'}} onChange={this.onOwnerChange}>
                                     <option value={null}>-</option>
                                     { this.props.accounts.map(this.renderAllAccountsDropdown) }
                                 </select>
                             </label>
                             <br/>
-                            <button onClick={this.setOwnerEthAccount}>Next</button>
+                            <button onClick={this.setOwnerEthAccountAndCheckOwnerContract}>Next</button>
                         </div>
                     : null }
 
@@ -154,45 +186,25 @@ class Owner extends Component {
 
                     { this.state.progressStep == 3 ?
                         <div className="step">
+
                             <h2 ref={subtitle => this.subtitle = subtitle}>Manage Cars</h2>
-                            <p>Create or delete car contracts that you own.
+                            <p>
+                                Owner Ethereum Address: {this.state.ownerEthereumAddress}
+                            <br/>
+                                Owner Contract Address: {this.state.ownerContractAddress}
+                            </p>
+                            <p>
+                                Create or delete car contracts that you own.
                             </p>
                             <div id="withdraw" className="ownerControlPanel">
                                 <h3>Withdraw money from all car contracts</h3>
-                                <button onClick={this.createContract}>Withdraw money</button>
+                                <p>
+                                    Ethereum in the owner contract: {this.state.etherInContract}
+                                </p>
+                                <button onClick={this.withdrawEthereum}>Withdraw money</button>
                             </div>
-                            <div id="delete" className="ownerControlPanel">
-                                <h3>Delete existing car contract</h3>
-                                <label>
-                                    Car contract address:
-                                    <br/>
-                                    <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
-                                        <option value={null}>-</option>
-                                        { this.props.accounts.map(this.renderAllAccountsDropdown) }
-                                    </select>
-                                </label>
-                                <br/>
-                                <button onClick={this.createContract}>Delete car</button>
-                            </div>
-                            <div id="addnew" className="ownerControlPanel">
-                                <h3>Create new car contract</h3>
-                                <h4>Geofence</h4>
-                                <div id="map"></div>
-                                <label>
-                                    Car GSM number:
-                                    <br/>
-                                    <input type="text" ref="carGSMField"/>
-                                </label>
-                                <br/>
-                                <label>
-                                    Penalty value:
-                                    <br/>
-                                    <input type="text" ref="carGSMField"/>
-                                </label>
-                                <br/>
-                                <button onClick={this.createContract}>Create car</button>
-                                {this.createScriptNode()}
-                            </div>
+                            <DeleteCar ownerEthereumAddress={this.state.ownerEthereumAddress} />
+                            <CreateCar />
                         </div>
                     : null }
 

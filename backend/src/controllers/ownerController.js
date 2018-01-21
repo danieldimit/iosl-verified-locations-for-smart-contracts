@@ -21,12 +21,42 @@ var owner_bytecode = contracts_output.contracts[':Owner'].bytecode;
 var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 
+splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
+	console.log(arrOfGeohashes);
+	return {
+        geofencePrefix: "asd",
+        geofenceSuffix: arrOfGeohashes
+	}
+}
 
 module.exports = {
 
+    getOwnerContract : function(address, callback){
+        const body = {
+            'account_address': address
+        };
+
+        Account.findOne({ where: body }).then(data => {
+            console.log(JSON.stringify(data));
+            if(data){
+                if(data.car_owner_address){
+                    var body = {
+                        contractMinedAddress: data.car_owner_address };
+                    base.successCallback(body,callback);
+                }else{
+                    var body = { Message: "There isn't an owner account for this address yet." };
+                    base.errorCallback(body,callback);
+                }
+            }else{
+                var body = { owerContractAddress: null };
+                base.errorCallback(body,callback);
+            }
+        });
+    },
+
 	deployCarOwnerContract : function(address, callback){
 		const body = {
-        'account_address': address
+        	'account_address': address
     	};
 
     	Account.findOne({ where: body }).then(data => {
@@ -60,7 +90,7 @@ module.exports = {
 							});
 					    }
 			    }else{
-			    	var body = { Message: "No account founc"};
+			    	var body = { Message: "No account found"};
 			    	base.errorCallback(body,callback);
 			    }	
 		}); 
@@ -85,19 +115,23 @@ module.exports = {
     		if(data.car_owner_address){
     			var car_owner = owner_contract.at(data.car_owner_address);
     			//TODO: need to change the string value to hash value
+
+                var geoSplit = splitGeofenceInPrefixAndSuffix(responsebody.geofence);
+
     			var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
     				responsebody.penaltyValue,
     				responsebody.position,
-    				responsebody.geofencePrefix,
-    				responsebody.geofenceSuffix,
+                    geoSplit.geofencePrefix,
+                    geoSplit.geofenceSuffix,
                     {from: account_address, gas: 4700000},
                     (err, result) => {
                     	if(err){
                     		base.errorCallback(err,callback);
                     	}
                     	if(result){
-                    		var res = { Message : "New car is added", car_address : result };
-                    		Car.create({ account_address:account_address ,car_address:result}).then(result => {
+                    		console.log("result: ", result);
+                    		var res = { Message : "New car is added", carAddress : result };
+                    		Car.create({ account_address:account_address, car_address:result }).then(result => {
                     			base.successCallback(res,callback);
                     		});
                     	}

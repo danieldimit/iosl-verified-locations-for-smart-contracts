@@ -10,6 +10,12 @@ router.post('/:address/createOwnerContract', function (request, response) {
 	});
 });
 
+router.get('/:address', function (request, response){
+    owner.getOwnerContract(request.params.address,function (result){
+        response.json(result);
+    });
+});
+
 
 router.post('/:address/createCarContract',function (request,response) {
 //Body to be sent

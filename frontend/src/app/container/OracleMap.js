@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as geohash from 'latlon-geohash';
+import * as s2 from 's2-geometry';
 import { fetchAllAccounts } from '../actions/index';
 
 import { oracleBackendUrl } from '../config';
@@ -87,6 +88,17 @@ class OracleMap extends Component {
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
         let geohashedPos = geohash.encode(cellLat, cellLng, 5);
+        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 13);
+        var id = s2.S2.keyToId(s2Key);
+        var latlng = s2.S2.idToLatLng(id);
+
+        var neighbors = s2.S2.latLngToNeighborKeys(cellLat, cellLng, 13);
+        var left = s2.S2.keyToLatLng(neighbors[0]);
+
+        console.log("S2 id ",latlng," ",cellLat ," ", cellLng);
+
+        console.log("S2 left coord ",left);
+
         this.setState({ cellCenter:{lat: cellLat, lng: cellLng},
                         cellRadius: cellRad,
                         ghPosition: geohash.bounds(geohashedPos)});
@@ -98,7 +110,7 @@ class OracleMap extends Component {
 
         fetch(url)
             .then(result=>result.json())
-            .then(result=>this.giveToState(result))
+            .then(result=>this.giveToState(result));
 
         console.log(e.latLng.lat(), " " + e.latLng.lng());
     }

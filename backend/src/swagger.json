@@ -231,6 +231,42 @@
         }
       }
     },
+    "/owner/{userAddress}": {
+      "get": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Get owner address if it exists",
+        "description": "Create and deploy a contract in the blockchain",
+        "operationId": "getOwnerContract",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ownerContractAddress": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/owner/{userAddress}/createCarContract": {
       "post": {
         "tags": [
@@ -364,15 +400,6 @@
           "application/json"
         ],
         "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/CarContractConstructor"
-            }
-          },
           {
             "name": "userAddress",
             "in": "path",

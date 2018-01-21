@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 
-const PG_HOST = process.env.PG_HOST || "localhost";
+const PG_HOST = process.env.PG_HOST || "192.168.99.100";
 const PG_PORT = process.env.PG_PORT || "5432";
 const PG_USER = process.env.PG_USER || "postgres"; 
 const PG_DATABASE = process.env.PG_DATABASE || "logging";

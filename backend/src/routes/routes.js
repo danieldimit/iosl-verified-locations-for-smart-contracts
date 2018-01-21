@@ -14,15 +14,15 @@ var location = require('./location');
 //Routes
 app.use('/account', accounts);
 
-// app.use('/owner', owner);
+app.use('/owner', owner);
 
-// app.use('/renter', renter);
+app.use('/renter', renter);
 
 app.use ('/oracle' , oracle);
 
 // app.use ('/location' , location);
 
-app.use ('/location' , location);
+// app.use ('/location' , location);
 
 module.exports = app;
 

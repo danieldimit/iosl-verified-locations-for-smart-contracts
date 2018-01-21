@@ -1,0 +1,198 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a s2 and cell tower joint server API.",
+    "version": "1.0.0",
+    "title": "S2 and Celltower Backend Server",
+    "contact": {
+      "email": "daniel.dimitrov@tu-berlin.de"
+    }
+  },
+  "tags": [
+    {
+      "name": "s2",
+      "description": "all convertions from and to s2"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/s2/getNearestCellPositionInLatLonAndS2Cell": {
+      "get": {
+        "tags": [
+          "s2"
+        ],
+        "summary": "Given a real lat lon position of the car, return the lat lon position of the nearest cell tower and a bounding s2 rhomb that contains  the cell tower location.",
+        "description": "Every time return a bounding box with the same size (for example a  bounding rhomb with sides 2km by 2km).",
+        "operationId": "addPet",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "lon",
+            "in": "query",
+            "description": "Real longitude position of the car",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "description": "Real latitude position of the car",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "level",
+            "in": "query",
+            "description": "S2 level (granularity of the s2 cell id)",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/CellTowerAndS2BoundingPolygon"
+            }
+          }
+        }
+      }
+    },
+    "/s2/convertS2ToBoundingLatLonPolygon": {
+      "get": {
+        "tags": [
+          "s2"
+        ],
+        "summary": "Converts an S2 cell id that was saved in the ethereum network to a Polygon with Lat Lon coordinates, to be visualized in the frontend.",
+        "description": "Will be used in the Oracle View to retrieve the last logged position from the database. Will be used in the Renter View to see where  the car is located. Might be used in the Owner View so the owner could see where his cars are located.",
+        "operationId": "convertS2ToBoundingLatLonPolygon",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "s2hash",
+            "in": "query",
+            "description": "s2 hash retrieved from the backend (which retrieved it from a smart contract in the testrpc network)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "boundingPolygon": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LatLon"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/s2/convertGeofenceToS2Polygons": {
+      "get": {
+        "tags": [
+          "s2"
+        ],
+        "summary": "Converts a polygon to an array of s2 cell ids and their corresponding bounding polygons",
+        "description": "",
+        "operationId": "createUsersWithListInput",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "geofenceAndLevel",
+            "description": "List of lat lon points that define a polygon (aka the geofence)",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "level": {
+                  "type": "integer"
+                },
+                "geofence": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/LatLon"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/S2GeofenceInLatLonPolygonsAndInCellIds"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "S2GeofenceInLatLonPolygonsAndInCellIds": {
+      "type": "object",
+      "properties": {
+        "geofenceLatLonPolygons": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/LatLon"
+            }
+          }
+        },
+        "geofenceCellIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "CellTowerAndS2BoundingPolygon": {
+      "type": "object",
+      "required": [
+        "name",
+        "photoUrls"
+      ],
+      "properties": {
+        "cellTowerLatLon": {
+          "$ref": "#/definitions/LatLon"
+        },
+        "boundingPolygon": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/LatLon"
+          }
+        }
+      }
+    },
+    "LatLon": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lon": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

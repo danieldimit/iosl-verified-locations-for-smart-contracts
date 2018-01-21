@@ -117,11 +117,13 @@
         ],
         "parameters": [
           {
+            "in": "body",
             "name": "oracleAddress",
-            "in": "query",
-            "description": "The ethereum address of the oracle",
+            "description": "Sets the address of the oracle",
             "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/Oracle"
+            }
           }
         ],
         "responses": {
@@ -243,8 +245,8 @@
         "parameters": [
           {
             "in": "body",
-            "name": "body",
-            "description": "Pet object that needs to be added to the store",
+            "name": "car",
+            "description": "Specifications of the new car object",
             "required": true,
             "schema": {
               "$ref": "#/definitions/CarContractConstructor"

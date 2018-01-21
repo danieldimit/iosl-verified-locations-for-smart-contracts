@@ -648,11 +648,11 @@
         "geohashLastPostion": {
           "type": "string"
         },
-        "geofencePrefix": {
-          "type": "string"
-        },
-        "geofenceSuffix": {
-          "type": "string"
+        "geofence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "xml": {
@@ -672,11 +672,11 @@
         "position": {
           "type": "string"
         },
-        "geofencePrefix": {
-          "type": "string"
-        },
-        "geofenceSuffix": {
-          "type": "string"
+        "geofence": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "xml": {
@@ -692,7 +692,7 @@
         "availableCarContract": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/CarContractConstructor"
           }
         }
       }

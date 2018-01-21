@@ -84,6 +84,7 @@ module.exports = {
     	Account.findOne({ where: body }).then(data => {
     		if(data.car_owner_address){
     			var car_owner = owner_contract.at(data.car_owner_address);
+    			//TODO: need to change the string value to hash value
     			var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
     				responsebody.penaltyValue,
     				responsebody.position,

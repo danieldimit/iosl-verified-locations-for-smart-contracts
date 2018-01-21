@@ -4,6 +4,7 @@ import com.google.common.geometry.*;
 import com.sun.deploy.util.StringUtils;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -117,56 +118,64 @@ public class Experiment {
     }
 
 
-    private static int findCover(List<double[]> fence) throws IOException {
+    private static int findCover(List<double[]> fence, int maxLevel) throws IOException {
+
+
+        long bitsCount = 0;
+        int cellCount = 0;
 
         List<S2Point> points = new ArrayList<>();
 
         for(double[] point : fence){
-            points.add(S2LatLng.fromDegrees(point[0], point[1]).toPoint());
+            points.add(0, S2LatLng.fromDegrees(point[0], point[1]).toPoint());
+            //points.add(S2LatLng.fromDegrees(point[0], point[1]).toPoint());
         }
 
         S2Loop loop = new S2Loop(points);
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
-        coverer.setMaxLevel(12);
+        coverer.setMaxLevel(maxLevel);
         coverer.setMaxCells(100000);
         S2CellUnion union = coverer.getCovering(region);
 
-        //BufferedWriter writer_fences = new BufferedWriter(new FileWriter( "fences.txt", true));
-        BufferedWriter writer_fences_hashed = new BufferedWriter(new FileWriter( "fences_hashed.txt", true));
+
+
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
+        BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info_s2_" + maxLevel + ".txt", true));
 
         List<Long> ids = new ArrayList<Long>();
         String fence_points = "";
-        double sum = 0;
+        cellCount = union.cellIds().size();
+
         for(S2CellId id : union.cellIds()){
             S2Cell s2Cell = new S2Cell(id);
-            sum += s2Cell.approxArea();
             ids.add(removeZeros(id.id()));
+
+            int lvl = id.level();
+            bitsCount += (4 + 2*lvl);
 
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
                 fence_points = fence_points.concat(p.toDegreesString() + ",");
             }
         }
-        log.info(String.valueOf(sum));
-        //writer_fences.write(fenceToString(fence));
-        //writer_fences.newLine();
-        //writer_fences.close();
 
-        writer_fences_hashed.write(convertToString(ids));
-        writer_fences_hashed.newLine();
-        writer_fences_hashed.close();
+        Double areaCovered = union.exactArea() * 6371 * 6371;
+        log.info(String.valueOf(areaCovered));
 
         writer_fences_points.write(fence_points);
         writer_fences_points.newLine();
         writer_fences_points.close();
 
+        write_fences_info.write(cellCount + ", " + areaCovered + ", " + bitsCount);
+        write_fences_info.newLine();
+        write_fences_info.close();
+
         return union.size();
     }
 
-    public static void readFromFile(String path) throws IOException {
+    private static void readFromFile(String path) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(path));
         String line;
 
@@ -176,15 +185,12 @@ public class Experiment {
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-            findCover(fence);
+            findCover(fence, 13);
         }
     }
 
     public static void main(String[] args) throws IOException {
 
         readFromFile("fences.txt");
-        /*for(int i =0; i < 100; i++){
-            findCover(generateRandomGeofence());
-        }*/
     }
 }

@@ -68,4 +68,54 @@ function getPoints(hash) {
     return [lat1, lon1, lat1, lon2, lat2, lon1, lat2, lon2]
 }
 
-console.log(getPoints("u33"));
+function findWithPrefix(hashes, prefix) {
+
+    prefixLenght = prefix.length;
+    count = 0;
+    for(i = 0; i < hashes.length; i++){
+        if(hashes[i].substring(0, prefixLenght) == prefix){
+            count += 1;
+        }
+    }
+    return count;
+}
+
+
+function findCompressedCells(hashes) {
+
+    compressedCells = [];
+
+    commonPrefix = findCommonPrefix(hashes);
+    rest = 6 - commonPrefix.length;
+    base32chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'j', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+        'u', 'v', 'w', 'x', 'y', 'z', '2', '3', '4', '5', '6', '7'];
+
+    for(j = 0; j < 32; j++){
+        checkprefix = commonPrefix + base32chars[j];
+        c = findWithPrefix(hashes, checkprefix);
+        prefix_length = checkprefix.length;
+        diff = hashes[0].length - prefix_length;
+
+        if(c == Math.pow(32, diff)){
+            compressedCells.push(checkprefix)
+        }
+        else{
+            for(k = 0; k < base32chars; k++){
+                checkprefix = checkprefix += base32chars[k];
+
+                c = findWithPrefix(hashes, checkprefix);
+                diff = hashes[0].length - prefix_length;
+                if(c == Math.pow(32, diff)){
+                    compressedCells.push(checkprefix);
+                }
+            }
+        }
+    }
+    return compressedCells;
+}
+
+hashes = ['u33aba', 'u33abb', 'u33abc', 'u33abd', 'u33abe', 'u33abf', 'u33abg', 'u33abj', 'u33abh', 'u33abi', 'u33abk',
+    'u33abl', 'u33abm', 'u33abn', 'u33abo', 'u33abp', 'u33abq', 'u33abr', 'u33abs', 'u33abt',
+    'u33abu', 'u33abv', 'u33abw', 'u33abx', 'u33aby', 'u33abz', 'u33ab2', 'u33ab3', 'u33ab4', 'u33ab5', 'u33ab6', 'u33ab7', "u33ac8"];
+
+console.log(findCompressedCells(hashes));

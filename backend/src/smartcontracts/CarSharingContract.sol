@@ -8,15 +8,19 @@ contract CarDetails {
       uint public penaltyValue;
       bool availability = true;
       bool leftGeofence = false;
-      string position = "";
+      //string position = "";
       //string geofence_prefix= "u33";
-      string geofence_prefix;
-      string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f","1","3","9","c"];
+      //string geofence_prefix;
+      //string[] geofence_suffix = ["h", "k","s","u","5","7","e","g","4","6","d","f","1","3","9","c"];
       int128[] geofenceInt= [855152, 855154, 855160, 855162, 855141, 855143, 855149,855151, 855140, 855142, 855148, 855150, 855137, 855139, 855145, 855147];
       int128 positionInt = 0;
       //address constant oracle = 0x8ead2d9305536ebdde184cea020063d2de3665c7;
       address oracle;
       uint pendingWithdrawals = 0;
+      
+      bytes32 position;
+      bytes8 geofence_prefix;
+      bytes4[] geofence_suffix;
       
       modifier onlyOwner() {
         require(msg.sender == owner);
@@ -37,7 +41,7 @@ contract CarDetails {
       //            Functions 
       /////////////////////////////////////
       
-      function CarDetails(bytes16 _carGSMNum, uint _penaltyValue, string _position, string _geofencePrefix, string _geofenceSuffix)  {
+      function CarDetails(bytes16 _carGSMNum, uint _penaltyValue, bytes32 _position, bytes8 _geofencePrefix, bytes4[] _geofenceSuffix)  {
         carGSMNum = _carGSMNum;
         owner= msg.sender;
         penaltyValue = _penaltyValue;
@@ -47,18 +51,18 @@ contract CarDetails {
     
       //Check if "curPos" hash is within the geofence defined in the "geofence" array 
       function checkPositionInGeofenceGeohash() {
-          bytes memory bPrefixFence = bytes(geofence_prefix);
-          bytes memory bPosition = bytes(position);
-          for(uint i; i<3; i++){
+          //bytes memory bPrefixFence = bytes(geofence_prefix);
+          //bytes memory bPosition = bytes(position);
+          //for(uint i; i<3; i++){
               
-              if(bPrefixFence[i] != bPosition[i]) leftGeofence = true;
+        //      if(bPrefixFence[i] != bPosition[i]) leftGeofence = true;
              
-          }
-              if(!leftGeofence){
-                leftGeofence = true;
-                for(uint j; j < geofence_suffix.length; j++){
-                    bytes memory bSuffix = bytes(geofence_suffix[j]);
-                    if(bPosition[3] == bSuffix[0]) leftGeofence = false;
+          //}
+            //  if(!leftGeofence){
+              //  leftGeofence = true;
+                //for(uint j; j < geofence_suffix.length; j++){
+                 //   bytes memory bSuffix = bytes(geofence_suffix[j]);
+                  //  if(bPosition[3] == bSuffix[0]) leftGeofence = false;
                 
                 /*
                 bool equal = true;
@@ -69,9 +73,27 @@ contract CarDetails {
                 if(equal) leftGeofence = false;
                 */
                     
-                }
+            //    }
                   
-              } 
+              //} 
+              
+        for(uint i;i<3;i++){
+              if(geofence_prefix[i]!=position[i]){
+                  leftGeofence = true;
+                  break;
+              }
+          }
+          if(leftGeofence==false){
+                 leftGeofence=true;
+              for(uint j; j<geofence_suffix.length;j++){
+                  bytes4 temp = geofence_suffix[j];
+                  if(bytes1(position[3])==bytes1(temp[0]))
+                  {
+                      leftGeofence = false;
+                      break;
+                  }
+              }
+          }
         }
 
       
@@ -133,12 +155,12 @@ contract CarDetails {
       // Functions called by the oracle 
       /////////////////////////////////////
 
-      function updatePosition(string curPos) onlyOracle {
+      function updatePosition(bytes32 curPos) onlyOracle {
             position = curPos;
             checkPositionInGeofenceGeohash();
       }
 
-      function getPosition() constant returns (string) {
+      function getPosition() constant returns (bytes32) {
           return position;
       }
       
@@ -181,7 +203,7 @@ contract Owner {
     // Functions called by owner
     /////////////////////////////////////
 
-     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, string _position, string _geofencePrefix, string _geofenceSuffix) onlyOwner returns (address){
+     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, bytes32 _position, bytes8 _geofencePrefix, bytes4[] _geofenceSuffix) onlyOwner returns (address){
         address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
         cars.push(carContract);
         return carContract;
@@ -288,3 +310,4 @@ contract Owner {
     }
     
 }
+

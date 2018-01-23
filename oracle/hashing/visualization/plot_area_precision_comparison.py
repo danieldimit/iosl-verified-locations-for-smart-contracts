@@ -102,11 +102,26 @@ def plot_comparison():
 
     plt.title("Overall hashes needed in comparison to the fence points")
     plt.xlabel("Average Hashes count")
-    plt.ylabel("Average area covered")
-    plt.ylim(0, 200)
-    plt.plot(geohash[1], geohash[0], "r", label="geohash")
-    plt.plot(s2[1], s2[0], "b", label="s2")
-    plt.legend(bbox_to_anchor=(1, 1), loc=2, borderaxespad=0.)
+    plt.ylabel("Average area covered in %")
+
+    ax1 = plt.subplot(211)
+    ax2 = plt.subplot(212)
+    ax3 = ax1.twiny()
+    ax4 = ax2.twiny()
+    ax1.set_ylim(90, 150)
+    ax2.set_ylim(90, 150)
+
+    ax1.plot(geohash[1], geohash[0], "r", label="geohash")
+    ax3.set_xticks(geohash[1])
+    ax3.set_xbound(ax1.get_xbound())
+    ax3.set_xticklabels(range(3,7))
+
+    ax2.plot(s2[1], s2[0], "b", label="s2")
+    ax4.set_xticks(s2[1])
+    ax4.set_xbound(ax2.get_xbound())
+    ax4.set_xticklabels(range(6, 16))
+    ax1.legend(loc='best')
+    ax2.legend(loc='best')
     plt.show()
 
 plot_comparison()

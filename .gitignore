@@ -5,6 +5,9 @@
  ./db/.idea/
  ./oracle/backendOracle/.idea/
  */.idea/
+ oracle/s2-server/.idea/
+ oracle/s2-server/build/
+ oracle/s2-server/gradle/
 
  # Logs
  logs

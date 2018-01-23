@@ -100,7 +100,6 @@ function findCommonPrefix(hashes, length) {
 }
 
 function findWithPrefix(hashes, prefix) {
-
     prefixLenght = prefix.length;
     count = 0;
     for(i = 0; i < hashes.length; i++){
@@ -110,38 +109,47 @@ function findWithPrefix(hashes, prefix) {
     }
     return count;
 }
+base32chars = ['b', 'c', 'd', 'e', 'f', 'g', 'j', 'h', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't',
+    'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+function createPermuations(hashes, prefix, original_length, length, compressed, point) {
+
+
+    if(length > 1){
+
+        if(point == 31){
+            if(findWithPrefix(hashes, prefix + base32chars[point]) == Math.pow(32, length - 1)){
+                compressed.push(prefix + base32chars[point]);
+            }
+            else{
+                for(c in base32chars){
+                    createPermuations(hashes, prefix + c,original_length, length - 1, compressed, 0);
+                }
+
+            }
+        }
+        else{
+            if(findWithPrefix(hashes, prefix + base32chars[point]) == Math.pow(32, length - 1)){
+                compressed.push(prefix + base32chars[point]);
+            }
+            else{
+                createPermuations(hashes, prefix, original_length, length, compressed, point + 1);
+            }
+        }
+    }
+}
 
 function findCompressedCells(hashes) {
 
     if(hashes[0] == undefined) return hashes;
     compressedCells = [];
 
-    commonPrefix = findCommonPrefix(hashes);
-    rest = 6 - commonPrefix.length;
-    base32chars = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'j', 'h', 'i', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+    prefix = findCommonPrefix(hashes);
+    rest = hashes[0].length - prefix.length;
 
-    for(j = 0; j < 36; j++){
-        checkprefix = commonPrefix + base32chars[j];
-        c = findWithPrefix(hashes, checkprefix);
-        prefix_length = checkprefix.length;
-        diff = hashes[0].length - prefix_length - 1;
+    createPermuations(hashes, prefix, hashes[0].length, rest, compressedCells, 0);
 
-        if(c == Math.pow(32, diff)){
-            compressedCells.push(checkprefix)
-        }
-        else{
-            for(m = 0; m < 36; m++){
-                new_prefix = checkprefix + base32chars[m];
-                c = findWithPrefix(hashes, new_prefix);
-
-                diff = hashes[0].length - prefix_length - 1;
-                if(c == Math.pow(32, diff)){
-                    compressedCells.push(new_prefix);
-                }
-            }
-        }
-    }
+    console.log(compressedCells);
 
     removable = [];
     for(i = 0; i < compressedCells.length; i++){
@@ -167,16 +175,24 @@ var sync = require("sync");
 * GeoHash FUNCTIONS
  */
 
-function hashToString(poly) {
+
+function hashToString(poly, only_area) {
+
+    if(only_area){
+        a = calculateArea(poly);
+        var stream_info = fs.createWriteStream("output/f_info.txt", {'flags': 'a'});
+        stream_info.write(a + "\n");
+        stream_info.end();
+    }
 
     var geohash_geofence = poly;
     geohash_geofence.push(geohash_geofence[0]);
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
-        geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
+        geohashpoly({coords: g_final, precision: 3, hashMode: "inside" }, function (err, hashes) {
             if(hashes && hashes.length) {
-                console.log(hashes.length)
+                console.log(hashes.length);
                 o = findCompressedCells(hashes);
                 hashes = o[0];
                 compressed_count = o[1];
@@ -195,11 +211,11 @@ function hashToString(poly) {
                 calc = getPointsFromHash(hashes);
                 area_covered = calc[0];
 
-                var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
+                /*var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
                 stream_points.once('open', function (fd) {
                     stream_points.write(calc[1] + "\n");
                     stream_points.end();
-                });
+                });*/
 
                 var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
                 stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed +
@@ -244,7 +260,7 @@ function main() {
         for(i = 0; i < cords.length; i += 2){
             new_fence.push([cords[i], cords[i+1]])
         }
-        geohash_polygon = hashToString(new_fence, num_geofences, geohash_cells, geohash_area_diffs, geohash_area);
+        geohash_polygon = hashToString(new_fence, false);
     });
 }
 

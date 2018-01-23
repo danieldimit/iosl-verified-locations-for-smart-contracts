@@ -164,8 +164,8 @@ public class Experiment {
         Double areaCovered = union.exactArea() * 6371 * 6371;
         log.info(String.valueOf(areaCovered));
 
-        writer_fences_points.write(fence_points);
-        writer_fences_points.newLine();
+        //writer_fences_points.write(fence_points);
+        //writer_fences_points.newLine();
         writer_fences_points.close();
 
         write_fences_info.write(cellCount + ", " + areaCovered + ", " + bitsCount);
@@ -185,7 +185,7 @@ public class Experiment {
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-            findCover(fence, 13);
+            findCover(fence, 6);
         }
     }
 

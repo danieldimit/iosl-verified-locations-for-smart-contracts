@@ -42,7 +42,7 @@ def read_s2_info():
                 if (perc_covered > 1000):
                     over_1000 += 1
 
-                if(area_real[count - 1] > 500 and perc_covered > 100):
+                if(area_real[count - 1] > 100 and perc_covered > 100):
                     area += perc_covered
                     r_count += 1
                     hash_count += float(x[0])
@@ -50,9 +50,6 @@ def read_s2_info():
                 line = fp.readline()
                 count += 1
 
-            print area / r_count
-            print under100
-            print over_1000
             avg_hash_count.append(hash_count / r_count)
             avg_percent_area.append(area / r_count)
 
@@ -82,7 +79,7 @@ def read_geohash_info():
                 x = x.split(",")
 
                 perc_covered = ((float(x[1]) / float(x[3])) * 100)
-                if(float(x[3]) > 500 and perc_covered > 100):
+                if(float(x[3]) > 100 and perc_covered > 90):
                     area += perc_covered
                     hash_count += float(x[0])
                     rc += 1

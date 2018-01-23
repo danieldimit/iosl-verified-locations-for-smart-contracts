@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const csv = require('fast-csv');
 const async = require('async');
+const s2 = require("s2-geometry").S2;
 const app = express();
 
 
@@ -52,9 +53,15 @@ function findNearestTower(lon, lat) {
 app.get('/getInArea', function(req, res) {
     res.header('Access-Control-Allow-Origin', req.get('Origin') || '*');
 
+
     findNearestTower(req.query.lon, req.query.lat)
         .then(function(cellTower) { // `delay` returns a promise
-            res.json(cellTower);
+            lon = cellTower[6];
+            lat = cellTower[7];
+
+            var key = s2.latLngToKey(lat, lon, 14);
+
+            res.json(s2.keyToId(key));
         })
         .catch(function(v) {
             res.send('Error');

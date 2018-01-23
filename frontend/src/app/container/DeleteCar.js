@@ -1,7 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import CreateCar from './CreateCar';
-import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 
 
@@ -20,7 +17,7 @@ class DeleteCar extends Component {
         this.filterOutEmptyAddresses = this.filterOutEmptyAddresses.bind(this);
     }
 
-    componentDidMount() {
+    componentWillUpdate() {
         this.getCarContracts();
     }
 
@@ -66,8 +63,6 @@ class DeleteCar extends Component {
         })  .then(result=>result.json())
             .then(result=>this.getCarContracts());
     }
-
-
 
     render() {
         return (

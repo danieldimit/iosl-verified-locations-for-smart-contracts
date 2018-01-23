@@ -4,15 +4,12 @@ class PolygonDrawMap extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            geofence: [],
-            carPosition: {
-                lat: 0,
-                lon: 0
-            }
-        };
         this.createScriptNode = this.createScriptNode.bind(this);
+        this.handleChangeGeo = this.handleChangeGeo.bind(this);
+        this.handleChangePos = this.handleChangePos.bind(this);
+        this.checkIfScripAlreadyInserted = this.checkIfScripAlreadyInserted.bind(this);
     }
+
 
     componentWillUnmount() {
         var id = document.getElementById("initMap");
@@ -25,6 +22,17 @@ class PolygonDrawMap extends Component {
         }
     }
 
+    checkIfScripAlreadyInserted() {
+        var id = document.getElementById("initMap");
+
+        return false;
+
+        if (id != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Append the map script to the bottom of the component
@@ -43,13 +51,29 @@ class PolygonDrawMap extends Component {
         document.body.appendChild(script);
     }
 
+    handleChangeGeo(event) {
+        if (this.refs.HiddenField !== null) {
+            var input = this.refs.HiddenFieldGeo;
+            this.props.inputValues.geofence.push(input.value);
+        }
+    }
 
+    handleChangePos(event) {
+        if (this.refs.HiddenField !== null) {
+            var input = this.refs.HiddenFieldPos;
+            this.props.inputValues.position = input.value;
+        }
+    }
 
     render() {
         return (
             <div>
                 <div id="map"></div>
-                {this.createScriptNode()}
+                <input id="hidden-search-field-geo" type="text" ref="HiddenFieldGeo"
+                       onClick={this.handleChangeGeo.bind(this)}/>
+                <input id="hidden-search-field-pos" type="text" ref="HiddenFieldPos"
+                       onClick={this.handleChangePos.bind(this)}/>
+                {this.checkIfScripAlreadyInserted() ? null : this.createScriptNode()}
             </div>
         );
     }

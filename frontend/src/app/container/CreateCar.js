@@ -1,20 +1,37 @@
 import React, { Component } from 'react';
 import PolygonDrawMap from './PolygonDrawMap';
 import CreateCarInput from './CreateCarInput';
+import { ethereumBackendUrl } from '../config';
 
 class CreateCar extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            ownerEthereumAddress: "-",
-            ownerContractAddress: null,
-            etherInContract: null,
-            carAddresses: [],
-            selectedCar: "-",
-            state: 1,
-            progressStep: 1
-        };
+        this.createCar = this.createCar.bind(this);
+    }
+
+    static staticState = {
+        carGSMNum: null,
+        penaltyValue: 0,
+        position: null,
+        geofence: []
+    };
+
+    createCar() {
+        console.log(CreateCar.staticState);
+
+        let url = ethereumBackendUrl + '/owner/' + this.props.ownerEthereumAddress + '/createCarContract';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(CreateCar.staticState)
+        })
+            .then(result=>result.json())
+            .then(result=>this.props.triggerRender());
+
     }
 
     render() {
@@ -22,10 +39,10 @@ class CreateCar extends Component {
             <div id="addnew" className="ownerControlPanel">
                 <h3>Create new car contract</h3>
                 <h4>Geofence</h4>
-                <PolygonDrawMap />
-                <CreateCarInput />
+                <PolygonDrawMap inputValues={CreateCar.staticState} />
+                <CreateCarInput inputValues={CreateCar.staticState} />
                 <br/>
-                <button onClick={this.createContract}>Create car</button>
+                <button onClick={this.createCar}>Create car</button>
             </div>
         );
     }

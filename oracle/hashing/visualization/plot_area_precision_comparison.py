@@ -79,7 +79,7 @@ def read_geohash_info():
                 x = x.split(",")
 
                 perc_covered = ((float(x[1]) / float(x[3])) * 100)
-                if(float(x[3]) > 100 and perc_covered > 90):
+                if(float(x[3]) > 100 and perc_covered > 100):
                     area += perc_covered
                     hash_count += float(x[0])
                     rc += 1
@@ -91,6 +91,8 @@ def read_geohash_info():
             avg_percent_area.append(float(area / float(rc)))
 
     return [avg_percent_area, avg_hash_count]
+
+
 
 def plot_comparison():
 

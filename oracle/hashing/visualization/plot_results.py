@@ -12,12 +12,12 @@ def read_fences():
     f = open("fences.txt", "r")
 
     fences = list()
-    for i in range(0, 8):
+    for i in range(0, 10):
         x = f.readline()
         cords = x.split(",")
         latlon = list()
         for i in range(0, len(cords), 2):
-            latlon.append([float(cords[i]), float(cords[i+1])])
+            latlon.append([float(cords[i+1]), float(cords[i])])
         fences.append(latlon)
     return fences
 
@@ -60,7 +60,7 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([12.9, 13.9, 52.2, 52.8])
+    ax.set_extent([6, 16, 45, 55])
     geoms = []
     geo = Polygon(fence)
     geoms.append(geo)
@@ -71,7 +71,7 @@ def plot_fence(fence, fence_points, subplot, title):
         geoms2.append(g)
 
     ax.title.set_text(title + "\nNumber of hashes: " + str(len(geoms2)))
-    ax.add_geometries(geoms, ccrs.PlateCarree(), facecolor='white',
+    ax.add_geometries(geoms, ccrs.PlateCarree(), facecolor='red',
                       edgecolor='black', alpha=1)
 
     ax.add_geometries(geoms2, ccrs.PlateCarree(), facecolor='orange',
@@ -185,8 +185,8 @@ if __name__ == "__main__":
         plt.figure(figsize=(20, 20))
 
         plot_fence(fences[x], fence_points_S2_13[x], [2,2,1], "S2 Max Precision: 13, Max precision - 1.37 km2")
-        plot_fence(fences[x], fence_points_S2_14[x], [2,2,2], "S2 Max Precision: 14, Max precision - 0.32 km2")
-        plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
+       # plot_fence(fences[x], fence_points_S2_14[x], [2,2,2], "S2 Max Precision: 14, Max precision - 0.32 km2")
+        #plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
         plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
 
         #plt.savefig("experiment-1/Test-" + str(x) + ".png")

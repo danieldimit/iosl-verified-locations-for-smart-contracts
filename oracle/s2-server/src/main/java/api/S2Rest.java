@@ -64,11 +64,12 @@ public class S2Rest {
         }
 
         S2Loop loop = new S2Loop(points);
+        loop.normalize();
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
         coverer.setMaxLevel(15);
-        coverer.setMaxCells(100000);
+        coverer.setMaxCells(1000);
         S2CellUnion union = coverer.getCovering(region);
 
         log.info(String.valueOf(union.cellIds().size()));

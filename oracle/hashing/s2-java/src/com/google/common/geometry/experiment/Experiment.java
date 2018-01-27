@@ -138,7 +138,7 @@ public class Experiment {
         S2RegionCoverer coverer = new S2RegionCoverer();
         coverer.setMinLevel(0);
         coverer.setMaxLevel(maxLevel);
-        coverer.setMaxCells(1100);
+        coverer.setMaxCells(1000);
         S2CellUnion union = coverer.getCovering(region);
 
 

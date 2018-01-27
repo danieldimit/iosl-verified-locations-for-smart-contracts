@@ -7,47 +7,47 @@ import cartopy.io.shapereader as shpreader
 from shapely .geometry import Polygon
 
 def read_fences():
-
-
-    f = open("fences.txt", "r")
-
     fences = list()
-    for i in range(0, 10):
-        x = f.readline()
-        cords = x.split(",")
-        latlon = list()
-        for i in range(0, len(cords), 2):
-            latlon.append([float(cords[i+1]), float(cords[i])])
-        fences.append(latlon)
+    with open("fences.txt") as fp:
+        line = fp.readline()
+        while line:
+            x = line.replace("(", "")
+            x = x.replace(")", "")
+            cords = x.split(",")
+            latlon = list()
+            for i in range(0, len(cords), 2):
+                latlon.append([float(cords[i]), float(cords[i+1])])
+            fences.append(latlon)
+            line = fp.readline()
     return fences
 
 def read_fences_point(path):
 
-    f = open(path, "r")
-
     fences = list()
-    for i in range(0, 100):
-        x = f.readline()
-        x = x.replace("(","")
-        x = x.replace(")","")
-        cords = x.split(",")
-        cells = list()
-        for i in range(0, len(cords) - 1, 8):
-            cell = []
-            lat = cords[i]
-            lon = cords[i + 1]
-            cell.append([float(lon), float(lat)])
-            lat = cords[i + 2]
-            lon = cords[i + 3]
-            cell.append([float(lon), float(lat)])
-            lat = cords[i + 4]
-            lon = cords[i + 5]
-            cell.append([float(lon), float(lat)])
-            lat = cords[i + 6]
-            lon = cords[i + 7]
-            cell.append([float(lon), float(lat)])
-            cells.append(cell)
-        fences.append(cells)
+    with open(path) as fp:
+        line = fp.readline()
+        while line:
+            x = line.replace("(","")
+            x = x.replace(")","")
+            cords = x.split(",")
+            cells = list()
+            for i in range(0, len(cords) - 1, 8):
+                cell = []
+                lat = cords[i]
+                lon = cords[i + 1]
+                cell.append([float(lon), float(lat)])
+                lat = cords[i + 2]
+                lon = cords[i + 3]
+                cell.append([float(lon), float(lat)])
+                lat = cords[i + 4]
+                lon = cords[i + 5]
+                cell.append([float(lon), float(lat)])
+                lat = cords[i + 6]
+                lon = cords[i + 7]
+                cell.append([float(lon), float(lat)])
+                cells.append(cell)
+            fences.append(cells)
+            line = fp.readline()
     return fences
 
 def plot_fence(fence, fence_points, subplot, title):
@@ -60,7 +60,7 @@ def plot_fence(fence, fence_points, subplot, title):
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.OCEAN)
     ax.add_feature(cartopy.feature.LAKES)
-    ax.set_extent([6, 16, 45, 55])
+    ax.set_extent([12.8, 13.8, 52, 53])
     geoms = []
     geo = Polygon(fence)
     geoms.append(geo)
@@ -176,18 +176,18 @@ if __name__ == "__main__":
     #plot_fence_info()
 
     fences = read_fences()
-    fence_points_S2_13 = read_fences_point("s2-13/fences_points.txt")
-    fence_points_S2_14 = read_fences_point("s2-14/fences_points.txt")
+    #fence_points_S2_13 = read_fences_point("s2-13/fences_points.txt")
+    #fence_points_S2_14 = read_fences_point("s2-14/fences_points.txt")
     fence_points_S2_15 = read_fences_point("s2-15/fences_points.txt")
-    fence_points_geohash_6 = read_fences_point("geohash-6/fences_points.txt")
+    #fence_points_geohash_6 = read_fences_point("geohash-6/fences_points.txt")
 
-    for x in range(0, len(fences) - 1):
+    for x in range(0, len(fences)):
         plt.figure(figsize=(20, 20))
 
-        plot_fence(fences[x], fence_points_S2_13[x], [2,2,1], "S2 Max Precision: 13, Max precision - 1.37 km2")
+        #plot_fence(fences[x], fence_points_S2_13[x], [2,2,1], "S2 Max Precision: 13, Max precision - 1.37 km2")
        # plot_fence(fences[x], fence_points_S2_14[x], [2,2,2], "S2 Max Precision: 14, Max precision - 0.32 km2")
-        #plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
-        plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
+        plot_fence(fences[x], fence_points_S2_15[x], [2,2,3], "S2 Max Precision: 15,  Max precision - 0.08 km2")
+        #plot_fence(fences[x], fence_points_geohash_6[x], [2,2,4], "Geohash Precision: 6, 30bit - Hash, Max precision - 0.76 km2")
 
         #plt.savefig("experiment-1/Test-" + str(x) + ".png")
         plt.show()

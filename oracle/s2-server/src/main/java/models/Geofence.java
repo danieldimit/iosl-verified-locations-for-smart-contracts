@@ -7,15 +7,15 @@ import java.util.ArrayList;
  */
 public class Geofence {
 
-    private ArrayList<LatLon> geofence;
+    private ArrayList<LatLng> geofence;
 
     private ArrayList<String> cellIds;
 
-    public ArrayList<LatLon> getGeofence() {
+    public ArrayList<LatLng> getGeofence() {
         return geofence;
     }
 
-    public void setGeofence(ArrayList<LatLon> geofence) {
+    public void setGeofence(ArrayList<LatLng> geofence) {
         this.geofence = geofence;
     }
 

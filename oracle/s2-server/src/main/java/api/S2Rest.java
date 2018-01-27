@@ -2,7 +2,7 @@ package api;
 
 import com.google.common.geometry.*;
 import models.Geofence;
-import models.LatLon;
+import models.LatLng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +13,7 @@ import java.util.List;
 /**
  * Created by rados on 1/22/2018.
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/")
 public class S2Rest {
@@ -20,14 +21,14 @@ public class S2Rest {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(
-            value = "{cellId}",
+            value = "{convertS2ToBoundingLatLonPolygon}",
             method = RequestMethod.GET,
             produces = {"application/json"})
     @ResponseBody
-    public ArrayList<LatLon> converGeofenceToS2Polygons(
-            @PathVariable("cellId") String cellId){
-
-        ArrayList<LatLon> response = new ArrayList<>();
+    public ArrayList<LatLng> converGeofenceToS2Polygons(
+            @RequestParam("cellId") String cellId){
+        System.out.println(cellId);
+        ArrayList<LatLng> response = new ArrayList<>();
 
         S2CellId s2CellId = new S2CellId(Long.valueOf(cellId));
         S2Cell s2Cell = new S2Cell(s2CellId);
@@ -35,9 +36,9 @@ public class S2Rest {
         for(int i=0; i < 4; i++){
             S2Point p = s2Cell.getVertex(i);
             S2LatLng latLng = new S2LatLng(p);
-            LatLon latLon = new LatLon();
-            latLon.setLat(latLng.latDegrees());
-            latLon.setLon(latLng.lngDegrees());
+            LatLng latLon = new LatLng();
+            latLon.setLng(latLng.latDegrees());
+            latLon.setLng(latLng.lngDegrees());
             response.add(latLon);
         }
 
@@ -55,12 +56,12 @@ public class S2Rest {
 
         Geofence response = new Geofence();
         ArrayList<String> cellIds = new ArrayList<>();
-        ArrayList<LatLon> polygonPoints = new ArrayList<>();
+        ArrayList<LatLng> polygonPoints = new ArrayList<>();
 
         List<S2Point> points = new ArrayList<>();
 
-        for(LatLon point : geofence.getGeofence()){
-            points.add(0, S2LatLng.fromDegrees(point.getLat(), point.getLon()).toPoint());
+        for(LatLng point : geofence.getGeofence()){
+            points.add(0, S2LatLng.fromDegrees(point.getLat(), point.getLng()).toPoint());
         }
 
         S2Loop loop = new S2Loop(points);
@@ -81,9 +82,9 @@ public class S2Rest {
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
                 S2LatLng latLng = new S2LatLng(p);
-                LatLon latLon = new LatLon();
+                LatLng latLon = new LatLng();
                 latLon.setLat(latLng.latDegrees());
-                latLon.setLon(latLng.lngDegrees());
+                latLon.setLng(latLng.lngDegrees());
                 polygonPoints.add(latLon);
             }
         }

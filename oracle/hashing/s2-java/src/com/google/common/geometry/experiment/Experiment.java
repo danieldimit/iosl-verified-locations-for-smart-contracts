@@ -132,13 +132,14 @@ public class Experiment {
         }
 
         S2Loop loop = new S2Loop(points);
+        loop.normalize();
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
+        coverer.setMinLevel(0);
         coverer.setMaxLevel(maxLevel);
-        coverer.setMaxCells(100000);
+        coverer.setMaxCells(1000);
         S2CellUnion union = coverer.getCovering(region);
-
 
 
         BufferedWriter writer_fences_points = new BufferedWriter(new FileWriter( "fences_points.txt", true));
@@ -146,7 +147,7 @@ public class Experiment {
 
         List<Long> ids = new ArrayList<Long>();
         String fence_points = "";
-        cellCount = union.cellIds().size();
+        cellCount = union.size();
 
         for(S2CellId id : union.cellIds()){
             S2Cell s2Cell = new S2Cell(id);
@@ -161,11 +162,11 @@ public class Experiment {
             }
         }
 
-        Double areaCovered = union.exactArea() * 6371 * 6371;
+        Double areaCovered = union.exactArea() * 6377.083 * 6377.083;
         log.info(String.valueOf(areaCovered));
 
-        //writer_fences_points.write(fence_points);
-        //writer_fences_points.newLine();
+        writer_fences_points.write(fence_points);
+        writer_fences_points.newLine();
         writer_fences_points.close();
 
         write_fences_info.write(cellCount + ", " + areaCovered + ", " + bitsCount);
@@ -181,16 +182,36 @@ public class Experiment {
 
         while ((line = br.readLine()) != null) {
             List<double[]> fence = new ArrayList<>();
+            line = line.replaceAll("\\(","").replaceAll("\\)","");
             String[] cords = line.split(",");
             for(int j=0; j < cords.length; j +=2){
                 fence.add(new double[]{Double.valueOf(cords[j+1]), Double.valueOf(cords[j])});
             }
-            findCover(fence, 6);
+            findCover(fence, 15);
         }
+    }
+
+    private static void infoForOneFence() throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader("fences.txt"));
+        String line;
+        if ((line = br.readLine()) != null) {
+            List<double[]> fence = new ArrayList<>();
+            line = line.replaceAll("\\(","").replaceAll("\\)","");
+            String[] cords = line.split(",");
+            for (int j = 0; j < cords.length; j += 2) {
+                fence.add(new double[]{Double.valueOf(cords[j + 1]), Double.valueOf(cords[j])});
+            }
+            for(int i = 6; i < 31; i++) {
+                findCover(fence, i);
+            }
+        }
+
+
     }
 
     public static void main(String[] args) throws IOException {
 
         readFromFile("fences.txt");
+        //infoForOneFence();
     }
 }

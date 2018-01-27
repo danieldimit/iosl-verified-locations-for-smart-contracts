@@ -190,7 +190,7 @@ function hashToString(poly, only_area) {
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
-        geohashpoly({coords: g_final, precision: 3, hashMode: "inside" }, function (err, hashes) {
+        geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
             if(hashes && hashes.length) {
                 console.log(hashes.length);
                 o = findCompressedCells(hashes);
@@ -211,11 +211,11 @@ function hashToString(poly, only_area) {
                 calc = getPointsFromHash(hashes);
                 area_covered = calc[0];
 
-                /*var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
+                var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
                 stream_points.once('open', function (fd) {
                     stream_points.write(calc[1] + "\n");
                     stream_points.end();
-                });*/
+                });
 
                 var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
                 stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed +

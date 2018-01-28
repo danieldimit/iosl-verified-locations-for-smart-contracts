@@ -5,17 +5,17 @@ import java.util.ArrayList;
 /**
  * Created by rados on 1/22/2018.
  */
-public class Geofence {
+public class S2Geofence {
 
-    private ArrayList<LatLng> geofence;
+    private ArrayList<LatLng[]> geofence;
 
     private ArrayList<String> cellIds;
 
-    public ArrayList<LatLng> getGeofence() {
+    public ArrayList<LatLng[]> getGeofence() {
         return geofence;
     }
 
-    public void setGeofence(ArrayList<LatLng> geofence) {
+    public void setGeofence(ArrayList<LatLng[]> geofence) {
         this.geofence = geofence;
     }
 

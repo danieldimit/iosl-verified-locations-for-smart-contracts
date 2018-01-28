@@ -3,18 +3,18 @@ package models;
 /**
  * Created by rados on 1/22/2018.
  */
-public class LatLon {
+public class LatLng {
 
     private double lat;
 
-    private double lon;
+    private double lng;
 
-    public double getLon() {
-        return lon;
+    public double getLng() {
+        return lng;
     }
 
-    public void setLon(double lon) {
-        this.lon = lon;
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 
     public double getLat() {

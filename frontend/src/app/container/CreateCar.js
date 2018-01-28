@@ -13,12 +13,22 @@ class CreateCar extends Component {
     static staticState = {
         carGSMNum: null,
         penaltyValue: 0,
-        position: null,
-        geofence: []
+        position: 5163466995026362368,
+        geofence: [],
+        s2GFPolygons: [],
+        s2GFHashes: [],
+        s2Level: 15
     };
 
     createCar() {
         console.log(CreateCar.staticState);
+
+        var carObject = {
+            carGSMNum: CreateCar.staticState.carGSMNum,
+            penaltyValue: CreateCar.staticState.penaltyValue,
+            position: CreateCar.staticState.position,
+            geofence: CreateCar.staticState.s2GFHashes
+        }
 
         let url = ethereumBackendUrl + '/owner/' + this.props.ownerEthereumAddress + '/createCarContract';
         fetch(url, {
@@ -27,7 +37,7 @@ class CreateCar extends Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(CreateCar.staticState)
+            body: JSON.stringify(carObject)
         })
             .then(result=>result.json())
             .then(result=>this.props.triggerRender());

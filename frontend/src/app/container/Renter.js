@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import RentACar from './RentACar';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 
@@ -158,26 +160,22 @@ class Renter extends Component {
 
 
                     { this.state.progressStep == 2 ?
+
                         <div className="step">
-                            <h2 ref={subtitle => this.subtitle = subtitle}>Rent a Car</h2>
-                            <p>The map displays all available cars. Choose one of them and specify a sum to be transfered
-                                to the contract. When you click on a car its geofence is displayed on the map together with
-                                the deposit needed for the penalty value.
-                            </p>
-                            <OracleMapWithCellTowers
-                                onMarkerDrag={this.handleMarkerDragged}
-                                carPosition={this.state.carPosition}
-                                cellCenter={this.state.cellCenter}
-                                cellRadius={this.state.cellRadius}
-                                ghPosition={this.state.ghPosition}
-                            />
-                            <label>
-                                Ethereum to be transfered to the contract:
-                                <br/>
-                                <input type="text" ref="carGSMField"/>
-                            </label>
-                            <br/>
-                            <button onClick={this.createContract}>Create car</button>
+                            <Tabs>
+                                <TabList>
+                                    <Tab>Rent a car</Tab>
+                                    <Tab>Return rented car</Tab>
+                                </TabList>
+
+                                <TabPanel>
+                                    <RentACar />
+                                </TabPanel>
+                                <TabPanel>
+                                    <h2>Any content 2</h2>
+                                </TabPanel>
+                            </Tabs>
+
                         </div>
                     : null }
 

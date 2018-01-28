@@ -188,18 +188,16 @@ function improvedCompression(poly, min, hashes, compressed){
  */
 
 
-function hashToString(poly, only_area) {
+function hashToString(poly, only_area, precision, callback) {
 
     var geohash_geofence = poly;
     geohash_geofence.push(geohash_geofence[0]);
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
-        geohashpoly({coords: g_final, precision: 5, hashMode: "inside" }, function (err, hashes) {
+
+        return geohashpoly({coords: g_final, precision: precision, hashMode: "inside" }, function (err, hashes) {
             if(hashes && hashes.length) {
-                /*for(l in hashes){
-                    console.log((hashes[l]))
-                }*/
                 o = findCompressedCells(hashes, g_final);
                 hashes = o[0];
                 compressed_count = o[1];
@@ -219,22 +217,28 @@ function hashToString(poly, only_area) {
                 calc = getPointsFromHash(hashes);
                 area_covered = calc[0];
 
-                var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
+                /*var stream_points = fs.createWriteStream("output/fences_points.txt", {'flags': 'a'});
                 stream_points.once('open', function (fd) {
                     stream_points.write(calc[1] + "\n");
                     stream_points.end();
-                });
+                });*/
 
-                var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
+                /*var stream_info = fs.createWriteStream("output/fences_info.txt", {'flags': 'a'});
                 stream_info.write(hashes_count + ", " + area_covered + ", " + bits_needed +
                     ", " + geofence_area + ", " + fence_edges + "\n");
-                stream_info.end();
+                stream_info.end();*/
 
                 console.log("Number of cells " + hashes_count);
                 console.log("Area covered " + area_covered);
                 console.log("Bits needed " + bits_needed);
                 console.log("Real Area covered " + geofence_area);
                 console.log("Fence Edges " + fence_edges);
+
+                hc = hashes_count;
+                ac = (area_covered / geofence_area) * 100;
+
+                meanArea += ac; meanHashCount += hc;count++;
+
             }
             else
                 console.log(calculateArea(poly));
@@ -246,13 +250,15 @@ function hashToString(poly, only_area) {
 * Main Function
  */
 
-function main() {
+meanArea = 0.0;
+meanHashCount = 0.0;
+count = 0;
 
-    num_geofences = 10;
+for(var prec=6; prec <7; prec++){
 
-    geohash_cells = [];
-    geohash_area_diffs = [];
-    geohash_area = [];
+    meanArea = 0.0;
+    meanHashCount = 0.0;
+    count = 0;
 
     var rd = readline.createInterface({
         input: fs.createReadStream('output/fences.txt'),
@@ -270,8 +276,12 @@ function main() {
         for(i = 0; i < cords.length; i += 2){
             new_fence.push([cords[i], cords[i+1]])
         }
-        geohash_polygon = hashToString(new_fence, true);
-    });
+        hashToString(new_fence, true, 6);
+        }).on('close', function () {
+            console.log("Done");
+            console.log(count);
+            console.log(meanHashCount);
+            console.log(meanArea);
+            result_info = fs.createWriteStream("output/result_info.txt", {'flags': 'a'});result_info.write(meanHashCount / 882 + ", " + meanArea / 882 + "\n");result_info.end();
+        });
 }
-
-main();

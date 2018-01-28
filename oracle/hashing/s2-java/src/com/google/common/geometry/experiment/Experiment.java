@@ -190,7 +190,7 @@ public class Experiment {
     private static void readFromFile(String path) throws IOException {
 
         ArrayList<Double> realArea = readRealArea();
-        for(int i = 10; i <=1000; i += 100) {
+        for(int i = 1100; i <=2000; i += 100) {
 
             double meanArea = 0.0;
             double meanCells = 0.0;

@@ -11,6 +11,7 @@ class PolygonDrawMap extends Component {
         this.handleChangeGeo = this.handleChangeGeo.bind(this);
         this.handleChangePos = this.handleChangePos.bind(this);
         this.checkIfScripAlreadyInserted = this.checkIfScripAlreadyInserted.bind(this);
+        this.handleS2ServerInfo = this.handleS2ServerInfo.bind(this);
     }
 
 
@@ -54,6 +55,14 @@ class PolygonDrawMap extends Component {
         document.body.appendChild(script);
     }
 
+    handleS2ServerInfo(response) {
+        this.refs.HiddenFieldPolygons.value = JSON.stringify(response);
+        var event = document.createEvent("HTMLEvents");
+        event.initEvent("click", true, false);
+        var target = $('#hidden-search-field-polygons')[0];
+        target.dispatchEvent(event);
+    }
+
     handleChangeGeo(event) {
         if (this.refs.HiddenField !== null) {
             var input = this.refs.HiddenFieldGeo;
@@ -65,7 +74,7 @@ class PolygonDrawMap extends Component {
                 this.props.inputValues.geofence.push(objLatLng);
             } else {
                 this.props.inputValues.geofence = {geofence: this.props.inputValues.geofence};
-                
+
                 let url = s2ServerUrl + '/convertGeofenceToS2Polygons?maxLevel=' + 15;
 
                 fetch(url, {
@@ -76,7 +85,7 @@ class PolygonDrawMap extends Component {
                         },
                         body: JSON.stringify(this.props.inputValues.geofence)})
                     .then(result=>result.json())
-                    .then(result=>console.log(result));
+                    .then(res=>this.handleS2ServerInfo(res));
             }
         }
     }
@@ -100,6 +109,7 @@ class PolygonDrawMap extends Component {
                        onClick={this.handleChangeGeo.bind(this)}/>
                 <input id="hidden-search-field-pos" type="text" ref="HiddenFieldPos"
                        onClick={this.handleChangePos.bind(this)}/>
+                <input id="hidden-search-field-polygons" type="text" ref="HiddenFieldPolygons"/>
                 {this.checkIfScripAlreadyInserted() ? null : this.createScriptNode()}
             </div>
         );

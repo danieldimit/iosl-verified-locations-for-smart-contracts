@@ -14,7 +14,9 @@ class CreateCar extends Component {
         carGSMNum: null,
         penaltyValue: 0,
         position: 5163466995026362368,
-        geofence: []
+        geofence: [],
+        s2GFPolygons: [],
+        s2GFHashes: []
     };
 
     createCar() {

@@ -1,4 +1,6 @@
 function initMap() {
+    var s2PolygonPoints = [];
+    var s2PolygonDisplay = [];
     var map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 52.520007, lng: 13.404954},
         zoom: 11
@@ -34,6 +36,26 @@ function initMap() {
     });
 
     marker.addListener('dragend', showNewRect);
+
+    // Define the LatLng coordinates for the polygon's path.
+    var triangleCoords = [
+        {lat: 52.520007, lng: 13.404954},
+        {lat: 53.520007, lng: 13.404954},
+        {lat: 52.520007, lng: 14.404954},
+        {lat: 53.520007, lng: 14.404954}
+    ];
+
+    // Construct the polygon.
+    var bermudaTriangle = new google.maps.Polygon({
+        paths: triangleCoords,
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        map: map
+    });
+    //bermudaTriangle.setMap(map);
 
     /** @this {google.maps.Rectangle} */
     function showNewRect(event) {
@@ -82,4 +104,24 @@ function initMap() {
         var target = $('#hidden-search-field-geo')[0];
         target.dispatchEvent(event);
     });
+
+    $( "#hidden-search-field-polygons" ).unbind().click(function() {
+        s2PolygonPoints = JSON.parse($( "#hidden-search-field-polygons" ).val()).geofence;
+        console.log(s2PolygonPoints);
+        for (var i = 0; i < s2PolygonPoints.length; i++) {
+
+            // Construct the polygon.
+            s2PolygonDisplay.push(new google.maps.Polygon({
+                paths: s2PolygonPoints[i],
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: map
+            }));
+        }
+        bermudaTriangle.setMap(null);
+    });
 }
+

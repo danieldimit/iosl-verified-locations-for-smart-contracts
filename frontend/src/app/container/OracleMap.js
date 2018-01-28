@@ -132,7 +132,7 @@ class OracleMap extends Component {
                     <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
                         <h2>Car address</h2>
 
-                        <select style={{float: 'left'}} onChange={this.onOwnerChange} ref="selectionOracle">
+                        <select onChange={this.onOwnerChange} ref="selectionOracle">
                             <option value={null}>-</option>
                             { this.props.accounts.map(this.renderAllAccountsDropdown) }
                         </select>

@@ -131,8 +131,6 @@ class RentACar extends Component {
         return (
 
             <div>
-
-                <h2 ref={subtitle => this.subtitle = subtitle}>Rent a Car</h2>
                 <p>The map displays all available cars. Choose one of them and specify a sum to be transfered
                     to the contract. When you click on a car its geofence is displayed on the map together with
                     the deposit needed for the penalty value.

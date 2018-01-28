@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import * as s2 from 's2-geometry';
 
 import { s2ServerUrl } from '../config';
+import CreateCarPolygonCounter from './CreateCarPolygonCounter';
 
 class PolygonDrawMap extends Component {
 
@@ -85,6 +86,10 @@ class PolygonDrawMap extends Component {
         event.initEvent("click", true, false);
         var target = $('#hidden-search-field-polygons')[0];
         target.dispatchEvent(event);
+
+        this.refs.asd.setState({
+            numberOfPolys: response.cellIds.length
+        });
     }
 
     handleChangeGeo(event) {
@@ -128,7 +133,7 @@ class PolygonDrawMap extends Component {
             <div>
                 S2 Level (bigger number = smaller polygons around the edges):
                 <br />
-                <select style={{float: 'left'}} defaultValue={15} onChange={this.onS2LevelChange}>
+                <select defaultValue={15} onChange={this.onS2LevelChange}>
                     <option value={9}>9</option>
                     <option value={10}>10</option>
                     <option value={11}>11</option>
@@ -138,6 +143,10 @@ class PolygonDrawMap extends Component {
                     <option value={15}>15</option>
                     <option value={16}>16</option>
                 </select>
+                <CreateCarPolygonCounter ref="asd"
+                    numberOfPolygons={this.props.inputValues.s2GFHashes.length}/>
+
+
                 <div id="map"></div>
                 <input id="hidden-search-field-geo" className="hidden" type="text" ref="HiddenFieldGeo"
                        onClick={this.handleChangeGeo.bind(this)}/>

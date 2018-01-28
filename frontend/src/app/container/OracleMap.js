@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import * as geohash from 'latlon-geohash';
+import { connect } from 'react-redux'
 import * as s2 from 's2-geometry';
 import { fetchAllAccounts } from '../actions/index';
 
-import { oracleBackendUrl } from '../config';
+import { oracleBackendUrl, s2ServerUrl } from '../config';
 
 import { compose, withProps } from "recompose";
 import {
@@ -13,7 +12,8 @@ import {
     GoogleMap,
     Marker,
     Circle,
-    Rectangle
+    Rectangle,
+    Polygon
 } from "react-google-maps";
 
 const OracleMapWithCellTowers = compose(
@@ -34,8 +34,7 @@ const OracleMapWithCellTowers = compose(
         <Marker position={props.carPosition} draggable={true} onDragEnd={props.onMarkerDrag}/>
         <Rectangle bounds={{east: 14.693115, west: 11.946533, north: 53.296414, south: 51.459141}}
                    options={{ fillColor: `black`, fillOpacity: 0.15, strokeWeight: 5}}/>
-        <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
-                            north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
+        <Polygon paths={props.s2Polygon}
                    options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
         <Circle center={props.cellCenter}
                 options={{ fillColor: `purple`, strokeOpacity: 0.7, strokeWeight: 1}}
@@ -45,7 +44,6 @@ const OracleMapWithCellTowers = compose(
                 radius={10}/>
     </GoogleMap>
 );
-
 
 class OracleMap extends Component {
 
@@ -57,7 +55,7 @@ class OracleMap extends Component {
             cellCenter: { lat: 52.520007, lng: 13.404954 },
             cellRadius: 0,
             value: '',
-            ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
+            s2Polygon: []
         };
 
         this.giveToState = this.giveToState.bind(this);
@@ -87,21 +85,17 @@ class OracleMap extends Component {
         let cellLat = parseFloat(cellInfo[7]);
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
-        let geohashedPos = geohash.encode(cellLat, cellLng, 5);
-        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 13);
+
+        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 12);
         var id = s2.S2.keyToId(s2Key);
-        var latlng = s2.S2.idToLatLng(id);
 
-        var neighbors = s2.S2.latLngToNeighborKeys(cellLat, cellLng, 13);
-        var left = s2.S2.keyToLatLng(neighbors[0]);
+        let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + id.toString();
 
-        console.log("S2 id ",latlng," ",cellLat ," ", cellLng);
-
-        console.log("S2 left coord ",left);
-
-        this.setState({ cellCenter:{lat: cellLat, lng: cellLng},
-                        cellRadius: cellRad,
-                        ghPosition: geohash.bounds(geohashedPos)});
+        fetch(url, {mode: 'cors'})
+            .then(result=>result.json())
+            .then(result=>this.setState({ cellCenter:{lat: cellLat, lng: cellLng},
+                                            cellRadius: cellRad,
+                                            s2Polygon: result}));
     }
 
     handleMarkerDragged = (e) => {
@@ -151,6 +145,7 @@ class OracleMap extends Component {
                     cellCenter={this.state.cellCenter}
                     cellRadius={this.state.cellRadius}
                     ghPosition={this.state.ghPosition}
+                    s2Polygon={this.state.s2Polygon}
                 />
 
             </div>

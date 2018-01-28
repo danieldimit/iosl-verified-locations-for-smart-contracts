@@ -13,7 +13,7 @@ class CreateCar extends Component {
     static staticState = {
         carGSMNum: null,
         penaltyValue: 0,
-        position: null,
+        position: 5163466995026362368,
         geofence: []
     };
 

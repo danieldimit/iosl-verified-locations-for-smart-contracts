@@ -37,7 +37,7 @@ public class S2Rest {
             S2Point p = s2Cell.getVertex(i);
             S2LatLng latLng = new S2LatLng(p);
             LatLng latLon = new LatLng();
-            latLon.setLng(latLng.latDegrees());
+            latLon.setLat(latLng.latDegrees());
             latLon.setLng(latLng.lngDegrees());
             response.add(latLon);
         }

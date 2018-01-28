@@ -7,3 +7,7 @@ gradle/
 out/
 
 .idea/
+
+fences.txt
+
+fences_info.txt

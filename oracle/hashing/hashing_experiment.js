@@ -102,8 +102,8 @@ function findCommonPrefix(hashes, length) {
 function findWithPrefix(hashes, prefix) {
     prefixLenght = prefix.length;
     count = 0;
-    for(i = 0; i < hashes.length; i++){
-       if(hashes[i].substring(0, prefixLenght) == prefix){
+    for(h in hashes){
+       if(hashes[h].includes(prefix, 0)){
            count += 1;
        }
     }
@@ -114,23 +114,23 @@ base32chars = ['b', 'c', 'd', 'e', 'f', 'g', 'j', 'h', 'k', 'm', 'n', 'p', 'q', 
 
 function createPermuations(hashes, prefix, original_length, length, compressed, point) {
 
-
     if(length > 1){
-
         if(point == 31){
             if(findWithPrefix(hashes, prefix + base32chars[point]) == Math.pow(32, length - 1)){
                 compressed.push(prefix + base32chars[point]);
             }
             else{
                 for(c in base32chars){
-                    createPermuations(hashes, prefix + c,original_length, length - 1, compressed, 0);
+                    createPermuations(hashes, prefix + base32chars[c],original_length, length - 1, compressed, 0);
                 }
 
             }
         }
         else{
+
             if(findWithPrefix(hashes, prefix + base32chars[point]) == Math.pow(32, length - 1)){
                 compressed.push(prefix + base32chars[point]);
+                createPermuations(hashes, prefix, original_length, length, compressed, point + 1);
             }
             else{
                 createPermuations(hashes, prefix, original_length, length, compressed, point + 1);
@@ -139,7 +139,7 @@ function createPermuations(hashes, prefix, original_length, length, compressed, 
     }
 }
 
-function findCompressedCells(hashes) {
+function findCompressedCells(hashes, polygon) {
 
     if(hashes[0] == undefined) return hashes;
     compressedCells = [];
@@ -148,8 +148,7 @@ function findCompressedCells(hashes) {
     rest = hashes[0].length - prefix.length;
 
     createPermuations(hashes, prefix, hashes[0].length, rest, compressedCells, 0);
-
-    console.log(compressedCells);
+    //improvedCompression(polygon, prefix.length + 1, hashes, compressedCells);
 
     removable = [];
     for(i = 0; i < compressedCells.length; i++){
@@ -169,7 +168,20 @@ function findCompressedCells(hashes) {
     return [hashes, compressedCells.length];
 }
 
-var sync = require("sync");
+
+function improvedCompression(poly, min, hashes, compressed){
+
+    max = hashes[0].length - 1;
+    for(t = min; t < max + 1; t++){
+        geohashpoly({coords: poly, precision: i, hashMode: "inside" }, function (err, new_hs) {
+            for(hash in new_hs){
+                if(findWithPrefix(hashes, new_hs[hash]) == Math.pow(32, max - t + 1)){
+                    compressed.push(new_hs[hash]);
+                }
+            }
+        });
+    }
+}
 
 /*
 * GeoHash FUNCTIONS
@@ -178,26 +190,22 @@ var sync = require("sync");
 
 function hashToString(poly, only_area) {
 
-    if(only_area){
-        a = calculateArea(poly);
-        var stream_info = fs.createWriteStream("output/f_info.txt", {'flags': 'a'});
-        stream_info.write(a + "\n");
-        stream_info.end();
-    }
-
     var geohash_geofence = poly;
     geohash_geofence.push(geohash_geofence[0]);
     var g_final = [];
     if(g_final.push(geohash_geofence)){
 
-        geohashpoly({coords: g_final, precision: 6, hashMode: "inside" }, function (err, hashes) {
+        geohashpoly({coords: g_final, precision: 5, hashMode: "inside" }, function (err, hashes) {
             if(hashes && hashes.length) {
-                console.log(hashes.length);
-                o = findCompressedCells(hashes);
+                /*for(l in hashes){
+                    console.log((hashes[l]))
+                }*/
+                o = findCompressedCells(hashes, g_final);
                 hashes = o[0];
                 compressed_count = o[1];
 
                 geofence_area = calculateArea(poly);
+                if(only_area) var area_info = fs.createWriteStream("output/f_info.txt", {'flags': 'a'});area_info.write(geofence_area + "\n");area_info.end();
                 hashes_count = hashes.length;
                 bits_needed = (hashes.length - compressed_count) * 24 + compressed_count * 20;
                 fence_edges = poly.length;
@@ -228,6 +236,8 @@ function hashToString(poly, only_area) {
                 console.log("Real Area covered " + geofence_area);
                 console.log("Fence Edges " + fence_edges);
             }
+            else
+                console.log(calculateArea(poly));
             });
     }
 }
@@ -260,7 +270,7 @@ function main() {
         for(i = 0; i < cords.length; i += 2){
             new_fence.push([cords[i], cords[i+1]])
         }
-        geohash_polygon = hashToString(new_fence, false);
+        geohash_polygon = hashToString(new_fence, true);
     });
 }
 

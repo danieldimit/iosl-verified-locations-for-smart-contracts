@@ -9,6 +9,7 @@
  ./oracle/s2-server/build/
  ./oracle/s2-server/gradle/
  ./oracle/s2-server/.gradle/
+ .idea/
 
  # Logs
  logs

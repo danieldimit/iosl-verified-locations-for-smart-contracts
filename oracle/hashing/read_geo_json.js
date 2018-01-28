@@ -1,6 +1,7 @@
 
 var fs = require('fs');
 var readGeoJson = require("read-geo-json");
+const geoarea = require('geo-area')(/*options*/{x: 'lng', y: 'lat'});
 
 fileCache   = {};
 function readJson(path, cb) {
@@ -18,18 +19,29 @@ function readJson(path, cb) {
     });
 }
 
+function calculateArea(geofence_normal){
+    //calculate area for irregular polygon
+    var geofence = geofence_normal.reverse();
 
-readJson("germany-geojson/admin4_berlin.json", function(json) {
+    var polygon = [];
+    for (var t = 0; t < geofence.length; t++) {
+
+        polygon.push({lng: geofence[t][0], lat: geofence[t][1]});
+    }
+    return geoarea(polygon) / 1000000;
+}
+
+
+readJson("germany-geojson/plz3.json", function(json) {
     count = 0;
     readGeoJson(json, {
 
-        eachMultiPolygon: function(polygon, feature, featureCollection) {
+        eachPolygon: function(polygon, feature, featureCollection) {
 
             coords = polygon["coordinates"];
-            for(i = 0; i < coords.length; i++){
-                var s = fs.createWriteStream("germany-geojson/fence_berlin.txt", {'flags': 'a'});s.write(coords[0] + "\n");s.close();
-            }
-            count +=1
+            if(calculateArea(coords[0]) > 30){
+                var s = fs.createWriteStream("germany-geojson/fences.txt", {'flags': 'a'});s.write(coords[0] + "\n");s.close();
+                count +=1}
         }
     });
     console.log(count)

@@ -1,5 +1,4 @@
 function initMap() {
-    var s2PolygonPoints = [];
     var s2PolygonDisplay = [];
     var map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 52.520007, lng: 13.404954},
@@ -36,26 +35,6 @@ function initMap() {
     });
 
     marker.addListener('dragend', showNewRect);
-
-    // Define the LatLng coordinates for the polygon's path.
-    var triangleCoords = [
-        {lat: 52.520007, lng: 13.404954},
-        {lat: 53.520007, lng: 13.404954},
-        {lat: 52.520007, lng: 14.404954},
-        {lat: 53.520007, lng: 14.404954}
-    ];
-
-    // Construct the polygon.
-    var bermudaTriangle = new google.maps.Polygon({
-        paths: triangleCoords,
-        strokeColor: '#FF0000',
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: '#FF0000',
-        fillOpacity: 0.35,
-        map: map
-    });
-    //bermudaTriangle.setMap(map);
 
     /** @this {google.maps.Rectangle} */
     function showNewRect(event) {
@@ -105,9 +84,26 @@ function initMap() {
         target.dispatchEvent(event);
     });
 
+    // Sets the map on all polygons in the array.
+    function setMapOnAll(map) {
+        for (var i = 0; i < s2PolygonDisplay.length; i++) {
+            s2PolygonDisplay[i].setMap(map);
+        }
+    }
+
+    // Removes the polygons from the map, but keeps them in the array.
+    function clearMarkers() {
+        setMapOnAll(null);
+    }
+
     $( "#hidden-search-field-polygons" ).unbind().click(function() {
-        s2PolygonPoints = JSON.parse($( "#hidden-search-field-polygons" ).val()).geofence;
-        console.log(s2PolygonPoints);
+        var s2PolygonPoints = JSON.parse($( "#hidden-search-field-polygons" ).val());
+
+        // Delete previously displayed polygons
+        clearMarkers();
+        s2PolygonDisplay = [];
+
+        // Display all of the new polygons
         for (var i = 0; i < s2PolygonPoints.length; i++) {
 
             // Construct the polygon.
@@ -121,7 +117,6 @@ function initMap() {
                 map: map
             }));
         }
-        bermudaTriangle.setMap(null);
     });
 }
 

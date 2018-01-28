@@ -2,6 +2,7 @@ package api;
 
 import com.google.common.geometry.*;
 import models.Geofence;
+import models.S2Geofence;
 import models.LatLng;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,17 +47,17 @@ public class S2Rest {
     }
 
     @RequestMapping(
-            value = "polygon",
+            value = "convertGeofenceToS2Polygons",
             method = RequestMethod.POST,
             produces = {"application/json"},
             consumes = {"application/json"})
     @ResponseBody
-    public Geofence converGeofenceToS2Polygons(
-            @RequestBody Geofence geofence){
+    public S2Geofence converGeofenceToS2Polygons(
+            @RequestBody Geofence geofence, @RequestParam("maxLevel") int maxLevel){
 
-        Geofence response = new Geofence();
+        S2Geofence response = new S2Geofence();
         ArrayList<String> cellIds = new ArrayList<>();
-        ArrayList<LatLng> polygonPoints = new ArrayList<>();
+        ArrayList<LatLng[]> polygonPoints = new ArrayList<>();
 
         List<S2Point> points = new ArrayList<>();
 
@@ -69,7 +70,7 @@ public class S2Rest {
         S2Polygon region = new S2Polygon(loop);
 
         S2RegionCoverer coverer = new S2RegionCoverer();
-        coverer.setMaxLevel(15);
+        coverer.setMaxLevel(maxLevel);
         coverer.setMaxCells(1000);
         S2CellUnion union = coverer.getCovering(region);
 
@@ -78,6 +79,7 @@ public class S2Rest {
         for(S2CellId id : union.cellIds()){
             S2Cell s2Cell = new S2Cell(id);
             cellIds.add(String.valueOf(id.id()));
+            LatLng[] tempPolyArr = new LatLng[4];
 
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
@@ -85,8 +87,9 @@ public class S2Rest {
                 LatLng latLon = new LatLng();
                 latLon.setLat(latLng.latDegrees());
                 latLon.setLng(latLng.lngDegrees());
-                polygonPoints.add(latLon);
+                tempPolyArr[j] = latLon;
             }
+            polygonPoints.add(tempPolyArr);
         }
 
         response.setCellIds(cellIds);

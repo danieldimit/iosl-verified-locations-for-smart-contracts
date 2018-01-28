@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import * as s2 from 's2-geometry';
 
+import { s2ServerUrl } from '../config';
+
 class PolygonDrawMap extends Component {
 
     constructor(props) {
@@ -60,10 +62,21 @@ class PolygonDrawMap extends Component {
             if (!regexp.test(input.value)) {
                 var latlng = input.value.split(/\s/);
                 var objLatLng = {lat: latlng[0], lng: latlng[1]};
-                console.log(objLatLng);
                 this.props.inputValues.geofence.push(objLatLng);
             } else {
+                this.props.inputValues.geofence = {geofence: this.props.inputValues.geofence};
+                
+                let url = s2ServerUrl + '/convertGeofenceToS2Polygons?maxLevel=' + 15;
 
+                fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(this.props.inputValues.geofence)})
+                    .then(result=>result.json())
+                    .then(result=>console.log(result));
             }
         }
     }
@@ -75,7 +88,6 @@ class PolygonDrawMap extends Component {
 
             let s2Key = s2.S2.latLngToKey(latlng[0], latlng[1], 16);
             var id = s2.S2.keyToId(s2Key);
-            console.log(id);
             this.props.inputValues.position = id;
         }
     }

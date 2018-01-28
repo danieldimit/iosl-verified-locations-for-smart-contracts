@@ -73,7 +73,6 @@ function initMap() {
             event.initEvent("click", true, false);
             var target = $('#hidden-search-field-geo')[0];
             target.dispatchEvent(event);
-            console.log(i.lat(), ' ', i.lng());
         }
 
         // Dispatch "End of polygon points array" event

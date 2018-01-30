@@ -130,25 +130,29 @@ class RentACar extends Component {
     render() {
         return (
 
-            <div>
-                <p>The map displays all available cars. Choose one of them and specify a sum to be transfered
+            <div className="rent-car row">
+                <p className="col-sm-12">The map displays all available cars. Choose one of them and specify a sum to be transfered
                     to the contract. When you click on a car its geofence is displayed on the map together with
                     the deposit needed for the penalty value.
                 </p>
-                <OracleMapWithCellTowers
-                    onMarkerDrag={this.handleMarkerDragged}
-                    carPosition={this.state.carPosition}
-                    cellCenter={this.state.cellCenter}
-                    cellRadius={this.state.cellRadius}
-                    ghPosition={this.state.ghPosition}
-                />
-                <label>
-                    Ethereum to be transfered to the contract:
-                    <br/>
-                    <input type="text" ref="carGSMField"/>
-                </label>
-                <br/>
-                <button onClick={this.createContract}>Rent</button>
+                <div className="renter-map col-lg-9 col-md-8 col-sm-12 col-xs-12">
+                    <OracleMapWithCellTowers
+                        onMarkerDrag={this.handleMarkerDragged}
+                        carPosition={this.state.carPosition}
+                        cellCenter={this.state.cellCenter}
+                        cellRadius={this.state.cellRadius}
+                        ghPosition={this.state.ghPosition}
+                    />
+                </div>
+                <div className="car-info col-lg-3 col-md-4 col-sm-12 col-xs-12">
+                    <h3>Car Information:</h3>
+                    <p>
+                        Address: 0x012312301230120312312312312
+                        <br/>
+                        Deposit: 100 Ether
+                    </p>
+                    <button onClick={this.createContract}>Rent</button>
+                </div>
 
             </div>
 

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import RentACar from './RentACar';
+import RentedCars from './RentedCars';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 
@@ -134,7 +135,18 @@ class Renter extends Component {
 
             <div  className="container-content-page">
 
-                <h1 className="section-header">Renter Control Panel</h1>
+                <div className="row">
+                    <h1 className="header-cols section-header col-md-7">Renter Control Panel</h1>
+                    { this.state.progressStep == 2 ?
+                        <div className="header-cols col-md-5">
+                            <p>
+                                Account: 0x01230123012031023213122123123
+                                <br/>
+                                Available Ether: 41223
+                            </p>
+                        </div>
+                    : null }
+                </div>
                 <br/>
 
                 <div>
@@ -172,26 +184,12 @@ class Renter extends Component {
                                     <RentACar />
                                 </TabPanel>
                                 <TabPanel>
-                                    <h2>Any content 2</h2>
+                                    <RentedCars />
                                 </TabPanel>
                             </Tabs>
 
                         </div>
                     : null }
-
-                    { this.state.progressStep == 3 ?
-                        <div className="step">
-                            <h2 ref={subtitle => this.subtitle = subtitle}>Return Car</h2>
-                            <p>Click the button to return the car you've rented. This would return your penalty deposit
-                                if you haven't left the geofence defined in the contract.
-                            </p>
-                            <div id="withdraw" className="ownerControlPanel">
-                                <h3>Withdraw money from all car contracts</h3>
-                                <button onClick={this.createContract}>Return car</button>
-                            </div>
-                        </div>
-                        : null }
-
                 </div>
             </div>
 

@@ -118,18 +118,32 @@ class OracleMap extends Component {
     render() {
         return (
             <div  className="container-content-page">
-                <h1 className="section-header">Oracle Control Panel</h1>
+
+                <div className="row">
+                    <h1 className="header-cols section-header col-md-6 col-sm-7 col-xs-12">Oracle Control Panel</h1>
+                    <div className="header-cols col-md-6 col-sm-5 col-xs-12">
+                        <p>
+                            Oracle address:
+                            <br/>
+                            {String(this.props.oracleAddress)}
+                        </p>
+                    </div>
+                </div>
                 <br/>
 
                 <section className="row">
-                    <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                        <h2>Oracle information</h2>
-                        <p>Oracle address:&nbsp;
-                            {String(this.props.oracleAddress)}
+                    <article className="content-block col-lg-8 col-md-7 col-sm-12 col-xs-12">
+                        <h2>Simulate car movement</h2>
+                        <p>
+                            Choose one of the rented cars from the dropdown menu. Then drag the marker across the map.
+                            Each time the marker gets released the position is submitted to the backend. For visualization
+                            purposes the nearest cell tower and its range is shown (the very small black circle is the
+                            cell tower and the big purple circle is the range of the tower). The red square is the hashed
+                            position of the car. This hashed position gets submitted to the backend. It is inaccurate so
+                            that it would perserve the renters position anonymous to the network.
                         </p>
                     </article>
-
-                    <article className="content-block col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                    <article className="content-block col-lg-4 col-md-5 col-sm-12 col-xs-12">
                         <h2>Car address</h2>
 
                         <select onChange={this.onOwnerChange} ref="selectionOracle">

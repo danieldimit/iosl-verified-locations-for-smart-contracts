@@ -9,8 +9,8 @@ router.get('/getAllAvailableCars', function (request, response) {
 	});
 });
 
-router.get('/:address/getOwnerContractAsRenter', function (request, response) {
-	renter.getOwnerContractAsRenter(request.param.address,function(result){
+router.get('/:address/getRentedCars', function (request, response) {
+	renter.getRentedCars(request.param.address,function(result){
 		response.json(result);
 	});
 });

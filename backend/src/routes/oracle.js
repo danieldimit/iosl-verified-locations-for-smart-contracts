@@ -16,7 +16,7 @@ router.put('/', function (request, response) {
 });
 
 router.get('/getRentedCarsContracts', function (request, response) {
-	oracle.getRentedCarsContracts(request.param.address, function(result){
+	oracle.getRentedCarsContracts(function(result){
 		response.json(result);
 	});
 });

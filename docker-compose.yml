@@ -34,3 +34,9 @@ services:
     build: db
     ports:
       - "5432:5432"
+
+  s2 :
+    build: oracle/s2-server
+    container_name: s2-server
+    ports:
+      - "8180:8180"

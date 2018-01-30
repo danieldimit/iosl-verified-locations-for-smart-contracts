@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import RentACar from './RentACar';
+import RentedCars from './RentedCars';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 
@@ -132,7 +135,18 @@ class Renter extends Component {
 
             <div  className="container-content-page">
 
-                <h1 className="section-header">Renter Control Panel</h1>
+                <div className="row">
+                    <h1 className="header-cols section-header col-md-7">Renter Control Panel</h1>
+                    { this.state.progressStep == 2 ?
+                        <div className="header-cols col-md-5">
+                            <p>
+                                Account: 0x01230123012031023213122123123
+                                <br/>
+                                Available Ether: 41223
+                            </p>
+                        </div>
+                    : null }
+                </div>
                 <br/>
 
                 <div>
@@ -158,42 +172,24 @@ class Renter extends Component {
 
 
                     { this.state.progressStep == 2 ?
+
                         <div className="step">
-                            <h2 ref={subtitle => this.subtitle = subtitle}>Rent a Car</h2>
-                            <p>The map displays all available cars. Choose one of them and specify a sum to be transfered
-                                to the contract. When you click on a car its geofence is displayed on the map together with
-                                the deposit needed for the penalty value.
-                            </p>
-                            <OracleMapWithCellTowers
-                                onMarkerDrag={this.handleMarkerDragged}
-                                carPosition={this.state.carPosition}
-                                cellCenter={this.state.cellCenter}
-                                cellRadius={this.state.cellRadius}
-                                ghPosition={this.state.ghPosition}
-                            />
-                            <label>
-                                Ethereum to be transfered to the contract:
-                                <br/>
-                                <input type="text" ref="carGSMField"/>
-                            </label>
-                            <br/>
-                            <button onClick={this.createContract}>Create car</button>
+                            <Tabs>
+                                <TabList>
+                                    <Tab>Rent a car</Tab>
+                                    <Tab>Return rented car</Tab>
+                                </TabList>
+
+                                <TabPanel>
+                                    <RentACar />
+                                </TabPanel>
+                                <TabPanel>
+                                    <RentedCars />
+                                </TabPanel>
+                            </Tabs>
+
                         </div>
                     : null }
-
-                    { this.state.progressStep == 3 ?
-                        <div className="step">
-                            <h2 ref={subtitle => this.subtitle = subtitle}>Return Car</h2>
-                            <p>Click the button to return the car you've rented. This would return your penalty deposit
-                                if you haven't left the geofence defined in the contract.
-                            </p>
-                            <div id="withdraw" className="ownerControlPanel">
-                                <h3>Withdraw money from all car contracts</h3>
-                                <button onClick={this.createContract}>Return car</button>
-                            </div>
-                        </div>
-                        : null }
-
                 </div>
             </div>
 

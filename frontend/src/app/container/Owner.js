@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CreateCar from './CreateCar';
 import DeleteCar from './DeleteCar';
+import CreateAndDeleteCar from './CreateAndDeleteCar';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 
@@ -30,6 +31,7 @@ class Owner extends Component {
         this.handleWithdrawMoneyResponse = this.handleWithdrawMoneyResponse.bind(this);
         this.getCarContracts = this.getCarContracts.bind(this);
         this.onSelectedCarChange = this.onSelectedCarChange.bind(this);
+        this.triggerRender = this.triggerRender.bind(this);
     }
 
     componentDidMount() {
@@ -141,13 +143,28 @@ class Owner extends Component {
     }
 
 
+    triggerRender() {
+        console.log("TRIGGERED");
+        this.setState({state: this.state.state + 1});
+    }
 
     render() {
         return (
 
             <div  className="container-content-page">
 
-                <h1 className="section-header">Owner Control Panel</h1>
+                <div className="row">
+                    <h1 className="header-cols section-header col-md-7">Owner Control Panel</h1>
+                    { this.state.progressStep > 1 ?
+                        <div className="header-cols col-md-5">
+                            <p>
+                                Owner Ethereum Address: {this.state.ownerEthereumAddress}
+                                <br/>
+                                Owner Contract Address: {this.state.ownerContractAddress}
+                            </p>
+                        </div>
+                        : null }
+                </div>
                 <br/>
 
                 <div>
@@ -189,11 +206,6 @@ class Owner extends Component {
 
                             <h2 ref={subtitle => this.subtitle = subtitle}>Manage Cars</h2>
                             <p>
-                                Owner Ethereum Address: {this.state.ownerEthereumAddress}
-                            <br/>
-                                Owner Contract Address: {this.state.ownerContractAddress}
-                            </p>
-                            <p>
                                 Create or delete car contracts that you own.
                             </p>
                             <div id="withdraw" className="ownerControlPanel">
@@ -204,7 +216,8 @@ class Owner extends Component {
                                 <button onClick={this.withdrawEthereum}>Withdraw money</button>
                             </div>
                             <DeleteCar ownerEthereumAddress={this.state.ownerEthereumAddress} />
-                            <CreateCar />
+                            <CreateCar ownerEthereumAddress={this.state.ownerEthereumAddress}
+                                       triggerRender={this.triggerRender}/>
                         </div>
                     : null }
 

@@ -1,0 +1,11 @@
+build/
+
+gradle/
+
+.gradle/
+
+out/
+
+.idea/
+
+output/

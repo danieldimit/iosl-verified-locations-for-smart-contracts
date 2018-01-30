@@ -1,0 +1,94 @@
+group 'iosl'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.5.4.RELEASE")
+        classpath "se.transmode.gradle:gradle-docker:1.2"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+repositories {
+    mavenCentral()
+}
+
+project.ext {
+    /**
+     * Application Related Version
+     */
+    springVersion = '4.3.9.RELEASE'
+    springBootVersion = '1.5.4.RELEASE'
+
+    /**
+     * Application Related Version
+     */
+    applicationDate = new Date()
+    applicationVersion = version
+    applicationVersionDebian = "1";
+    applicationVersionFull = "${applicationVersion}"
+}
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: springBootVersion
+
+    compile 'com.google.code.gson:gson:2.8.0'
+
+    // https://mvnrepository.com/artifact/com.github.docker-java/docker-java
+    compile group: 'com.github.docker-java', name: 'docker-java', version: '3.0.12'
+
+    // https://mvnrepository.com/artifact/io.sgr/s2-geometry-library-java
+    compile group: 'io.sgr', name: 's2-geometry-library-java', version: '1.0.0'
+
+
+    // https://mvnrepository.com/artifact/org.springframework/spring-test
+    testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.9.RELEASE'
+
+
+    // https://mvnrepository.com/artifact/junit/junit
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // https://mvnrepository.com/artifact/org.powermock/powermock-mockito-release-full
+    testCompile group: 'org.powermock', name: 'powermock-mockito-release-full', version: '1.6.4'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-test
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.5.4.RELEASE'
+}
+
+
+bootRepackage {
+    mainClass = 'application.Starter'
+}
+
+/*
+task buildDocker(type: Docker) {
+    dockerfile = 'docker/elastest-platform-manager/Dockerfile'
+    addFile {
+        from jar
+    }
+    tag = 'elastest/elastest-platform-manager'
+}
+
+task buildDockerFromScratch(type: Docker) {
+    baseImage = 'openjdk:8-jre-alpine'
+    push = project.hasProperty('push')
+    tag = 'elastest/elastest-platform-manager'
+    addFile {
+        from jar
+        rename {'epm.jar'}
+    }
+    entryPoint(['java', '-jar', '/epm.jar'])
+    exposePort(8180)
+}
+buildDocker.dependsOn(build)*/

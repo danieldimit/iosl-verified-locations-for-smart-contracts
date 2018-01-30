@@ -5,22 +5,25 @@ class CreateCarInput extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ownerEthereumAddress: "-",
-            ownerContractAddress: null,
-            etherInContract: null,
-            carAddresses: [],
-            selectedCar: "-",
-            state: 1,
-            progressStep: 1
+            carGSMNum: null,
+            penaltyValue: 0
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.handleChangeInGSM = this.handleChangeInGSM.bind(this);
+        this.handleChangeInPenalty = this.handleChangeInPenalty.bind(this);
     }
+
 
     /**
      * INPUT FIELD METHODS
      */
-    handleChange(e) {
-        this.setState({carGSM: e.target.value});
+    handleChangeInGSM(e) {
+        this.setState({carGSMNum: e.target.value});
+        this.props.inputValues.carGSMNum = e.target.value;
+    }
+
+    handleChangeInPenalty(e) {
+        this.setState({penalty: e.target.value});
+        this.props.inputValues.penalty = e.target.value;
     }
 
     render() {
@@ -29,13 +32,13 @@ class CreateCarInput extends Component {
                 <label>
                     Car GSM number:
                     <br/>
-                    <input type="text" onChange={this.handleChange} ref="carGSMField"/>
+                    <input type="text" onChange={this.handleChangeInGSM} ref="carGSMField"/>
                 </label>
                 <br/>
                 <label>
                     Penalty value:
                     <br/>
-                    <input type="text" ref="penalty"/>
+                    <input type="text" onChange={this.handleChangeInPenalty} ref="penalty"/>
                 </label>
             </div>
         );

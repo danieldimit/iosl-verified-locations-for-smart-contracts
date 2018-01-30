@@ -228,17 +228,18 @@ function hashToString(poly, only_area, precision, callback) {
                     ", " + geofence_area + ", " + fence_edges + "\n");
                 stream_info.end();*/
 
-                console.log("Number of cells " + hashes_count);
-                console.log("Area covered " + area_covered);
-                console.log("Bits needed " + bits_needed);
-                console.log("Real Area covered " + geofence_area);
-                console.log("Fence Edges " + fence_edges);
+
 
                 hc = hashes_count;
                 ac = (area_covered / geofence_area) * 100;
 
-                meanArea += ac; meanHashCount += hc;count++;
 
+
+                if(ac > 90){
+                    meanArea += ac; meanHashCount += hc;++count_fences;
+                }
+                console.log("Number of cells " + hc);
+                console.log("Area covered " + ac + "%");
             }
             else
                 console.log(calculateArea(poly));
@@ -252,13 +253,13 @@ function hashToString(poly, only_area, precision, callback) {
 
 meanArea = 0.0;
 meanHashCount = 0.0;
-count = 0;
+count_fences = 0;
 
 for(var prec=6; prec <7; prec++){
 
     meanArea = 0.0;
     meanHashCount = 0.0;
-    count = 0;
+    count_fences = 0;
 
     var rd = readline.createInterface({
         input: fs.createReadStream('output/fences.txt'),
@@ -276,12 +277,12 @@ for(var prec=6; prec <7; prec++){
         for(i = 0; i < cords.length; i += 2){
             new_fence.push([cords[i], cords[i+1]])
         }
-        hashToString(new_fence, true, 6);
+        hashToString(new_fence, true, 5);
         }).on('close', function () {
             console.log("Done");
-            console.log(count);
+            console.log(count_fences);
             console.log(meanHashCount);
             console.log(meanArea);
-            result_info = fs.createWriteStream("output/result_info.txt", {'flags': 'a'});result_info.write(meanHashCount / 882 + ", " + meanArea / 882 + "\n");result_info.end();
+            result_info = fs.createWriteStream("output/result_info.txt", {'flags': 'a'});result_info.write(meanHashCount / count_fences + ", " + meanArea / count_fences + "\n");result_info.end();
         });
 }

@@ -6,7 +6,9 @@ import com.sun.deploy.util.StringUtils;
 import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -118,9 +120,9 @@ public class Experiment {
     }
 
 
-    private static double[] findCover(List<double[]> fence, int maxCells) throws IOException {
+    private static Object[] findCover(List<double[]> fence, int maxCells) throws IOException {
 
-
+        Map<Integer, Integer> cellDistribution = new HashMap<Integer, Integer>();
         long bitsCount = 0;
         int cellCount = 0;
 
@@ -156,6 +158,9 @@ public class Experiment {
             int lvl = id.level();
             bitsCount += (4 + 2*lvl);
 
+            if(cellDistribution.containsKey(lvl)) cellDistribution.put(lvl, cellDistribution.get(lvl)+1);
+                else cellDistribution.put(lvl, 1);
+
             for(int j = 0; j < 4; j++){
                 S2Point p = s2Cell.getVertex(j);
                 fence_points = fence_points.concat(p.toDegreesString() + ",");
@@ -173,7 +178,7 @@ public class Experiment {
         write_fences_info.newLine();
         write_fences_info.close();*/
 
-        return new double[]{union.size(), areaCovered};
+        return new Object[]{union.size(), areaCovered, cellDistribution};
     }
 
     private static ArrayList<Double> readRealArea() throws IOException {
@@ -190,10 +195,11 @@ public class Experiment {
     private static void readFromFile(String path) throws IOException {
 
         ArrayList<Double> realArea = readRealArea();
-        for(int i = 1100; i <=2000; i += 100) {
+        for(int i = 100; i <=2000; i += 100) {
 
             double meanArea = 0.0;
             double meanCells = 0.0;
+            Map<Integer, Double> cellDistribution = new HashMap<Integer, Double>();
             int count = 0;
 
             BufferedReader br = new BufferedReader(new FileReader(path));
@@ -206,17 +212,31 @@ public class Experiment {
                 for (int j = 0; j < cords.length; j += 2) {
                     fence.add(new double[]{Double.valueOf(cords[j + 1]), Double.valueOf(cords[j])});
                 }
-                double[] info = findCover(fence, i);
-                meanArea += ((info[1] / realArea.get(count)) * 100.0);
-                meanCells += info[0];
+                Object[] info = findCover(fence, i);
+                meanArea += (((Double) info[1] / realArea.get(count)) * 100.0);
+                meanCells += Double.valueOf((int)info[0]);
+                Map<Integer, Integer> current = ((Map<Integer, Integer>) info[2]);
+                for( Integer key : current.keySet()){
+                    if(cellDistribution.containsKey(key)) cellDistribution.put(key, cellDistribution.get(key)+current.get(key));
+                    else cellDistribution.put(key, Double.valueOf(current.get(key)));
+                }
+
                 count++;
 
             }
+
+            for(Integer key : cellDistribution.keySet()) cellDistribution.put(key, cellDistribution.get(key) / count);
+
             log.info(String.valueOf(meanArea));
             BufferedWriter write_fences_info = new BufferedWriter(new FileWriter( "fences_info.txt", true));
             write_fences_info.write(meanCells / count + ", " + meanArea / count);
             write_fences_info.newLine();
             write_fences_info.close();
+
+            BufferedWriter write_cell_distribution = new BufferedWriter(new FileWriter( "cell_distribution.txt", true));
+            write_cell_distribution.write(cellDistribution.toString());
+            write_cell_distribution.newLine();
+            write_cell_distribution.close();
         }
     }
 

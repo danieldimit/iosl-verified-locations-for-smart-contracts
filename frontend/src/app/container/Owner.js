@@ -153,7 +153,18 @@ class Owner extends Component {
 
             <div  className="container-content-page">
 
-                <h1 className="section-header">Owner Control Panel</h1>
+                <div className="row">
+                    <h1 className="header-cols section-header col-md-7">Owner Control Panel</h1>
+                    { this.state.progressStep > 1 ?
+                        <div className="header-cols col-md-5">
+                            <p>
+                                Owner Ethereum Address: {this.state.ownerEthereumAddress}
+                                <br/>
+                                Owner Contract Address: {this.state.ownerContractAddress}
+                            </p>
+                        </div>
+                        : null }
+                </div>
                 <br/>
 
                 <div>
@@ -194,11 +205,6 @@ class Owner extends Component {
                         <div className="step">
 
                             <h2 ref={subtitle => this.subtitle = subtitle}>Manage Cars</h2>
-                            <p>
-                                Owner Ethereum Address: {this.state.ownerEthereumAddress}
-                            <br/>
-                                Owner Contract Address: {this.state.ownerContractAddress}
-                            </p>
                             <p>
                                 Create or delete car contracts that you own.
                             </p>

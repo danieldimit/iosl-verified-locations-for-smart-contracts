@@ -28,7 +28,6 @@ public class S2Rest {
     @ResponseBody
     public ArrayList<LatLng> converGeofenceToS2Polygons(
             @RequestParam("cellId") String cellId){
-        System.out.println(cellId);
         ArrayList<LatLng> response = new ArrayList<>();
 
         S2CellId s2CellId = new S2CellId(Long.valueOf(cellId));

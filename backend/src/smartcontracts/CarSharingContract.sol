@@ -48,6 +48,7 @@ contract CarDetails {
         position = _position;
         geofence_prefix =_geofencePrefix;
       }
+      
     
       //Check if "curPos" hash is within the geofence defined in the "geofence" array 
       function checkPositionInGeofenceGeohash() {
@@ -188,6 +189,7 @@ contract Owner {
     address[] cars;
     
     address[] listAvailableCars;
+     address[] RentedCars;
     
     modifier onlyOwner() {
         require(msg.sender == owner_address);
@@ -253,10 +255,19 @@ contract Owner {
     }
 
 
-    function testpayable() payable returns(uint){
-      return msg.value;
+       function AlreadyRentedCars() constant returns (address[]){
+            for(uint i = 0; i < cars.length; i++)
+            {
+                CarDetails carObj = CarDetails(cars[i]);
+                if(carObj.isAvailable() == false){
+                    RentedCars.push(cars[i]);
+                }
+                else{
+                    delete cars[i];
+                }
+            }
+            return RentedCars;
     }
-
     
     function rentCar(address carAddress) payable returns (bool){
         bool success= false;

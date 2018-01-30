@@ -19,11 +19,11 @@ router.get('/:address', function (request, response){
 
 router.post('/:address/createCarContract',function (request,response) {
 //Body to be sent
-//{
+// {
 //   "carGSMNum": "string",
 //   "penaltyValue": 0,
-//   "geofencePrefix": "string",
-//   "geofenceSuffix": [
+//   "position": "string",
+//   "geofence": [
 //     "string"
 //   ]
 // }	
@@ -32,17 +32,12 @@ router.post('/:address/createCarContract',function (request,response) {
 	});
 });
 
-router.delete('/:address/:caraddress',function (request,response) {	
-	owner.deleteCar(request.params.address,request.params.caraddress, function (result) {
-		response.json(result);	
-	});
-});
-
 router.get('/:address/getCarContracts', function (request, response){
 	owner.getAllCarDetails(request.params.address,function (result){
 		response.json(result);
 	});
-}); 
+});
+
 
 router.get('/:address/showBalance', function (request, response){
 	owner.showBalance(request.params.address,function (result){
@@ -50,8 +45,9 @@ router.get('/:address/showBalance', function (request, response){
 	});
 }); 
 
-router.get('/:address/showRenters', function (request, response){
-	owner.showRenters(request.params.address,function (result){
+
+router.get('/:address/showRentedCarsInfo', function (request, response){
+	owner.showRentedCarsInfo(request.params.address,function (result){
 		response.json(result);
 	});
 }); 
@@ -61,5 +57,11 @@ router.post('/:address/withdrawMoney' , function(request , response){
 		response.json(result);
 	});
 });
+
+router.delete('/:address/:caraddress',function (request,response) {	
+	owner.deleteCar(request.params.address,request.params.caraddress, function (result) {
+		response.json(result);	
+	});
+}); 
 
 module.exports = router;

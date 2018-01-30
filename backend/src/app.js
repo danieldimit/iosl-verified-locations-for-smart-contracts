@@ -64,5 +64,5 @@ app.use('/api/v1',routes);
 app.get('/',function (req , res){
  res.sendFile(path.join(__dirname+'/index.html'));
 // res.send('<h1>Hello<//h1> <br>welcome to Blockchain <br><br><h2>Available Accounts Are</h2><br>'
-// 	+JSON.stringify(global.web3.eth.accounts,null,4));
+//  +JSON.stringify(global.web3.eth.accounts,null,4));
 });

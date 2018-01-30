@@ -6,7 +6,7 @@ const owner = require('./owner');
 var renter = require('./renter');
 var oracle = require('./oracle');
 var location = require('./location');
-
+var s2 = require('./s2');
 
 //Routes
 app.use('/account', accounts);
@@ -19,7 +19,7 @@ app.use ('/oracle' , oracle);
 
 app.use ('/location' , location);
 
-// app.use ('/location' , location);
+app.use ('/s2' , s2);
 
 module.exports = app;
 

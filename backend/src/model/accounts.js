@@ -1,11 +1,11 @@
 const Sequelize = require('sequelize');
 
 
-const PG_HOST = process.env.PG_HOST || "192.168.99.100";
+const PG_HOST = process.env.PG_HOST || "baasu.db.elephantsql.com";
 const PG_PORT = process.env.PG_PORT || "5432";
-const PG_USER = process.env.PG_USER || "postgres"; 
-const PG_DATABASE = process.env.PG_DATABASE || "logging";
-const PG_PASSWORD = process.env.PG_PASSWORD || "root";
+const PG_USER = process.env.PG_USER || "ewbycxch"; 
+const PG_DATABASE = process.env.PG_DATABASE || "ewbycxch";
+const PG_PASSWORD = process.env.PG_PASSWORD || "IpINcghMvxWlkSQPKpMAJToifC4fyujn";
 
 global.db = new Sequelize( PG_DATABASE, PG_USER, PG_PASSWORD,{
        host: PG_HOST,
@@ -37,7 +37,20 @@ var Cars = global.db.define('cars', {
   },
     car_address : {
     type: Sequelize.STRING
-  }}, {
+  },
+   carGSMNum : {
+    type: Sequelize.STRING
+  },
+   penaltyValue : {
+    type: Sequelize.STRING
+  },
+   position : {
+    type: Sequelize.STRING
+  },
+  geofence : {
+    type: Sequelize.STRING
+  }
+}, {
   timestamps: false
 });
 

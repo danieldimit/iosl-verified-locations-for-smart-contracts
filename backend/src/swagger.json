@@ -360,7 +360,7 @@
         }
       }
     },
-    "/owner/{userAddress}/showRenters": {
+    "/owner/{userAddress}/showRentedCarsInfo": {
       "get": {
         "tags": [
           "owner"
@@ -504,7 +504,7 @@
         }
       }
     },
-    "/renter/{userAddress}/getOwnerContractAsRenter": {
+    "/renter/{userAddress}/getRentedCars": {
       "get": {
         "tags": [
           "renter"

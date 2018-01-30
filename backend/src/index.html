@@ -2,26 +2,60 @@
 <html>
 <head>
 	<title></title>
-
+	<script type="text/javascript" src="https://raw.githubusercontent.com/douglascrockford/JSON-js/master/cycle.js"></script>
 	<script type="text/javascript">
-		
 
-		// import { default as Web3 } from 'web3';
-// 		console.log("Web 3 provider is"+web3.currentProvider);
-// 		console.log('print object: ' + JSON.stringify({dsda:'dsasd',dasda:'dasdas'}));
-// 		//alert(web3.currentProvider.toSource());
+    function filter(item) {
+  var i = 0;
 
-// 		var propValue;
-for(var propName in web3.currentProvider) {
-    propValue = web3.currentProvider[propName]
+  return function(key, value) {
+    if(i !== 0 && typeof(censor) === 'object' && typeof(value) == 'object' && censor == value) 
+      return '[Circular]'; 
 
-    console.log(propName,propValue);
+    if(i >= 29) // seems to be a harded maximum of 30 serialized objects?
+      return '[Unknown]';
+
+    ++i; // so we know we aren't using the original object anymore
+
+    return value;  
+  }
 }
-		
-		 // var xmlHttp = new XMLHttpRequest();
-   // 			xmlHttp.open( "GET", 'http://localhost:4000/api/v1/account/'+web3.currentProvider, false );
-   		 window.location='http://localhost:4000/api/v1/account/'+web3.currentProvider.isConnected;
 
+function stringify(item, censor, space) {
+  return JSON.stringify(item, censor ? censor : filter(item), space)
+}
+
+
+		if (typeof web3 !== 'undefined') {
+ 				 web3 = new Web3(web3.currentProvider);
+		
+     // console.log(web3.currentProvider);
+  }
+
+   for(var propName in web3.currentProvider) {
+                        var propValue = web3.currentProvider[propName];
+                        console.log(propName,propValue);
+                    }      
+
+		 var http = new XMLHttpRequest();
+		
+   //   http.open("POST", "http://localhost:4000/api/v1/account/setPorviders", true);
+   //                  http.setRequestHeader("Content-Type", "application/json");
+   //                  http.send(JSON.stringify({web3: simpleStringify(web3)}));
+			    // fetch('http://localhost:4000/api/v1/account/decrypt/'+web3)
+			    // .then(
+			    //     response => response.text() // .json(), etc.
+			    //     // same as function(response) {return response.text();}
+			    // ).then(
+			    //     html => console.log(html)
+			    // );
+
+			http.open("POST", "http://localhost:4000/api/v1/account/setPorviders", true);
+			http.setRequestHeader("Content-Type", "application/json");
+
+			// console.log("SHA is :"+sha512(web3.toString()));
+			// http.send(JSON.stringify({"web3":JSON.decycle(web3.currentProvider)}));
+			
 	</script>
 </head>
 <body>

@@ -178,12 +178,12 @@ contract CarDetails {
       function setOracleAddress(address _oracle) onlyOwner{
           oracle=_oracle;
       }
-      
+
       function GetCarDetails() onlyOwner public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-     bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) {
+     bytes16 _position, bytes16[] _geofenceSuffix) {
           _penaltyValue = penaltyValue;
           _carGSMNum = carGSMNum;
-          _geofencePrefix = geofence_prefix;
+          _position = position;
           _geofenceSuffix=geofence_suffix;
       }
       
@@ -272,9 +272,9 @@ contract Owner {
     }
     
     function GetCarDetails(address carAddress) public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-      bytes6 _geofencePrefix, bytes16[] _geofenceSuffix){
+      bytes16 _position, bytes16[] _geofenceSuffix){
         CarDetails carObj = CarDetails(carAddress);
-        (_penaltyValue,_carGSMNum, _geofencePrefix, )=carObj.GetCarDetails();
+        (_penaltyValue,_carGSMNum, _position, )=carObj.GetCarDetails();
     }
 
     /////////////////////////////////////

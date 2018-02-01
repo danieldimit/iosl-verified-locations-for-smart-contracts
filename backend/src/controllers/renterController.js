@@ -5,6 +5,7 @@ const Web3 = require('web3');
 var base = require('../model/callback');
 const Account = require('../model/accounts').Accounts;
 var config = require('../config');
+var Web3Utils = require('web3-utils');
 
 
 //Added temprory for testing else global.web3 will be used
@@ -83,8 +84,8 @@ module.exports = {
                                                     (err, result) => {if(result){
                                                                             available_car_result.push({carContractAddress:car_,
                                                                                 carDetails:{penaltyValue:result[0],
-                                                                                            carGSMNum:result[1],
-                                                                                            position:result[2],
+                                                                                            carGSMNum:Web3Utils.hexToUtf8(result[1]),
+                                                                                            position:Web3Utils.hexToUtf8(result[2]),
                                                                                             geofence:result[3]
                                                                                             }});
                                                                     }});

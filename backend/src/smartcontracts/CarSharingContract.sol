@@ -180,7 +180,7 @@ contract CarDetails {
       }
       
       function GetCarDetails() onlyOwner public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-      bytes8 _geofencePrefix, bytes4[] _geofenceSuffix) {
+      bytes8 _geofencePrefix, bytes16[] _geofenceSuffix) {
           _penaltyValue = penaltyValue;
           _carGSMNum = carGSMNum;
           _geofencePrefix = geofence_prefix;
@@ -241,7 +241,7 @@ contract Owner {
     // Functions called by owner
     /////////////////////////////////////
 
-     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, bytes32 _position, bytes8 _geofencePrefix, bytes4[] _geofenceSuffix) onlyOwner returns (address){
+     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) onlyOwner returns (address){
         address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
         cars.push(carContract);
         return carContract;
@@ -288,6 +288,19 @@ contract Owner {
                 }
             }
             return listAvailableCars;
+    }
+
+    function showCarDetail(address carAddress) constant returns (bool){
+      bool success =false;
+            for(uint i = 0; i < cars.length; i++)
+            {
+                CarDetails carObj = CarDetails(cars[i]);
+                 bool isCarAvailable = carObj.isAvailable();
+                if(cars[i] == carAddress && isCarAvailable){
+                    success = true;
+                }
+            }
+       return success;
     }
 
 

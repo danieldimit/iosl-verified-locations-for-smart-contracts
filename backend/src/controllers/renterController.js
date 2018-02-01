@@ -38,34 +38,67 @@ module.exports = {
 // }
 
     getAllAvailableCars: function(callback){
-        Account.findAll().then(result=>{
-            var availableCars = new Array();
-            for (var i = 0; i < result.length; i++) {
-                if(result[i].car_owner_address){
-                        var car_owner = renter_contract.at(result[i].car_owner_address);
+        // Account.findAll().then(result=>{
+        //     var availableCars = new Array();
+        //     for (var i = 0; i < result.length; i++) {
+        //         if(result[i].car_owner_address){
+                        var car_owner = renter_contract.at('0xc6161536f5e8e3816f91958b78769ef4d829c387');
                         var available_car = car_owner.ListAvailableCars.call();
-                        if(available_car.length>0){
-                                Car.findAll({ where: {'account_address' :result[i].account_address} }).then(data => {
-                                    if(data.length>0){
-                                        var car_details = new Array();
-                                      for (var j = 0; j < available_car.length; j++) {
-                                           car_details.push({   car_address:available_car[j],
-                                                                carGSMNum:data[j].carGSMNum,
-                                                                penaltyValue:data[j].penaltyValue,
-                                                                position:data[j].position,
-                                                                geofence:data[j].geofence}); 
-                                      }
-                                      availableCars.push({ownerContract:result[i].car_owner_address,availableCarContract:car_details}); 
-                                      base.successCallback(availableCars,callback);
+                        console.log("available_car list is:"+available_car);
+                          // var car_contract_details = car_owner.getAllCarDetails();
+
+                        var car_contract_details = car_owner.showCarDetail('0x8409cb138f4a5f72012f7b3d7a601014e0f327df',
+                            {from: '0xc6161536f5e8e3816f91958b78769ef4d829c387', gas: 4700000},
+                                (err, result) => {
+                                    if(err){
+                                        console.log("car list is err:"+err);
+                                        base.errorCallback(err,callback);
+                                    }if(result){
+                                        console.log("car list is result:"+result);
+                                        base.successCallback(result,callback);
                                     }
-                                });    
-                        }
-                }
-            }            
-        },
-            error=>{
-                base.errorCallback(error,callback);
-        });
+                                });
+                        // var car_list = car_contract_details.GetCarDetails(
+                        //     // {from: account_address, gas: 4700000},
+                        //     //     (err, result) => {
+                        //     //         if(err){
+                        //     //             base.errorCallback(err,callback);
+                        //     //         }if(result){
+                        //     //             base.successCallback(result,callback);
+                        //     //         }
+                        //     //     }
+                        //         ).call();
+                        console.log("car list is:"+car_contract_details);
+                        // base.successCallback(car_list,callback);
+                        // }
+                        // else{
+                        //     var res = { Message : "No car found"};
+                        //     base.errorCallback(res,callback);
+                        // }
+
+
+
+
+                        // if(available_car.length>0){
+                        //         Car.findAll({ where: {'account_address' :result[i].account_address} }).then(data => {
+                        //             if(data.length>0){
+                        //                 var car_details = new Array();
+                        //               for (var j = 0; j < available_car.length; j++) {
+                        //                    car_details.push({   car_address:available_car[j],
+                        //                                         carGSMNum:data[j].carGSMNum,
+                        //                                         penaltyValue:data[j].penaltyValue,
+                        //                                         position:data[j].position,
+                        //                                         geofence:data[j].geofence}); 
+                        //               }
+                        //               availableCars.push({ownerContract:result[i].car_owner_address,availableCarContract:car_details}); 
+                        //               base.successCallback(availableCars,callback);
+                        //             }
+                        //         });    
+                        // }           
+        // },
+        //     error=>{
+        //         base.errorCallback(error,callback);
+        // });
     },
 
     deployRenterContract : function (account_address, callback){

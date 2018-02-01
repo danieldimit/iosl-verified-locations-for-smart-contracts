@@ -180,7 +180,7 @@ contract CarDetails {
       }
       
       function GetCarDetails() onlyOwner public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-      bytes8 _geofencePrefix, bytes16[] _geofenceSuffix) {
+     bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) {
           _penaltyValue = penaltyValue;
           _carGSMNum = carGSMNum;
           _geofencePrefix = geofence_prefix;
@@ -270,7 +270,12 @@ contract Owner {
     function showRenters() onlyOwner constant returns(Renter[]){
         return renters;
     }
-
+    
+    function GetCarDetails(address carAddress) public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
+      bytes6 _geofencePrefix, bytes16[] _geofenceSuffix){
+        CarDetails carObj = CarDetails(carAddress);
+        (_penaltyValue,_carGSMNum, _geofencePrefix, )=carObj.GetCarDetails();
+    }
 
     /////////////////////////////////////
     // Functions called by renter

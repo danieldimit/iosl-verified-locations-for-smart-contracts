@@ -10,7 +10,7 @@ router.get('/getAllAvailableCars', function (request, response) {
 });
 
 router.get('/:address/getRentedCars', function (request, response) {
-	renter.getRentedCars(request.param.address,function(result){
+	renter.getRentedCars(request.params.address,function(result){
 		response.json(result);
 	});
 });

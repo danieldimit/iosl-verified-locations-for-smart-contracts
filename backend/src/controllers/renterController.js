@@ -151,7 +151,36 @@ module.exports = {
     },
 
     getRentedCars : function(accounts_address, callback){
-            base.successCallback({Message : "Implementation is pending"},callback);
+                const body = {
+                             'account_address': accounts_address
+                             };
+
+        Account.findOne({ where: body }).then(data => {
+            if(data.car_owner_address){
+                    var car_owner = renter_contract.at(data.car_owner_address);
+                                var available_car = car_owner.ListAvailableCars.call();
+                                var available_car_result = new Array();
+                                available_car.forEachDone(function(car_){
+                                     car_owner.GetCarDetails(car_, {from: accounts_address, gas: 4700000},
+                                                            (err, result) => {if(result){
+                                                                                    available_car_result.push({carContractAddress:car_,
+                                                                                        carDetails:{penaltyValue:result[0],
+                                                                                                    carGSMNum:Web3Utils.hexToUtf8(result[1]),
+                                                                                                    position:Web3Utils.hexToUtf8(result[2]),
+                                                                                                    geofence:result[3]
+                                                                                                    }});
+                                                                            }});
+                                },function(){
+                                    setTimeout(function() {
+                                         var response = {ownerContract:data.car_owner_address,availableCarContract:available_car_result};
+                                         base.successCallback(response,callback);
+                                    }, 1000);
+                                });
+            }else{
+                var res = { Message : "Create a car owner contract first"};
+                         base.errorCallback(res,callback);
+            }
+        });          
     },
 
     rentCar : function (account_address, ownercontractaddress ,car_contract_address, callback){

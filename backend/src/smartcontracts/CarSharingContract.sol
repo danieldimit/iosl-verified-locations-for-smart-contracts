@@ -175,7 +175,12 @@ contract CarDetails {
             availability=status;
       }
     
-      function setOracleAddress(address _oracle) onlyOwner{
+      // function setOracleAddress(address _oracle) onlyOwner{
+      //     oracle=_oracle;
+      // }
+
+      //  all address can create oracle onlyOwner removed
+      function setOracleAddress(address _oracle){
           oracle=_oracle;
       }
 

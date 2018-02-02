@@ -72,7 +72,6 @@ var Locations = global.db.define('locations', {
 
 
 
-
 module.exports = {
               Accounts:Accounts ,
               Cars :Cars,

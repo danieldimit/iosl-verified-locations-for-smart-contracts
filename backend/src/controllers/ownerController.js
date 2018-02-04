@@ -105,7 +105,7 @@ module.exports = {
 //   "geofence": [
 //     "string"
 //   ]
-// }	
+// }	0x428109329c17506119ffd8402d9b7bae2cd3d27e
 		const body = {
         'account_address': account_address
     	};

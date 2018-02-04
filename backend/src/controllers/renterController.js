@@ -5,6 +5,7 @@ const Web3 = require('web3');
 var base = require('../model/callback');
 const Account = require('../model/accounts').Accounts;
 var config = require('../config');
+var Web3Utils = require('web3-utils');
 
 
 //Added temprory for testing else global.web3 will be used
@@ -22,46 +23,84 @@ var renter_bytecode = contracts_output.contracts[':Owner'].bytecode;
 var renter_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var renter_contract = web3.eth.contract(renter_abi);
 
+//Object forEachDone
+
+Object.defineProperty(Array.prototype, "forEachDone", {
+    enumerable: false,
+    value: function(task, cb){
+        var counter = 0;
+        this.forEach(function(item, index, array){
+            task(item, index, array);
+            if(array.length === ++counter){
+                if(cb) cb();
+            }
+        });
+    }
+});
+
+
+//Array forEachDone
+
+Object.defineProperty(Object.prototype, "forEachDone", {
+    enumerable: false,
+    value: function(task, cb){
+        var obj = this;
+        var counter = 0;
+        Object.keys(obj).forEach(function(key, index, array){
+            task(obj[key], key, obj);
+            if(array.length === ++counter){
+                if(cb) cb();
+            }
+        });
+    }
+});
 
 
 module.exports = {
 
-
-// {
-// ownerContract    string
-// availableCarContract [CarContractConstructor{
-// carGSMNum    string
-// penaltyValue integer($int32)
-// position string
-// geofence [string]
-// }]
-// }
-
     getAllAvailableCars: function(callback){
+        // {
+        //     ownerContract   string
+        //                 availableCarContract    [{
+        //                 carContractAddress  string
+        //                 carDetails  CarContractConstructor{
+        //                 carGSMNum   string
+        //                 penaltyValue    integer($int32)
+        //                 position    string
+        //                 geofence    [string]
+        //                 }
+        //                 }]
+        // }
+
         Account.findAll().then(result=>{
-            var availableCars = new Array();
-            for (var i = 0; i < result.length; i++) {
-                if(result[i].car_owner_address){
-                        var car_owner = renter_contract.at(result[i].car_owner_address);
+            var car_response = new Array();
+            result.forEachDone(function(item){
+                if(item.car_owner_address){
+                     var car_owner = renter_contract.at(item.car_owner_address);
                         var available_car = car_owner.ListAvailableCars.call();
-                        if(available_car.length>0){
-                                Car.findAll({ where: {'account_address' :result[i].account_address} }).then(data => {
-                                    if(data.length>0){
-                                        var car_details = new Array();
-                                      for (var j = 0; j < available_car.length; j++) {
-                                           car_details.push({   car_address:available_car[j],
-                                                                carGSMNum:data[j].carGSMNum,
-                                                                penaltyValue:data[j].penaltyValue,
-                                                                position:data[j].position,
-                                                                geofence:data[j].geofence}); 
-                                      }
-                                      availableCars.push({ownerContract:result[i].car_owner_address,availableCarContract:car_details}); 
-                                      base.successCallback(availableCars,callback);
-                                    }
-                                });    
-                        }
+                        var available_car_result = new Array();
+                        available_car.forEachDone(function(car_){
+                             car_owner.GetCarDetails(car_, {from: item.account_address, gas: 4700000},
+                                                    (err, result) => {if(result){
+                                                                            available_car_result.push({carContractAddress:car_,
+                                                                                carDetails:{penaltyValue:result[0],
+                                                                                            carGSMNum:Web3Utils.hexToUtf8(result[1]),
+                                                                                            position:Web3Utils.hexToUtf8(result[2]),
+                                                                                            geofence:result[3]
+                                                                                            }});
+                                                                    }});
+                        },function(){
+                            setTimeout(function() {
+                              car_response.push({ownerContract:item.car_owner_address,availableCarContract:available_car_result});
+                            }, 1000);
+                        });
                 }
-            }            
+            }, function(){
+                setTimeout(function() {
+                        console.log('done');
+                         base.successCallback(car_response,callback);
+                }, 1000);
+            });
         },
             error=>{
                 base.errorCallback(error,callback);
@@ -112,7 +151,36 @@ module.exports = {
     },
 
     getRentedCars : function(accounts_address, callback){
-            base.successCallback({Message : "Implementation is pending"},callback);
+                const body = {
+                             'account_address': accounts_address
+                             };
+
+        Account.findOne({ where: body }).then(data => {
+            if(data.car_owner_address){
+                    var car_owner = renter_contract.at(data.car_owner_address);
+                                var available_car = car_owner.ListAvailableCars.call();
+                                var available_car_result = new Array();
+                                available_car.forEachDone(function(car_){
+                                     car_owner.GetCarDetails(car_, {from: accounts_address, gas: 4700000},
+                                                            (err, result) => {if(result){
+                                                                                    available_car_result.push({carContractAddress:car_,
+                                                                                        carDetails:{penaltyValue:result[0],
+                                                                                                    carGSMNum:Web3Utils.hexToUtf8(result[1]),
+                                                                                                    position:Web3Utils.hexToUtf8(result[2]),
+                                                                                                    geofence:result[3]
+                                                                                                    }});
+                                                                            }});
+                                },function(){
+                                    setTimeout(function() {
+                                         var response = {ownerContract:data.car_owner_address,availableCarContract:available_car_result};
+                                         base.successCallback(response,callback);
+                                    }, 1000);
+                                });
+            }else{
+                var res = { Message : "Create a car owner contract first"};
+                         base.errorCallback(res,callback);
+            }
+        });          
     },
 
     rentCar : function (account_address, ownercontractaddress ,car_contract_address, callback){

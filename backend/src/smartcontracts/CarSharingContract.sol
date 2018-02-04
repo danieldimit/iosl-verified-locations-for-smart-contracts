@@ -175,16 +175,22 @@ contract CarDetails {
             availability=status;
       }
     
-      function setOracleAddress(address _oracle) onlyOwner{
+      // function setOracleAddress(address _oracle) onlyOwner{
+      //     oracle=_oracle;
+      // }
+
+      //  all address can create oracle onlyOwner removed
+      function setOracleAddress(address _oracle){
           oracle=_oracle;
       }
-      
+
       function GetCarDetails() onlyOwner public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-      bytes8 _geofencePrefix, bytes4[] _geofenceSuffix) {
+     bytes16 _position,bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) {
           _penaltyValue = penaltyValue;
           _carGSMNum = carGSMNum;
-          _geofencePrefix = geofence_prefix;
+          _position = position;
           _geofenceSuffix=geofence_suffix;
+          _geofencePrefix=geofence_prefix;
       }
       
       /////////////////////////////////////
@@ -210,13 +216,14 @@ contract Owner {
     * 2. Owner can have multiple renters.
     *
     */
-    struct Renter{
-        address renter;
+    struct RenterInfo{
+        //address renter;
         address rented_car;
         uint moneyForcar; //rent + deposit
     }
-    
-    Renter[] renters; 
+    mapping(address=>RenterInfo) renters;
+    address[] public renterAddress;
+    //Renter[] renters; 
 
 
     address public owner_address;
@@ -225,7 +232,7 @@ contract Owner {
     address[] cars;
     
     address[] listAvailableCars;
-     address[] RentedCars;
+    address[] RentedCars;
     
     modifier onlyOwner() {
         require(msg.sender == owner_address);
@@ -241,7 +248,7 @@ contract Owner {
     // Functions called by owner
     /////////////////////////////////////
 
-     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, bytes32 _position, bytes8 _geofencePrefix, bytes4[] _geofenceSuffix) onlyOwner returns (address){
+     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) onlyOwner returns (address){
         address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
         cars.push(carContract);
         return carContract;
@@ -267,10 +274,19 @@ contract Owner {
         return owner_balance;
     }
 
-    function showRenters() onlyOwner constant returns(Renter[]){
-        return renters;
+    function showRenters() onlyOwner constant returns(address[]){
+       return renterAddress;
     }
-
+    
+    function getRenterInfo(address _renterAddress) view public returns(address,uint){
+        return (renters[_renterAddress].rented_car, renters[_renterAddress].moneyForcar);
+    }
+    
+    function GetCarDetails(address carAddress) public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
+      bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix){
+        CarDetails carObj = CarDetails(carAddress);
+        (_penaltyValue,_carGSMNum, _position,_geofencePrefix,)=carObj.GetCarDetails();
+    }
 
     /////////////////////////////////////
     // Functions called by renter
@@ -290,8 +306,21 @@ contract Owner {
             return listAvailableCars;
     }
 
+    function showCarDetail(address carAddress) constant returns (bool){
+      bool success =false;
+            for(uint i = 0; i < cars.length; i++)
+            {
+                CarDetails carObj = CarDetails(cars[i]);
+                 bool isCarAvailable = carObj.isAvailable();
+                if(cars[i] == carAddress && isCarAvailable){
+                    success = true;
+                }
+            }
+       return success;
+    }
 
-       function AlreadyRentedCars() constant returns (address[]){
+
+    function AlreadyRentedCars() constant returns (address[]){
             for(uint i = 0; i < cars.length; i++)
             {
                 CarDetails carObj = CarDetails(cars[i]);
@@ -307,7 +336,7 @@ contract Owner {
     
     function rentCar(address carAddress) payable returns (bool){
         bool success= false;
-        for(uint i = 0; i < cars.length; i++) {
+        /*for(uint i = 0; i < cars.length; i++) {
             CarDetails carObj = CarDetails(cars[i]);
             bool isCarAvailable = carObj.isAvailable();
             if(cars[i] == carAddress && isCarAvailable){
@@ -316,7 +345,19 @@ contract Owner {
                  owner_balance += msg.value;
                  success= true;
             }
-        }
+        }*/
+        CarDetails carObj = CarDetails(carAddress);
+            bool isCarAvailable = carObj.isAvailable();
+            if(isCarAvailable){
+                var renter = renters[msg.sender];
+                renter.rented_car = carAddress;
+                renter.moneyForcar = msg.value;
+                renterAddress.push(msg.sender);
+                carObj.SetCarStatus(msg.sender,false);
+                owner_balance += msg.value;
+                success= true;
+            }
+        
         return success;
     }
 
@@ -337,7 +378,7 @@ contract Owner {
         }*/
 
         bool success= false;
-        for(uint i=0;i<renters.length; i++){
+       /* for(uint i=0;i<renters.length; i++){
           // checks for valid renter and car address
           if(renters[i].renter == msg.sender && renters[i].rented_car==carAddress){ 
               CarDetails carObj = CarDetails(carAddress);
@@ -352,7 +393,26 @@ contract Owner {
               carObj.SetCarStatus(msg.sender,true);
               success= true;
           }
+        }*/
+        var renter= renters[msg.sender];
+        if(renter.rented_car == carAddress){
+            CarDetails carObj = CarDetails(carAddress);
+              bool leftGeofence = carObj.hasLeftGeofence();
+              uint deposit = carObj.penaltyValue();
+              if(leftGeofence==false){
+                  msg.sender.send(deposit);
+                  owner_balance -= deposit;
+                  
+              }
+              delete renters[msg.sender];
+              carObj.SetCarStatus(msg.sender,true);
+              success= true;
         }
+         for(uint i=0;i<renterAddress.length; i++){
+             if(renterAddress[i]==msg.sender){
+                 delete renterAddress[i];
+             }
+         }
         return success;
     }
     

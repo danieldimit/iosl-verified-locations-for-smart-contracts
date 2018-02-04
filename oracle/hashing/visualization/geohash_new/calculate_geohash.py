@@ -56,19 +56,22 @@ if __name__ == "__main__":
 
     fences = read_fences()
 
-    geohash_num = []
-    p_area = []
+    for precision in range(7, 9):
+        geohash_num = []
+        p_area = []
+        for fence in fences:
+            polygon = geometry.Polygon(fence)
+            real_area = area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000
 
-    for fence in fences:
-        polygon = geometry.Polygon(fence)
-        real_area = area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000
+            inner_geohashes_polygon = polygon_to_geohashes(polygon, precision, False)
+            polygon = geohashes_to_polygon(inner_geohashes_polygon)
 
-        inner_geohashes_polygon = polygon_to_geohashes(polygon, 7, False)
-        polygon = geohashes_to_polygon(inner_geohashes_polygon)
+            perc_area = 100 * (area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000) / real_area
+            p_area.append(perc_area)
+            geohash_num.append(len(compress(list(inner_geohashes_polygon))))
+            print(precision)
 
-        perc_area = 100 * (area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000) / real_area
-        p_area.append(perc_area)
-        geohash_num.append(len(compress(inner_geohashes_polygon)))
 
-    print(len(p_area))
-    print(sum(p_area) / len(p_area))
+        f = open("geohash_info.txt", "a")
+        f.write(str(sum(p_area) / len(p_area)) + "," + str(str(sum(geohash_num) / len(geohash_num)) + "\n"))
+        f.close()

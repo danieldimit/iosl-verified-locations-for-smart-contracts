@@ -10,18 +10,15 @@ def compress(hashes):
     new_prefix = True
     prefix = ""
     for i in range(0, len_hash):
-        for j in range(0, len(hashes)):
+        for j in range(0, len(hashes)-1):
 
             if hashes[j][i] != hashes[j+1][i]:
                 new_prefix = False
         if new_prefix:
             prefix = hashes[0][:i+1]
-
-    compressions = []
-    for i in range(1, len(prefix) - 1):
+    for i in range(1, len_hash - len(prefix)):
         base32chars = 'bcdefgjhkmnpqrstuvwxyz0123456789'
-        l = [prefix.join(x) for x in itertools.product(base32chars, repeat=i)]
-
+        l = [prefix + ''.join(x) for x in itertools.product(base32chars, repeat=i)]
         for p in l:
             count = len([x for x in hashes if p in x])
             if count == (32 ** (len_hash - len(p))):
@@ -67,11 +64,11 @@ if __name__ == "__main__":
         real_area = area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000
 
         inner_geohashes_polygon = polygon_to_geohashes(polygon, 7, False)
-        geohash_num.append(len(inner_geohashes_polygon))
         polygon = geohashes_to_polygon(inner_geohashes_polygon)
 
         perc_area = 100 * (area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000) / real_area
         p_area.append(perc_area)
+        geohash_num.append(len(compress(inner_geohashes_polygon)))
 
     print(len(p_area))
     print(sum(p_area) / len(p_area))

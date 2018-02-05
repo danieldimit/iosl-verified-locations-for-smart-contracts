@@ -62,4 +62,5 @@ if __name__ == "__main__":
     ax1.legend(loc='best')
     ax2.legend(loc='best')
     ax3.legend(loc='best')
+    ax4.legend(loc='best')
     plt.show()

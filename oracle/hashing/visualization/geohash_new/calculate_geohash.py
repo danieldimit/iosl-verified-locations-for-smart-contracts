@@ -38,6 +38,7 @@ def create_geojson(polygon):
 
 def read_fences():
     fences = []
+    area
     with open("fences.txt") as fp:
         line = fp.readline()
         while line:

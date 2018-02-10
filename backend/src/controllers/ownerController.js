@@ -155,6 +155,7 @@ module.exports = {
         'account_address': account_address
     	};
     	Account.findOne({ where: body }).then(data => {
+    		console.log("data"+JSON.stringify(data));
     		if(data.car_owner_address){
     			var car_owner = owner_contract.at(data.car_owner_address);
     			var car_list = car_owner.showCars(
@@ -221,8 +222,22 @@ module.exports = {
 		    		}
 		    	});
 	},
-
+	//
 	showRentedCarsInfo : function (account_address , callback){
+		// etRenterInfo(address _renterAddress) view public returns(address,uint){
+			// [
+			//   {
+			//     "renterAddress": "string",
+			//     "carDetails": {
+			//       "carGSMNum": "string",
+			//       "penaltyValue": 0,
+			//       "position": "string",
+			//       "geofence": [
+			//         "string"
+			//       ]
+			//     }
+			//   }
+			// ]
 				const body = {
 		        'account_address': account_address
 		    	};
@@ -233,6 +248,7 @@ module.exports = {
 			    			{from: account_address, gas: 4700000},
 			                    (err, result) => {
 			                    	if(err){
+			                    		console.log("error is :"+err);
 			                    		base.errorCallback(err,callback);
 			                    	}if(result){
 			                    		base.successCallback(result,callback);

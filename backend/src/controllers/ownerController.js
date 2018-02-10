@@ -21,11 +21,34 @@ var owner_bytecode = contracts_output.contracts[':Owner'].bytecode;
 var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 
+function fillWithZeros(byteNum, length) {
+	var byte;
+	if (byteNum.length != length + 2) {
+		if (byteNum.length > length + 2) {
+            byte = byteNum.substring(0,9);
+		} else {
+			// Difference
+			var zerosToAdd = length + 2 - byteNum.length;
+            byte = byteNum.substring(2,9);
+			while (zerosToAdd != 0) {
+				byte = "0".concat(byte);
+
+                zerosToAdd = zerosToAdd - 1;
+			}
+			byte = "0x".concat(byte);
+		}
+	}
+	return byte;
+}
+
 splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
-	console.log(arrOfGeohashes);
+	var arrayWithBytes = [];
+	for (var i = 0; i < arrOfGeohashes.length; i++) {
+        arrayWithBytes.push(web3.fromDecimal(arrOfGeohashes[i]));
+	}
 	return {
-        geofencePrefix: "asd",
-        geofenceSuffix: arrOfGeohashes
+        geofencePrefix: fillWithZeros(web3.fromDecimal(12), 6),
+        geofenceSuffix: arrayWithBytes
 	}
 }
 
@@ -109,44 +132,51 @@ module.exports = {
 		const body = {
         'account_address': account_address
     	};
-    	console.log("account_address is :"+account_address);
-
-    	console.log("cargms is :"+responsebody.carGSMNum);
 
     	Account.findOne({ where: body }).then(data => {
-    		if(data.car_owner_address){
-    			var car_owner = owner_contract.at(data.car_owner_address);
-    			//TODO: need to change the string value to hash value
+    		console.log("DATA: ",data);
+            console.log("DATA CAR OWNER: ",data.car_owner_address);
+    		if (data) {
+                if(data.car_owner_address){
+                    var car_owner = owner_contract.at(data.car_owner_address);
+                    //TODO: need to change the string value to hash value
 
-                var geoSplit = splitGeofenceInPrefixAndSuffix(responsebody.geofence);
+                    var geoSplit = splitGeofenceInPrefixAndSuffix(responsebody.geofence);
 
-    			var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
-    				responsebody.penaltyValue,
-    				responsebody.position,
-                    geoSplit.geofencePrefix,
-                    geoSplit.geofenceSuffix,
-                    {from: account_address, gas: 4700000},
-                    (err, result) => {
-                    	if(err){
-                    		base.errorCallback(err,callback);
-                    	}
-                    	if(result){
-                    		console.log("result: ", result);
-                    		var res = { Message : "New car is added", carAddress : result };
-		                    		Car.create({ account_address:account_address, 
-		                    					 car_address:result,
-		                    					 carGSMNum:responsebody.carGSMNum ,
-		                    					 penaltyValue:responsebody.penaltyValue, 
-		                    					 position:responsebody.position,
-		                    					 geofence :JSON.stringify(responsebody.geofence)}).then(result => {
-		                    					base.successCallback(res,callback);
-		                    		});
-                    	}
-                    });
-    		}else{
-    			var res = { Message : "Create a car owner contract first"};
-    			base.errorCallback(res,callback);
-    		}
+                    var addNewCar = car_owner.addNewCar(
+                        web3.fromAscii(responsebody.carGSMNum, 16),
+                        parseInt(responsebody.penaltyValue),
+                        web3.fromAscii(responsebody.position, 9),
+                        geoSplit.geofencePrefix,
+                        geoSplit.geofenceSuffix,
+                        {from: account_address, gas: 4700000},
+                        (err, result) => {
+                            if(err){
+                                base.errorCallback(err,callback);
+                            }
+                            if(result){
+                                console.log("result: ", result);
+                                var res = { Message : "New car is added", carAddress : result };
+
+                                Car.create({ account_address: account_address,
+                                    car_address: result,
+                                    carGSMNum: responsebody.carGSMNum ,
+                                    penaltyValue: responsebody.penaltyValue,
+                                    position: responsebody.position,
+                                    geofence: JSON.stringify(responsebody.geofence)}).then(result => {
+                                    base.successCallback(res,callback);
+                                });
+                            }
+                        });
+                }else{
+                    var res = { Message : "Create a car owner contract first"};
+                    base.errorCallback(res,callback);
+                }
+			} else{
+                var body = { Message: "No account found"};
+                base.errorCallback(body,callback);
+            }
+
     	});
 	},
 
@@ -178,25 +208,25 @@ module.exports = {
 		const body = {
         'account_address': account_address
     	};
-    	Car.findAll({ where: body }).then(data => {
+    	Account.findOne({ where: body }).then(data => {
     		
     		console.log("Car Details :"+JSON.stringify(data));
 
-    		// if(data.car_owner_address){
-    		// 	var car_owner = owner_contract.at(data.car_owner_address);
-    		// 	var car_list = car_owner.deleteCar(car_address,
-	    	// 		{from: account_address, gas: 4700000},
-	     //                (err, result) => {
-	     //                	if(err){
-	     //                		base.errorCallback(err,callback);
-	     //                	}if(result){
-	     //                		base.successCallback(result,callback);
-	     //                	}
-	     //                });
-    		// }else{
-    		// 	var res = { Message : "Create a car owner contract first"};
-    		// 	base.successCallback(res,callback);
-    		// }
+    		if(data.car_owner_address){
+    			var car_owner = owner_contract.at(data.car_owner_address);
+    			var car_list = car_owner.deleteCar(car_address,
+	    			{from: account_address, gas: 4700000},
+	                    (err, result) => {
+	                    	if(err){
+	                    		base.errorCallback(err,callback);
+	                    	}if(result){
+	                    		base.successCallback(result,callback);
+	                    	}
+	                    });
+    		}else{
+    			var res = { Message : "Create a car owner contract first"};
+    			base.successCallback(res,callback);
+    		}
     	});
 	},
 

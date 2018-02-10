@@ -23,7 +23,7 @@ class CreateCarInput extends Component {
 
     handleChangeInPenalty(e) {
         this.setState({penalty: e.target.value});
-        this.props.inputValues.penalty = e.target.value;
+        this.props.inputValues.penaltyValue = e.target.value;
     }
 
     render() {

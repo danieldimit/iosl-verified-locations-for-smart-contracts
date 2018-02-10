@@ -4,6 +4,7 @@ services:
 
   frontend:
     build: frontend
+    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:
@@ -13,11 +14,13 @@ services:
 
   oracle_backend_celltower:
     build: oracle/backendOracle
+    container_name: backend_celltower
     ports:
       - "5000:5000"
 
   backend:
     build: backend
+    container_name: backend
     ports:
       - "4000:4000"
     depends_on:
@@ -27,11 +30,13 @@ services:
 
   testrpc_server:
     build: testrpc
+    container_name: testrpc
     ports:
       - "8545:8545"
 
   db :
     build: db
+    container_name: db
     ports:
       - "5432:5432"
 

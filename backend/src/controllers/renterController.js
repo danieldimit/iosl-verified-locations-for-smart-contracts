@@ -71,24 +71,27 @@ module.exports = {
         //                 }
         //                 }]
         // }
-
         Account.findAll().then(result=>{
             var car_response = new Array();
             result.forEachDone(function(item){
                 if(item.car_owner_address){
                      var car_owner = renter_contract.at(item.car_owner_address);
+                    console.log(">?>>>>>>>>>>>>> BEFORE THE CALL");
                         var available_car = car_owner.ListAvailableCars.call();
                         var available_car_result = new Array();
                         available_car.forEachDone(function(car_){
-                             car_owner.GetCarDetails(car_, {from: item.account_address, gas: 4700000},
+                             car_owner.GetCarDetails(car_, {from: item.account_address, gas: 47000000},
                                                     (err, result) => {if(result){
-                                                                            available_car_result.push({carContractAddress:car_,
-                                                                                carDetails:{penaltyValue:result[0],
-                                                                                            carGSMNum:Web3Utils.hexToUtf8(result[1]),
-                                                                                            position:Web3Utils.hexToUtf8(result[2]),
-                                                                                            geofence:result[3]
-                                                                                            }});
-                                                                    }});
+                                                        console.log("?????????????????? RESULT 1: ",web3.toAscii(result[1]));
+                                                        console.log("?????????????????? RESULT 3: ",web3.toAscii(result[3]));
+                                                        console.log("?????????????????? RESULT 4: ",(result[4]));
+                                                        available_car_result.push({carContractAddress:car_,
+                                                            carDetails:{penaltyValue:result[0],
+                                                                        carGSMNum:web3.toAscii(result[1]),
+                                                                        position:web3.toAscii(result[2]),
+                                                                        geofence:result[3]
+                                                                        }});
+                                                        }});
                         },function(){
                             setTimeout(function() {
                               car_response.push({ownerContract:item.car_owner_address,availableCarContract:available_car_result});

@@ -27,7 +27,7 @@ router.post('/:address/createCarContract',function (request,response) {
 //     "string"
 //   ]
 // }	
-	owner.createNewCar(request.params.address,request.body, function (result) {
+	owner.createNewCar(request.params.address, request.body, function (result) {
 		response.json(result);	
 	});
 });

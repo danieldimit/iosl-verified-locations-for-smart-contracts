@@ -102,6 +102,7 @@ class PolygonDrawMap extends Component {
                 var objLatLng = {lat: latlng[0], lng: latlng[1]};
                 this.props.inputValues.geofence.push(objLatLng);
             } else {
+                console.log(this.props.inputValues.geofence);
                 let url = s2ServerUrl + '/convertGeofenceToS2Polygons?maxLevel=' + 15;
 
                 fetch(url, {

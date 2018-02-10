@@ -78,20 +78,26 @@ module.exports = {
                      var car_owner = renter_contract.at(item.car_owner_address);
                     console.log(">?>>>>>>>>>>>>> BEFORE THE CALL");
                         var available_car = car_owner.ListAvailableCars.call();
+                        console.log("available_car :"+available_car);
                         var available_car_result = new Array();
                         available_car.forEachDone(function(car_){
-                             car_owner.GetCarDetails(car_, {from: item.account_address, gas: 47000000},
+                             console.log("car_ is ",car_);
+                             car_owner.GetCarDetails(car_, {from: item.account_address, gas: 4700000},
                                                     (err, result) => {if(result){
-                                                        console.log("?????????????????? RESULT 1: ",web3.toAscii(result[1]));
-                                                        console.log("?????????????????? RESULT 3: ",web3.toAscii(result[3]));
-                                                        console.log("?????????????????? RESULT 4: ",(result[4]));
+                                                        console.log("?????????????????? RESULT : "+result);
                                                         available_car_result.push({carContractAddress:car_,
                                                             carDetails:{penaltyValue:result[0],
                                                                         carGSMNum:web3.toAscii(result[1]),
                                                                         position:web3.toAscii(result[2]),
                                                                         geofence:result[3]
                                                                         }});
-                                                        }});
+                                                        }
+
+                                                            if(err){
+                                                                console.log("Error is :"+err);
+                                                            }
+
+                                                    });
                         },function(){
                             setTimeout(function() {
                               car_response.push({ownerContract:item.car_owner_address,availableCarContract:available_car_result});

@@ -268,27 +268,64 @@ module.exports = {
 			//     }
 			//   }
 			// ]
-				const body = {
+
+			const body = {
 		        'account_address': account_address
 		    	};
-		    	Account.findOne({ where: body }).then(data => {
-		    		if(data.car_owner_address){
-		    			var car_owner = owner_contract.at(data.car_owner_address);
-		    			var car_list = car_owner.showRenters(
-			    			{from: account_address, gas: 4700000},
-			                    (err, result) => {
-			                    	if(err){
-			                    		console.log("error is :"+err);
-			                    		base.errorCallback(err,callback);
-			                    	}if(result){
-			                    		base.successCallback(result,callback);
-			                    	}
-			                    });
-		    		}else{
-		    			var res = { Message : "Create a car owner contract first"};
+    		Account.findOne({ where: body }).then(data => {
+            var car_response = new Array();
+		                if(data.car_owner_address){
+		                     var car_owner = owner_contract.at(data.car_owner_address);
+		                     var renter_details = car_owner.showRenters(
+					    			{from: account_address, gas: 4700000},
+					                    (err, result) => {
+					                    	if(err){
+					                    		base.errorCallback(err,callback);
+					                    	}if(result){
+					                    		var rented_car_result = new Array();
+										            result.forEachDone(function(renter_address_){
+							                             console.log("renter_address_ is ",renter_address_);
+							                             car_owner.getRenterInfo(renter_address_, {from: data.account_address, gas: 4700000},
+							                                                    (err, result) => {
+							                                                    	if(result){
+							                                                        console.log("car address : "+result[0]);
+																						car_owner.GetCarDetails(result[0], {from: data.account_address, gas: 4700000},
+																                                                    (err, result) => {
+																                                                    	if(result){
+																                                                        rented_car_result.push({renterAddress:renter_address_,
+																                                                            carDetails:{penaltyValue:result[0],
+																                                                                        carGSMNum:web3.toAscii(result[1]),
+																                                                                        position:web3.toAscii(result[2]),
+																                                                                        geofence:result[3]
+																                                                                        }});
+																                                                        }
+
+																                                                            if(err){
+																                                                                console.log("Error is :"+err);
+																                                                            }
+																                                                    });       
+								                                                        }
+							                                                            if(err){
+							                                                                console.log("Error is :"+err);
+							                                                            }
+							                                                    });
+							                        },function(){
+							                            setTimeout(function() {
+							                              car_response.push(rented_car_result);
+							                                // console.log('done');
+							                         base.successCallback(car_response,callback);
+							                            }, 1000);
+							                        });
+					                    	}
+					                    });
+                }else{
+		    			var res = { Message : "No Renter Available"};
 		    			base.successCallback(res,callback);
 		    		}
-		    	});
+        },
+            error=>{
+                base.errorCallback(error,callback);
+        });
 	},
 
 	withdrawMoney: function (owner_address , callback){

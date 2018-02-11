@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 contract CarDetails {
     
       address public owner;
-      bytes16 public carGSMNum;
+      string public carGSMNum;
       //uint public penaltyValue = 100;
       uint public penaltyValue;
       bool availability = true;
@@ -39,12 +39,13 @@ contract CarDetails {
       //            Functions 
       /////////////////////////////////////
       
-      function CarDetails(bytes16 _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix)  {
+      function CarDetails(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix)  {
         carGSMNum = _carGSMNum;
         owner= msg.sender;
         penaltyValue = _penaltyValue;
         position = _position;
         geofence_prefix =_geofencePrefix;
+        geofence_suffix = _geofenceSuffix;
       }
       
     
@@ -184,13 +185,15 @@ contract CarDetails {
           oracle=_oracle;
       }
 
-      function GetCarDetails() onlyOwner public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-     bytes16 _position,bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) {
+
+
+    function GetCarDetails() onlyOwner public constant returns(uint _penaltyValue, string _carGSMNum,
+     bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) {
           _penaltyValue = penaltyValue;
           _carGSMNum = carGSMNum;
           _position = position;
-          _geofenceSuffix=geofence_suffix;
-          _geofencePrefix=geofence_prefix;
+          _geofenceSuffix = geofence_suffix;
+          _geofencePrefix = geofence_prefix;
       }
       
       /////////////////////////////////////
@@ -248,7 +251,7 @@ contract Owner {
     // Functions called by owner
     /////////////////////////////////////
 
-     function addNewCar(bytes16 _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) onlyOwner returns (address){
+     function addNewCar(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) onlyOwner returns (address){
         address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
         cars.push(carContract);
         return carContract;
@@ -281,12 +284,7 @@ contract Owner {
     function getRenterInfo(address _renterAddress) view public returns(address,uint){
         return (renters[_renterAddress].rented_car, renters[_renterAddress].moneyForcar);
     }
-    
-    function GetCarDetails(address carAddress) public constant returns(uint _penaltyValue,bytes16 _carGSMNum, 
-      bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix){
-        CarDetails carObj = CarDetails(carAddress);
-        (_penaltyValue,_carGSMNum, _position,_geofencePrefix,)=carObj.GetCarDetails();
-    }
+
 
     /////////////////////////////////////
     // Functions called by renter

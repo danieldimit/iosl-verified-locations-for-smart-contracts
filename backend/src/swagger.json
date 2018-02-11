@@ -652,12 +652,12 @@
           "format": "int32"
         },
         "position": {
-          "type": "string"
+          "type": "integer"
         },
         "geofence": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "integer"
           }
         }
       },

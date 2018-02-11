@@ -5,6 +5,7 @@ import RentACar from './RentACar';
 import RentedCars from './RentedCars';
 import { fetchAllAccounts } from '../actions/index';
 
+import { ethereumBackendUrl } from '../config';
 
 class Renter extends Component {
 
@@ -12,6 +13,7 @@ class Renter extends Component {
         super(props);
         this.state = {
             chosenAddress: "-",
+            balance: 0,
             state: 1,
             progressStep: 1,
             carPosition: { lat: 52.520007, lng: 13.404954 },
@@ -21,10 +23,10 @@ class Renter extends Component {
             ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
         };
         this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
-        this.createContract = this.createContract.bind(this);
         this.onOwnerChange = this.onOwnerChange.bind(this);
         this.setRenterEthAccount = this.setRenterEthAccount.bind(this);
         this.createScriptNode = this.createScriptNode.bind(this);
+        this.fetchAccountBalance = this.fetchAccountBalance.bind(this);
     }
 
     componentDidMount() {
@@ -33,29 +35,6 @@ class Renter extends Component {
 
     onOwnerChange(e) {
         this.setState({chosenAddress: e.target.value});
-    }
-
-    createContract() {
-        this.setState({progressStep: 3});
-        /*
-        if (this.refs.carGSMField.value == "" || this.state.chosenAddress == "-") {
-            alert ("You have to fill out all fields.");
-        } else {
-            let url = ethereumBackendUrl + '/owner/' + this.state.chosenAddress + '/create_contract';
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    carGSMNumber: this.refs.carGSMField.value
-                })
-            })
-                .then(result=>result.json())
-                .then(result=>console.log('teeeeeeeest: ',result));
-        }
-        */
     }
 
     renderAllAccountsDropdown(data) {
@@ -69,16 +48,19 @@ class Renter extends Component {
         }
     }
 
-    handleReturnedMarkers(markers) {
-        this.setState({
-            activeMarkers: markers
-        });
-    }
-
-
-
     setRenterEthAccount() {
         this.setState({progressStep: 2});
+        this.fetchAccountBalance();
+    }
+
+    fetchAccountBalance() {
+        let url = ethereumBackendUrl + '/account/' + this.state.chosenAddress;
+
+        fetch(url, {
+            method: 'get'
+        })  .then(result=>result.json())
+            .then(result=>result.success ? this.setState({balance: result.data.balance}) : null);
+
     }
 
 
@@ -108,7 +90,7 @@ class Renter extends Component {
                             <p>
                                 Account: {this.state.chosenAddress}
                                 <br/>
-                                Available Ether: 41223
+                                Available Ether: {this.state.balance}
                             </p>
                         </div>
                     : null }

@@ -46,6 +46,7 @@ class RentedCars extends Component {
         this.setRentedCarsToState = this.setRentedCarsToState.bind(this);
         this.renderCarOnMap = this.renderCarOnMap.bind(this);
         this.handleClickOnCar = this.handleClickOnCar.bind(this);
+        this.returnCarAndRerender = this.returnCarAndRerender.bind(this);
     }
 
     componentDidMount() {
@@ -122,7 +123,25 @@ class RentedCars extends Component {
             }
         })
             .then(result=>result.json())
-            .then(result=>console.log("Returning ", this.state.selectedCar.carContractAddress, ' ', result));
+            .then(result=>this.returnCarAndRerender(result));
+    }
+
+    returnCarAndRerender(result) {
+        if (result.success == true) {
+            let newCarsList = this.state.rentedCars;
+
+            // Delete car with the given id
+            newCarsList.splice(this.state.selectedCar.id, 1);
+
+            // Renumber the entries to be able to do it again
+            for (var i = 0; i < newCarsList.length; i++) {
+                newCarsList[i].id = i;
+            }
+
+            this.setState({rentedCars: newCarsList});
+
+            console.log("Returning ", this.state.selectedCar.carContractAddress, ' ', newCarsList);
+        }
     }
 
     setOwnerEthAccount() {

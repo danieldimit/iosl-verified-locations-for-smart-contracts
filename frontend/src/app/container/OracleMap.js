@@ -86,7 +86,7 @@ class OracleMap extends Component {
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
 
-        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 13);
+        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 14);
         var id = s2.S2.keyToId(s2Key);
 
         let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + id.toString();

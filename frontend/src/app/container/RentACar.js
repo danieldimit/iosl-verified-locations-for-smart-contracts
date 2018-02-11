@@ -9,10 +9,7 @@ import {
     withScriptjs,
     withGoogleMap,
     GoogleMap,
-    Marker,
-    Circle,
-    Rectangle,
-    Polygon
+    Marker
 } from "react-google-maps";
 
 const OracleMapWithCellTowers = compose(
@@ -31,9 +28,6 @@ const OracleMapWithCellTowers = compose(
         defaultCenter={props.center}
     >
         {props.availableCars.map(props.renderCars)}
-        <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
-            north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
-                   options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
     </GoogleMap>
 );
 
@@ -45,31 +39,20 @@ class RentACar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            chosenAddress: "-",
-            progressStep: 1,
             availableCars: [],
-            carPosition: { lat: 52.520007, lng: 13.404954 },
-            cellCenter: { lat: 52.520007, lng: 13.404954 },
-            cellRadius: 0,
-            value: '',
-            ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
+            selectedCar: {}
         };
-        this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
-        this.createContract = this.createContract.bind(this);
-        this.onOwnerChange = this.onOwnerChange.bind(this);
+        this.rentCar = this.rentCar.bind(this);
         this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
         this.createScriptNode = this.createScriptNode.bind(this);
         this.fetchAvailableCars = this.fetchAvailableCars.bind(this);
         this.setAvailableCarsToState = this.setAvailableCarsToState.bind(this);
         this.renderCarOnMap = this.renderCarOnMap.bind(this);
+        this.handleClickOnCar = this.handleClickOnCar.bind(this);
     }
 
     componentDidMount() {
         this.fetchAvailableCars();
-    }
-
-    onOwnerChange(e) {
-        this.setState({chosenAddress: e.target.value});
     }
 
     fetchAvailableCars() {
@@ -84,7 +67,8 @@ class RentACar extends Component {
         var flattenedDict = [];
         var idCounter = 0;
 
-        function handleResponse(newCar, result, counter) {
+        function handleResponse(newCar, result) {
+
             newCar['carDetails']['position'] = result;
             flattenedDict.push(newCar);
 
@@ -103,59 +87,43 @@ class RentACar extends Component {
 
                 fetch(url, {mode: 'cors'})
                     .then(result=>result.json())
-                    .then(result=>handleResponse(car, result, idCounter))
+                    .then(result=>handleResponse(car, result))
                     .then(result=>this.setState({availableCars: flattenedDict}));
 
+                if (car.id == 0) {
+                    this.setState({selectedCar: car});
+                }
                 idCounter++;
             }
         }
         return flattenedDict;
     }
 
-    createContract() {
-        this.setState({progressStep: 3});
-        /*
-         if (this.refs.carGSMField.value == "" || this.state.chosenAddress == "-") {
-         alert ("You have to fill out all fields.");
-         } else {
-         let url = ethereumBackendUrl + '/owner/' + this.state.chosenAddress + '/create_contract';
-         fetch(url, {
-         method: 'POST',
-         headers: {
-         'Accept': 'application/json',
-         'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({
-         carGSMNumber: this.refs.carGSMField.value
-         })
-         })
-         .then(result=>result.json())
-         .then(result=>console.log('teeeeeeeest: ',result));
-         }
-         */
+    rentCar() {
+        console.log(this.props.renterEthAddress, this.state.selectedCar.owner, this.state.selectedCar.carContractAddress);
+        let url = ethereumBackendUrl + '/renter/' + this.props.renterEthAddress + '/'
+            + this.state.selectedCar.owner + '/' + this.state.selectedCar.carContractAddress + '/rentCar';
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(result=>result.json())
+            .then(result=>console.log("Renting ", this.state.selectedCar.carContractAddress, ' ', result));
     }
 
-    renderAllAccountsDropdown(data) {
-
-        if (data == this.props.oracleAddress) {
-            return ;
-        } else {
-            return (
-                <option key={data} value={data}>{data}</option>
-            );
-        }
-    }
-
-    handleReturnedMarkers(markers) {
-        this.setState({
-            activeMarkers: markers
-        });
+    handleClickOnCar(carId) {
+        this.setState({selectedCar: this.state.availableCars[carId]});
+        console.log("clicker", carId);
     }
 
     renderCarOnMap(car) {
         console.log("RENDER CAR: ", car);
         return (
-            <Marker key={car.id} position={car.carDetails.position[0]} draggable={false}/>
+            <Marker key={car.id} options={{ fillColor: `orange`, fillOpacity: 0.3, strokeWeight: 1}} position={car.carDetails.position[0]} draggable={false}
+                    onClick={() => this.handleClickOnCar(car.id)}/>
         );
     }
 
@@ -188,11 +156,6 @@ class RentACar extends Component {
                 </p>
                 <div className="renter-map col-lg-9 col-md-8 col-sm-12 col-xs-12">
                     <OracleMapWithCellTowers
-                        onMarkerDrag={this.handleMarkerDragged}
-                        carPosition={this.state.carPosition}
-                        cellCenter={this.state.cellCenter}
-                        cellRadius={this.state.cellRadius}
-                        ghPosition={this.state.ghPosition}
                         availableCars={this.state.availableCars}
                         renderCars={this.renderCarOnMap}
                     />
@@ -200,11 +163,13 @@ class RentACar extends Component {
                 <div className="car-info col-lg-3 col-md-4 col-sm-12 col-xs-12">
                     <h3>Car Information:</h3>
                     <p>
-                        Address: 0x012312301230120312312312312
+                        Address: {this.state.selectedCar != undefined ? this.state.selectedCar.carContractAddress : null}
                         <br/>
-                        Deposit: 100 Ether
+                        Deposit:    {this.state.selectedCar != undefined &&
+                                    this.state.selectedCar.carDetails != undefined
+                                    ? this.state.selectedCar.carDetails.penaltyValue : null} Ether
                     </p>
-                    <button onClick={this.createContract}>Rent</button>
+                    <button onClick={this.rentCar}>Rent</button>
                 </div>
 
             </div>

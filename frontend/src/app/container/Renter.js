@@ -147,10 +147,10 @@ class Renter extends Component {
                                 </TabList>
 
                                 <TabPanel>
-                                    <RentACar renterEthAddress={this.state.ownerEthereumAddress} />
+                                    <RentACar renterEthAddress={this.state.chosenAddress} />
                                 </TabPanel>
                                 <TabPanel>
-                                    <RentedCars renterEthAddress={this.state.ownerEthereumAddress} />
+                                    <RentedCars renterEthAddress={this.state.chosenAddress} />
                                 </TabPanel>
                             </Tabs>
 

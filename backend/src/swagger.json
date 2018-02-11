@@ -559,7 +559,7 @@
         }
       }
     },
-    "/renter/{userAddress}/{ownerContract}/returnCar": {
+    "/renter/{userAddress}/{ownerContract}/{carContractAddress}/returnCar": {
       "put": {
         "tags": [
           "renter"
@@ -588,8 +588,8 @@
             "format": "string"
           },
           {
-            "name": "carContract",
-            "in": "query",
+            "name": "carContractAddress",
+            "in": "path",
             "description": "The user address in the blockchain",
             "required": true,
             "type": "string",

@@ -28,6 +28,7 @@ router.put('/:address/:ownercontractaddress/:car_contract_address/rentCar', func
 });
 
 router.put('/:address/:ownercontractaddress/:car_contract_address/returnCar', function (request, response) {
+	console.log("here we are");
 	renter.returnCar(request.params.address,request.params.ownercontractaddress,request.params.car_contract_address,function(result){
 		response.json(result);
 	});

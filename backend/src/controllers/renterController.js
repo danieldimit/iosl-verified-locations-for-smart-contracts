@@ -37,7 +37,7 @@ function geofencePrefAndSufToGeofence(prefix, suffix) {
 
 function removeZeros(hex) {
     var newHex = hex;
-    while (newHex.substring(newHex.length - 1) == '0') {
+    while (newHex.substring(newHex.length - 1) == '0' && newHex[newHex.length - 2] != 'x') {
         newHex = newHex.substring(0, newHex.length - 1);
     }
     return newHex;
@@ -104,6 +104,7 @@ module.exports = {
                             car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
                                                     (err, result) => {if(result){
                                                         var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
+                                                        console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
                                                         available_car_result.push({carContractAddress:_car,
                                                             carDetails:{penaltyValue:result[0],
                                                                         carGSMNum: result[1],

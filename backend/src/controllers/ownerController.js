@@ -21,31 +21,48 @@ var owner_bytecode = contracts_output.contracts[':Owner'].bytecode;
 var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 
-function fillWithZeros(byteNum, length) {
-	var byte;
-	if (byteNum.length != length + 2) {
-		if (byteNum.length > length + 2) {
-            byte = byteNum.substring(0,9);
-		} else {
-			// Difference
-			var zerosToAdd = length + 2 - byteNum.length;
-            byte = byteNum.substring(2,9);
-			while (zerosToAdd != 0) {
-				byte = "0".concat(byte);
+splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
+	var commonPrefix;
+	var arraySuffixes = [];
+	var stillSame = true;
+	var shortestGeohash = 999999;
+	var currentSymbolNum = 0;
 
-                zerosToAdd = zerosToAdd - 1;
+	// See how long the shortest geohash is
+    for (var j = 0; j < arrOfGeohashes.length; j++) {
+		var temp = String(arrOfGeohashes[j]).length;
+
+		if (temp < shortestGeohash) {
+			shortestGeohash = temp;
+		}
+    }
+
+    // Extract the common prefix
+	while (stillSame && currentSymbolNum < shortestGeohash) {
+    	var curSymbol = String(arrOfGeohashes[0])[currentSymbolNum];
+        for (var i = 1; i < arrOfGeohashes.length; i++) {
+            if (curSymbol != String(arrOfGeohashes[i])[currentSymbolNum]) {
+                stillSame = false;
 			}
-			byte = "0x".concat(byte);
+        }
+
+        // If the symbols are still the same go check the next one, otherwise stop here
+        if (stillSame == true) {
+            currentSymbolNum++;
 		}
 	}
-	return byte;
-}
 
-splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
-	var arrayWithBytes = [];
+	// Split into prefix and suffixes
+	if (currentSymbolNum != -1) {
+        commonPrefix = parseInt(String(arrOfGeohashes[0]).substring(0, currentSymbolNum));
+	}
+    for (var i = 0; i < arrOfGeohashes.length; i++) {
+        arraySuffixes.push(parseInt(String(arrOfGeohashes[i]).substring(currentSymbolNum, String(arrOfGeohashes[i]).length)));
+    }
+
 	return {
-        geofencePrefix: 12,
-        geofenceSuffix: arrOfGeohashes
+        geofencePrefix: commonPrefix,
+        geofenceSuffix: arraySuffixes
 	}
 }
 

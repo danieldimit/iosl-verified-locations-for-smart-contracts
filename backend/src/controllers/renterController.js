@@ -103,6 +103,7 @@ module.exports = {
 
                             car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
                                                     (err, result) => {if(result){
+                                                        var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
                                                         available_car_result.push({carContractAddress:_car,
                                                             carDetails:{penaltyValue:result[0],
                                                                         carGSMNum: result[1],

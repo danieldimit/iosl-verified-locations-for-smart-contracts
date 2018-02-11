@@ -108,7 +108,7 @@ module.exports = {
                                                         available_car_result.push({carContractAddress:_car,
                                                             carDetails:{penaltyValue:result[0],
                                                                         carGSMNum: result[1],
-                                                                        position: web3.toDecimal(removeZeros(result[2])),
+                                                                        position: web3.toDecimal(String(result[2]).substring(0, 18)),
                                                                         geofence: geofence
                                                                         }});
                                                         }});

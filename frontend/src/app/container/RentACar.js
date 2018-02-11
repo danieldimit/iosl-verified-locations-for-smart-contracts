@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { fetchAllAccounts } from '../actions/index';
-import { ethereumBackendUrl } from '../config';
+import { ethereumBackendUrl, s2ServerUrl } from '../config';
 
 import { compose, withProps } from "recompose";
 import {
@@ -11,7 +11,8 @@ import {
     GoogleMap,
     Marker,
     Circle,
-    Rectangle
+    Rectangle,
+    Polygon
 } from "react-google-maps";
 
 const OracleMapWithCellTowers = compose(
@@ -29,6 +30,7 @@ const OracleMapWithCellTowers = compose(
         defaultZoom={11}
         defaultCenter={props.center}
     >
+        {props.availableCars.map(props.renderCars)}
         <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
             north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
                    options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
@@ -44,8 +46,8 @@ class RentACar extends Component {
         super(props);
         this.state = {
             chosenAddress: "-",
-            state: 1,
             progressStep: 1,
+            availableCars: [],
             carPosition: { lat: 52.520007, lng: 13.404954 },
             cellCenter: { lat: 52.520007, lng: 13.404954 },
             cellRadius: 0,
@@ -57,13 +59,57 @@ class RentACar extends Component {
         this.onOwnerChange = this.onOwnerChange.bind(this);
         this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
         this.createScriptNode = this.createScriptNode.bind(this);
+        this.fetchAvailableCars = this.fetchAvailableCars.bind(this);
+        this.setAvailableCarsToState = this.setAvailableCarsToState.bind(this);
+        this.renderCarOnMap = this.renderCarOnMap.bind(this);
     }
 
     componentDidMount() {
+        this.fetchAvailableCars();
     }
 
     onOwnerChange(e) {
         this.setState({chosenAddress: e.target.value});
+    }
+
+    fetchAvailableCars() {
+        let url = ethereumBackendUrl + '/renter/getAllAvailableCars';
+        fetch(url, {
+            method: 'get'
+        })  .then(result=>result.json())
+            .then(result=>result.success ? this.setAvailableCarsToState(result.data) : null);
+    }
+
+    setAvailableCarsToState(availableCars) {
+        var flattenedDict = [];
+        var idCounter = 0;
+
+        function handleResponse(newCar, result, counter) {
+            newCar['carDetails']['position'] = result;
+            flattenedDict.push(newCar);
+
+            console.log(flattenedDict);
+            return flattenedDict;
+        }
+
+        for (let carsOfOneOwner of availableCars) {
+            for (let car of carsOfOneOwner.availableCarContract) {
+                car['owner'] = carsOfOneOwner.ownerContract;
+                car['id'] = idCounter;
+
+
+                // Convert position from s2 to lat lon
+                let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + car['carDetails']['position'];
+
+                fetch(url, {mode: 'cors'})
+                    .then(result=>result.json())
+                    .then(result=>handleResponse(car, result, idCounter))
+                    .then(result=>this.setState({availableCars: flattenedDict}));
+
+                idCounter++;
+            }
+        }
+        return flattenedDict;
     }
 
     createContract() {
@@ -106,7 +152,12 @@ class RentACar extends Component {
         });
     }
 
-
+    renderCarOnMap(car) {
+        console.log("RENDER CAR: ", car);
+        return (
+            <Marker key={car.id} position={car.carDetails.position[0]} draggable={false}/>
+        );
+    }
 
     setOwnerEthAccount() {
         this.setState({progressStep: 2});
@@ -142,6 +193,8 @@ class RentACar extends Component {
                         cellCenter={this.state.cellCenter}
                         cellRadius={this.state.cellRadius}
                         ghPosition={this.state.ghPosition}
+                        availableCars={this.state.availableCars}
+                        renderCars={this.renderCarOnMap}
                     />
                 </div>
                 <div className="car-info col-lg-3 col-md-4 col-sm-12 col-xs-12">

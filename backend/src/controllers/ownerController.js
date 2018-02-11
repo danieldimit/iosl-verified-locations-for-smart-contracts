@@ -28,8 +28,9 @@ splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
 	var shortestGeohash = 999999;
 	var currentSymbolNum = 0;
 
-	// See how long the shortest geohash is
+	// See how long the shortest geohash is and convert it to integer
     for (var j = 0; j < arrOfGeohashes.length; j++) {
+    	arrOfGeohashes[j] = parseInt(arrOfGeohashes[j]);
 		var temp = String(arrOfGeohashes[j]).length;
 
 		if (temp < shortestGeohash) {
@@ -218,21 +219,12 @@ module.exports = {
     	});
 	},
     createNewCar : function (account_address, responsebody , callback){
-        //Body to be sent
-// 			/{
-//   "carGSMNum": "string",
-//   "penaltyValue": 0,
-//   "position": "string",
-//   "geofence": [
-//     "string"
-//   ]
-// }	0x428109329c17506119ffd8402d9b7bae2cd3d27e
         const body = {
             'account_address': account_address
         };
         console.log("account_address is :"+account_address);
 
-        console.log("cargms is :"+responsebody.carGSMNum);
+        console.log("position is :"+responsebody.position);
 
         Account.findOne({ where: body }).then(data => {
             if(data.car_owner_address){
@@ -245,7 +237,7 @@ module.exports = {
 
                 var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
                     responsebody.penaltyValue,
-                    responsebody.position,
+                    parseInt(responsebody.position),
                     geoSplit.geofencePrefix,
                     geoSplit.geofenceSuffix,
                     {from: account_address, gas: 4700000},

@@ -77,41 +77,31 @@ Object.defineProperty(Object.prototype, "forEachDone", {
 module.exports = {
 
     getAllAvailableCars: function(callback){
-        // {
-        //     ownerContract   string
-        //                 availableCarContract    [{
-        //                 carContractAddress  string
-        //                 carDetails  CarContractConstructor{
-        //                 carGSMNum   string
-        //                 penaltyValue    integer($int32)
-        //                 position    string
-        //                 geofence    [string]
-        //                 }
-        //                 }]
-        // }
         Account.findAll().then(result=>{
             var car_response = new Array();
             result.forEachDone(function(item){
-                if(item.car_owner_address){
+                if(item.car_owner_address) {
                      var car_owner = renter_contract.at(item.car_owner_address);
                     console.log(">?>>>>>>>>>>>>> BEFORE THE CALL ", item.car_owner_address);
-                        var available_car = car_owner.ListAvailableCars.call();
+                        var available_car = car_owner.getAvailableCars.call();
                         var available_car_result = new Array();
                         available_car.forEachDone(function(_car){
-                            console.log(_car);
-                            var car_address = car_contract.at(_car);
+                            if (_car != "0x0000000000000000000000000000000000000000") {
+                                console.log(_car);
+                                var car_address = car_contract.at(_car);
 
-                            car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
-                                                    (err, result) => {if(result){
-                                                        var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
-                                                        console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
-                                                        available_car_result.push({carContractAddress:_car,
-                                                            carDetails:{penaltyValue:result[0],
-                                                                        carGSMNum: result[1],
-                                                                        position: web3.toDecimal(String(result[2]).substring(0, 18)),
-                                                                        geofence: geofence
-                                                                        }});
-                                                        }});
+                                car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
+                                    (err, result) => {if(result){
+                                        var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
+                                        console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
+                                        available_car_result.push({carContractAddress:_car,
+                                            carDetails:{penaltyValue:result[0],
+                                                carGSMNum: result[1],
+                                                position: web3.toDecimal(String(result[2]).substring(0, 18)),
+                                                geofence: geofence
+                                            }});
+                                    }});
+                            }
                         },function(){
                             setTimeout(function() {
                               car_response.push({ownerContract:item.car_owner_address,availableCarContract:available_car_result});
@@ -215,11 +205,6 @@ module.exports = {
             error=>{
                 base.errorCallback(error,callback);
             });
-
-
-                const body = {
-                             'account_address': accounts_address
-                             };
     },
 
     rentCar : function (account_address, ownercontractaddress ,car_contract_address, callback){

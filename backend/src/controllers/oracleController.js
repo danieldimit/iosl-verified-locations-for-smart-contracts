@@ -13,6 +13,7 @@ var contracts_output = solc.compile(contracts_input.toString(), 1);
 var oracle_bytecode = contracts_output.contracts[':CarDetails'].bytecode;
 var oracle_abi = JSON.parse(contracts_output.contracts[':CarDetails'].interface);
 var oracle_contract = web3.eth.contract(oracle_abi);
+var oracleAddress = null;
 var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 var Web3Utils = require('web3-utils');
@@ -27,7 +28,7 @@ module.exports = {
 	} ,
 
 	setOracleAddress : function(address, callback){
-		oracleAddress = newOracleAddress;
+		oracleAddress = address;
 		base.successCallback({oracleAddress : oracleAddress}, callback);
 		// const body = {
   //       	'account_address': address

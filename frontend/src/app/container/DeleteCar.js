@@ -7,18 +7,15 @@ class DeleteCar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            carAddresses: [],
             selectedCar: "-"
         };
         this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
         this.deleteCar = this.deleteCar.bind(this);
-        this.getCarContracts = this.getCarContracts.bind(this);
         this.onSelectedCarChange = this.onSelectedCarChange.bind(this);
-        this.filterOutEmptyAddresses = this.filterOutEmptyAddresses.bind(this);
     }
 
     componentWillUpdate() {
-        this.getCarContracts();
+        //this.getCarContracts();
     }
 
     /**
@@ -34,22 +31,7 @@ class DeleteCar extends Component {
         );
     }
 
-    filterOutEmptyAddresses(data) {
-        var index = data.indexOf("0x0000000000000000000000000000000000000000");
-        while(index > -1) {
-            data.splice(index, 1);
-            index = data.indexOf("0x0000000000000000000000000000000000000000");
-        }
-        return data;
-    }
 
-    getCarContracts() {
-        let url = ethereumBackendUrl + '/owner/' + this.props.ownerEthereumAddress + '/getCarContracts';
-        fetch(url)
-            .then(result=>result.json())
-            .then(result=>this.filterOutEmptyAddresses(result.data))
-            .then(result=>this.setState({carAddresses: result}));
-    }
 
 
     /**
@@ -61,7 +43,7 @@ class DeleteCar extends Component {
         fetch(url, {
             method: 'delete'
         })  .then(result=>result.json())
-            .then(result=>this.getCarContracts());
+            .then(result=>this.props.triggerRender());
     }
 
     render() {
@@ -73,7 +55,7 @@ class DeleteCar extends Component {
                     <br/>
                     <select style={{float: 'left'}} onChange={this.onSelectedCarChange}>
                         <option value={null}>-</option>
-                        { this.state.carAddresses.map(this.renderAllAccountsDropdown) }
+                        { this.props.carAddresses.map(this.renderAllAccountsDropdown) }
                     </select>
                 </label>
                 <br/>

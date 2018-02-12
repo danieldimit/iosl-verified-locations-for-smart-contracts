@@ -80,7 +80,10 @@
         ],
         "responses": {
           "200": {
-            "description": "successful operation"
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/AccountInfo"
+            }
           }
         }
       }
@@ -559,7 +562,7 @@
         }
       }
     },
-    "/renter/{userAddress}/{ownerContract}/returnCar": {
+    "/renter/{userAddress}/{ownerContract}/{carContractAddress}/returnCar": {
       "put": {
         "tags": [
           "renter"
@@ -588,8 +591,8 @@
             "format": "string"
           },
           {
-            "name": "carContract",
-            "in": "query",
+            "name": "carContractAddress",
+            "in": "path",
             "description": "The user address in the blockchain",
             "required": true,
             "type": "string",
@@ -652,12 +655,12 @@
           "format": "int32"
         },
         "position": {
-          "type": "string"
+          "type": "integer"
         },
         "geofence": {
           "type": "array",
           "items": {
-            "type": "string"
+            "type": "integer"
           }
         }
       },
@@ -698,6 +701,17 @@
           "carDetails": {
             "$ref": "#/definitions/CarContractConstructor"
           }
+        }
+      }
+    },
+    "AccountInfo": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "integer"
         }
       }
     },

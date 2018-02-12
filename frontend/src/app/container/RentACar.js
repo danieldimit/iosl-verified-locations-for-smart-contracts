@@ -2,16 +2,14 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { fetchAllAccounts } from '../actions/index';
-import { ethereumBackendUrl } from '../config';
+import { ethereumBackendUrl, s2ServerUrl } from '../config';
 
 import { compose, withProps } from "recompose";
 import {
     withScriptjs,
     withGoogleMap,
     GoogleMap,
-    Marker,
-    Circle,
-    Rectangle
+    Marker
 } from "react-google-maps";
 
 const OracleMapWithCellTowers = compose(
@@ -29,9 +27,7 @@ const OracleMapWithCellTowers = compose(
         defaultZoom={11}
         defaultCenter={props.center}
     >
-        <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
-            north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
-                   options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
+        {props.availableCars.map(props.renderCars)}
     </GoogleMap>
 );
 
@@ -43,70 +39,93 @@ class RentACar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            chosenAddress: "-",
-            state: 1,
-            progressStep: 1,
-            carPosition: { lat: 52.520007, lng: 13.404954 },
-            cellCenter: { lat: 52.520007, lng: 13.404954 },
-            cellRadius: 0,
-            value: '',
-            ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
+            availableCars: [],
+            selectedCar: {}
         };
-        this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
-        this.createContract = this.createContract.bind(this);
-        this.onOwnerChange = this.onOwnerChange.bind(this);
+        this.rentCar = this.rentCar.bind(this);
         this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
         this.createScriptNode = this.createScriptNode.bind(this);
+        this.fetchAvailableCars = this.fetchAvailableCars.bind(this);
+        this.setAvailableCarsToState = this.setAvailableCarsToState.bind(this);
+        this.renderCarOnMap = this.renderCarOnMap.bind(this);
+        this.handleClickOnCar = this.handleClickOnCar.bind(this);
     }
 
     componentDidMount() {
+        this.fetchAvailableCars();
     }
 
-    onOwnerChange(e) {
-        this.setState({chosenAddress: e.target.value});
+    fetchAvailableCars() {
+        let url = ethereumBackendUrl + '/renter/getAllAvailableCars';
+        fetch(url, {
+            method: 'get'
+        })  .then(result=>result.json())
+            .then(result=>result.success ? this.setAvailableCarsToState(result.data) : null);
     }
 
-    createContract() {
-        this.setState({progressStep: 3});
-        /*
-         if (this.refs.carGSMField.value == "" || this.state.chosenAddress == "-") {
-         alert ("You have to fill out all fields.");
-         } else {
-         let url = ethereumBackendUrl + '/owner/' + this.state.chosenAddress + '/create_contract';
-         fetch(url, {
-         method: 'POST',
-         headers: {
-         'Accept': 'application/json',
-         'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({
-         carGSMNumber: this.refs.carGSMField.value
-         })
-         })
-         .then(result=>result.json())
-         .then(result=>console.log('teeeeeeeest: ',result));
-         }
-         */
-    }
+    setAvailableCarsToState(availableCars) {
+        var flattenedDict = [];
+        var idCounter = 0;
 
-    renderAllAccountsDropdown(data) {
+        function handleResponse(newCar, result) {
 
-        if (data == this.props.oracleAddress) {
-            return ;
-        } else {
-            return (
-                <option key={data} value={data}>{data}</option>
-            );
+            newCar['carDetails']['position'] = result;
+            flattenedDict.push(newCar);
+
+            console.log(flattenedDict);
+            return flattenedDict;
         }
+
+        for (let carsOfOneOwner of availableCars) {
+            for (let car of carsOfOneOwner.availableCarContract) {
+                car['owner'] = carsOfOneOwner.ownerContract;
+                car['id'] = idCounter;
+
+
+                // Convert position from s2 to lat lon
+                let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + car['carDetails']['position'];
+
+                fetch(url, {mode: 'cors'})
+                    .then(result=>result.json())
+                    .then(result=>handleResponse(car, result))
+                    .then(result=>this.setState({availableCars: flattenedDict}));
+
+                if (car.id == 0) {
+                    this.setState({selectedCar: car});
+                }
+                idCounter++;
+            }
+        }
+        return flattenedDict;
     }
 
-    handleReturnedMarkers(markers) {
-        this.setState({
-            activeMarkers: markers
-        });
+    rentCar() {
+        console.log(this.props.renterEthAddress, this.state.selectedCar.owner, this.state.selectedCar.carContractAddress);
+        let url = ethereumBackendUrl + '/renter/' + this.props.renterEthAddress + '/'
+            + this.state.selectedCar.owner + '/' + this.state.selectedCar.carContractAddress + '/rentCar';
+        fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(result=>result.json())
+            .then(result=>console.log("Renting ", this.state.selectedCar.carContractAddress, ' ', result));
     }
 
+    handleClickOnCar(carId) {
+        this.setState({selectedCar: this.state.availableCars[carId]});
+        console.log("clicker", carId);
+    }
 
+    renderCarOnMap(car) {
+        console.log("RENDER CAR: ", car);
+        return (
+            <Marker key={car.id} options={{ fillColor: `orange`, fillOpacity: 0.3, strokeWeight: 1}} position={car.carDetails.position[0]} draggable={false}
+                    onClick={() => this.handleClickOnCar(car.id)}/>
+        );
+    }
 
     setOwnerEthAccount() {
         this.setState({progressStep: 2});
@@ -137,21 +156,20 @@ class RentACar extends Component {
                 </p>
                 <div className="renter-map col-lg-9 col-md-8 col-sm-12 col-xs-12">
                     <OracleMapWithCellTowers
-                        onMarkerDrag={this.handleMarkerDragged}
-                        carPosition={this.state.carPosition}
-                        cellCenter={this.state.cellCenter}
-                        cellRadius={this.state.cellRadius}
-                        ghPosition={this.state.ghPosition}
+                        availableCars={this.state.availableCars}
+                        renderCars={this.renderCarOnMap}
                     />
                 </div>
                 <div className="car-info col-lg-3 col-md-4 col-sm-12 col-xs-12">
                     <h3>Car Information:</h3>
                     <p>
-                        Address: 0x012312301230120312312312312
+                        Address: {this.state.selectedCar != undefined ? this.state.selectedCar.carContractAddress : null}
                         <br/>
-                        Deposit: 100 Ether
+                        Deposit:    {this.state.selectedCar != undefined &&
+                                    this.state.selectedCar.carDetails != undefined
+                                    ? this.state.selectedCar.carDetails.penaltyValue : null} Ether
                     </p>
-                    <button onClick={this.createContract}>Rent</button>
+                    <button onClick={this.rentCar}>Rent</button>
                 </div>
 
             </div>

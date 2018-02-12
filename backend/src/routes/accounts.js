@@ -13,7 +13,7 @@ router.get('/', function (request, response) {
 
 
 router.get('/:address', function (request, response) {
-	accounts.getAddresses(request.params.address, function (result) {
+	accounts.getAddress(request.params.address, function (result) {
 		response.json(result);	
 	});
 });

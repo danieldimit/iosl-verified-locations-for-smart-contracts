@@ -3,7 +3,7 @@ const router = express.Router();
 const Account = require('../model/accounts').Accounts;
 var base = require('../model/callback');
 var owner = require('./ownerController');
-const Web3 = require('web3');
+const web3 = require('web3');
 var config = require('../config');
 var _default_Provider = '';
 var crypto = require('crypto');
@@ -54,20 +54,22 @@ module.exports = {
 		}
     },
 
-    getAddresses : function (address , callback){
+    getAddress : function (address , callback){
 
-    const body = {
-        'account_address': address
-    };
-    
-    Account.findOne({ where: body }).then(data => {
-            if(data) {
-                owner.getAllCarDetails(data.account_address , function(result){
-                 return base.successCallback({data , result},callback);
-                });
-            } else {
-                return base.errorCallback({message: "Invalid Account Address"},callback);
-            }
-});
-    } 
+        const body = {
+            'account_address': address
+        };
+
+        Account.findOne({ where: body }).then(data => {
+                if(data) {
+                    var obj = {};
+                    obj.address = address;
+                    obj.balance = global.web3.fromWei(global.web3.eth.getBalance(address).toNumber(), 'ether');
+
+                    return base.successCallback(obj,callback);
+                } else {
+                    return base.errorCallback({message: "Invalid Account Address"},callback);
+                }
+        });
+    }
 }

@@ -3,7 +3,7 @@ import PolygonDrawMap from './PolygonDrawMap';
 import CreateCarInput from './CreateCarInput';
 import { ethereumBackendUrl } from '../config';
 
-class CreateCar extends Component {
+class CreateAndDeleteCar extends Component {
 
     constructor(props) {
         super(props);
@@ -112,8 +112,8 @@ class CreateCar extends Component {
                 <div id="addnew" className="ownerControlPanel">
                     <h3>Create new car contract</h3>
                     <h4>Geofence</h4>
-                    <PolygonDrawMap inputValues={CreateCar.staticState} />
-                    <CreateCarInput inputValues={CreateCar.staticState} />
+                    <PolygonDrawMap inputValues={CreateAndDeleteCar.staticState} />
+                    <CreateCarInput inputValues={CreateAndDeleteCar.staticState} />
                     <br/>
                     <button onClick={this.createCar}>Create car</button>
                 </div>
@@ -122,4 +122,4 @@ class CreateCar extends Component {
     }
 }
 
-export default (CreateCar);
+export default (CreateAndDeleteCar);

@@ -28,6 +28,8 @@ class Owner extends Component {
         this.withdrawEthereum = this.withdrawEthereum.bind(this);
         this.getEthereumBalanceOfContract = this.getEthereumBalanceOfContract.bind(this);
         this.moveToNextStepAndSaveContractHash = this.moveToNextStepAndSaveContractHash.bind(this);
+
+        this.filterOutEmptyAddresses = this.filterOutEmptyAddresses.bind(this);
         this.handleWithdrawMoneyResponse = this.handleWithdrawMoneyResponse.bind(this);
         this.getCarContracts = this.getCarContracts.bind(this);
         this.onSelectedCarChange = this.onSelectedCarChange.bind(this);
@@ -71,7 +73,7 @@ class Owner extends Component {
                 ownerContractAddress: response.data.contractMinedAddress
             })
             this.getEthereumBalanceOfContract();
-            this.getCarContracts();
+            this.triggerRender();
         }
     }
 
@@ -125,8 +127,16 @@ class Owner extends Component {
         })
             .then(result=>result.json())
             .then(result=>this.moveToNextStepAndSaveContractHash(result))
-            .then(result=>this.getEthereumBalanceOfContract())
-            .then(result=>this.getCarContracts());
+            .then(result=>this.getEthereumBalanceOfContract());
+    }
+
+    filterOutEmptyAddresses(data) {
+        var index = data.indexOf("0x0000000000000000000000000000000000000000");
+        while(index > -1) {
+            data.splice(index, 1);
+            index = data.indexOf("0x0000000000000000000000000000000000000000");
+        }
+        return data;
     }
 
     withdrawEthereum() {
@@ -142,10 +152,12 @@ class Owner extends Component {
             .then(result=>this.handleWithdrawMoneyResponse(result));
     }
 
-
     triggerRender() {
-        console.log("TRIGGERED");
-        this.setState({state: this.state.state + 1});
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/getCarContracts';
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.filterOutEmptyAddresses(result.data))
+            .then(result=>this.setState({carAddresses: result}));
     }
 
     render() {
@@ -215,15 +227,15 @@ class Owner extends Component {
                                 </p>
                                 <button onClick={this.withdrawEthereum}>Withdraw money</button>
                             </div>
-                            <DeleteCar ownerEthereumAddress={this.state.ownerEthereumAddress} />
+                            <DeleteCar ownerEthereumAddress={this.state.ownerEthereumAddress}
+                                       carAddresses={this.state.carAddresses}
+                                       triggerRender={this.triggerRender}/>
                             <CreateCar ownerEthereumAddress={this.state.ownerEthereumAddress}
                                        triggerRender={this.triggerRender}/>
                         </div>
                     : null }
-
                 </div>
             </div>
-
         );
     }
 }

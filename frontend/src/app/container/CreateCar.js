@@ -8,6 +8,7 @@ class CreateCar extends Component {
     constructor(props) {
         super(props);
         this.createCar = this.createCar.bind(this);
+        this.strToIntArr = this.strToIntArr.bind(this);
     }
 
     static staticState = {
@@ -20,14 +21,21 @@ class CreateCar extends Component {
         s2Level: 15
     };
 
-    createCar() {
-        console.log(CreateCar.staticState);
+    strToIntArr(geofence) {
+        var newGeo = [];
+        for (let a of geofence) {
+            newGeo.push(parseInt(a));
+        }
+        console.log(newGeo);
+        return newGeo;
+    }
 
+    createCar() {
         var carObject = {
             carGSMNum: CreateCar.staticState.carGSMNum,
             penaltyValue: CreateCar.staticState.penaltyValue,
-            position: CreateCar.staticState.position,
-            geofence: CreateCar.staticState.s2GFHashes
+            position: parseInt(CreateCar.staticState.position),
+            geofence: this.strToIntArr(CreateCar.staticState.s2GFHashes)
         }
 
         let url = ethereumBackendUrl + '/owner/' + this.props.ownerEthereumAddress + '/createCarContract';
@@ -42,6 +50,7 @@ class CreateCar extends Component {
             .then(result=>result.json())
             .then(result=>this.props.triggerRender());
 
+        console.log(carObject);
     }
 
     render() {

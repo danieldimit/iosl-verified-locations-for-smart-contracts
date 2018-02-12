@@ -4,41 +4,8 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import RentACar from './RentACar';
 import RentedCars from './RentedCars';
 import { fetchAllAccounts } from '../actions/index';
+
 import { ethereumBackendUrl } from '../config';
-
-import { compose, withProps } from "recompose";
-import {
-    withScriptjs,
-    withGoogleMap,
-    GoogleMap,
-    Marker,
-    Circle,
-    Rectangle
-} from "react-google-maps";
-
-const OracleMapWithCellTowers = compose(
-    withProps({
-        googleMapURL: "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&v=3.exp&libraries=geometry,drawing,places",
-        loadingElement: <div style={{ height: `100%` }} />,
-        containerElement: <div style={{ height: `400px` }} />,
-        mapElement: <div style={{ height: `100%` }} />,
-        center: { lat: 52.520007, lng: 13.404954 },
-    }),
-    withScriptjs,
-    withGoogleMap
-)(props =>
-    <GoogleMap
-        defaultZoom={11}
-        defaultCenter={props.center}
-    >
-        <Rectangle bounds={{east: props.ghPosition.ne.lon, west: props.ghPosition.sw.lon,
-            north: props.ghPosition.ne.lat, south: props.ghPosition.sw.lat}}
-                   options={{ fillColor: `red`, fillOpacity: 0.3, strokeWeight: 1}}/>
-    </GoogleMap>
-);
-
-
-
 
 class Renter extends Component {
 
@@ -46,6 +13,7 @@ class Renter extends Component {
         super(props);
         this.state = {
             chosenAddress: "-",
+            balance: 0,
             state: 1,
             progressStep: 1,
             carPosition: { lat: 52.520007, lng: 13.404954 },
@@ -55,10 +23,10 @@ class Renter extends Component {
             ghPosition: {ne: {lat: 0, lon: 0}, sw: {lat: 0, lon: 0}}
         };
         this.renderAllAccountsDropdown = this.renderAllAccountsDropdown.bind(this);
-        this.createContract = this.createContract.bind(this);
         this.onOwnerChange = this.onOwnerChange.bind(this);
-        this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
+        this.setRenterEthAccount = this.setRenterEthAccount.bind(this);
         this.createScriptNode = this.createScriptNode.bind(this);
+        this.fetchAccountBalance = this.fetchAccountBalance.bind(this);
     }
 
     componentDidMount() {
@@ -67,29 +35,6 @@ class Renter extends Component {
 
     onOwnerChange(e) {
         this.setState({chosenAddress: e.target.value});
-    }
-
-    createContract() {
-        this.setState({progressStep: 3});
-        /*
-        if (this.refs.carGSMField.value == "" || this.state.chosenAddress == "-") {
-            alert ("You have to fill out all fields.");
-        } else {
-            let url = ethereumBackendUrl + '/owner/' + this.state.chosenAddress + '/create_contract';
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    carGSMNumber: this.refs.carGSMField.value
-                })
-            })
-                .then(result=>result.json())
-                .then(result=>console.log('teeeeeeeest: ',result));
-        }
-        */
     }
 
     renderAllAccountsDropdown(data) {
@@ -103,16 +48,19 @@ class Renter extends Component {
         }
     }
 
-    handleReturnedMarkers(markers) {
-        this.setState({
-            activeMarkers: markers
-        });
+    setRenterEthAccount() {
+        this.setState({progressStep: 2});
+        this.fetchAccountBalance();
     }
 
+    fetchAccountBalance() {
+        let url = ethereumBackendUrl + '/account/' + this.state.chosenAddress;
 
+        fetch(url, {
+            method: 'get'
+        })  .then(result=>result.json())
+            .then(result=>result.success ? this.setState({balance: result.data.balance}) : null);
 
-    setOwnerEthAccount() {
-        this.setState({progressStep: 2});
     }
 
 
@@ -140,9 +88,9 @@ class Renter extends Component {
                     { this.state.progressStep == 2 ?
                         <div className="header-cols col-md-5">
                             <p>
-                                Account: 0x01230123012031023213122123123
+                                Account: {this.state.chosenAddress}
                                 <br/>
-                                Available Ether: 41223
+                                Available Ether: {this.state.balance}
                             </p>
                         </div>
                     : null }
@@ -166,7 +114,7 @@ class Renter extends Component {
                                 </select>
                             </label>
                             <br/>
-                            <button onClick={this.setOwnerEthAccount}>Next</button>
+                            <button onClick={this.setRenterEthAccount}>Next</button>
                         </div>
                     : null }
 
@@ -181,10 +129,10 @@ class Renter extends Component {
                                 </TabList>
 
                                 <TabPanel>
-                                    <RentACar />
+                                    <RentACar renterEthAddress={this.state.chosenAddress} />
                                 </TabPanel>
                                 <TabPanel>
-                                    <RentedCars />
+                                    <RentedCars renterEthAddress={this.state.chosenAddress} />
                                 </TabPanel>
                             </Tabs>
 

@@ -6,7 +6,7 @@ def read_s2_info():
     avg_hash_count = []
     avg_percent_area = []
 
-    path = "fences_info_s2_"
+    path = "s2/fences_info_s2_"
 
     for i in range(6, 21):
 
@@ -28,7 +28,7 @@ def read_geohash_info():
     avg_hash_count = []
     avg_percent_area = []
 
-    path = "fences_info.txt"
+    path = "geohash/fences_info.txt"
 
     with open(path) as fp:
         line = fp.readline()

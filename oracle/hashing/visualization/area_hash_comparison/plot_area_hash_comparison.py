@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     ax1 = plt.subplot(211)
     ax2 = plt.subplot(212)
-    ax1.set_ylim(97, 110)
+    ax1.set_ylim(0, 220)
     ax2.set_ylim(95, 120)
 
     ax1.set_xlabel("Average Hashes count")

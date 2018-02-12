@@ -11,8 +11,7 @@ def read_fences():
     with open("fences.txt") as fp:
         line = fp.readline()
         while line:
-            x = line.replace("(", "")
-            x = x.replace(")", "")
+            x = line.replace("(", "").replace(")", "").replace("[", "").replace("]", "")
             cords = x.split(",")
             latlon = list()
             for i in range(0, len(cords), 2):
@@ -27,8 +26,7 @@ def read_fences_point(path):
     with open(path) as fp:
         line = fp.readline()
         while line:
-            x = line.replace("(","")
-            x = x.replace(")","")
+            x = line.replace("(", "").replace(")", "").replace("[", "").replace("]", "")
             cords = x.split(",")
             cells = list()
             for i in range(0, len(cords) - 1, 8):
@@ -178,8 +176,8 @@ if __name__ == "__main__":
     fences = read_fences()
     #fence_points_S2_13 = read_fences_point("s2-13/fences_points.txt")
     #fence_points_S2_14 = read_fences_point("s2-14/fences_points.txt")
-    fence_points_S2_15 = read_fences_point("s2-15/fences_points.txt")
-    fence_points_geohash_6 = read_fences_point("geohash-6/fences_points.txt")
+    fence_points_S2_15 = read_fences_point("cell_points/s2-15/fences_points.txt")
+    fence_points_geohash_6 = read_fences_point("fences_points.txt")
 
     for x in range(0, len(fences)):
         plt.figure(figsize=(20, 20))

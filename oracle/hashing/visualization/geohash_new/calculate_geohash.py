@@ -38,7 +38,6 @@ def create_geojson(polygon):
 
 def read_fences():
     fences = []
-    area
     with open("fences.txt") as fp:
         line = fp.readline()
         while line:
@@ -64,15 +63,15 @@ if __name__ == "__main__":
             polygon = geometry.Polygon(fence)
             real_area = area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000
 
-            inner_geohashes_polygon = polygon_to_geohashes(polygon, precision, False)
-            polygon = geohashes_to_polygon(inner_geohashes_polygon)
+            geohashes_polygon = polygon_to_geohashes(polygon, precision, False)
+            polygon = geohashes_to_polygon(geohashes_polygon)
 
             perc_area = 100 * (area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000) / real_area
             p_area.append(perc_area)
-            geohash_num.append(len(compress(list(inner_geohashes_polygon))))
+            geohash_num.append(len(compress(list(geohashes_polygon))))
             print(precision)
 
 
         f = open("geohash_info.txt", "a")
-        f.write(str(sum(p_area) / len(p_area)) + "," + str(str(sum(geohash_num) / len(geohash_num)) + "\n"))
+        f.write(str(str(sum(geohash_num) / len(geohash_num)) + "\n") + "," + str(sum(p_area) / len(p_area)) )
         f.close()

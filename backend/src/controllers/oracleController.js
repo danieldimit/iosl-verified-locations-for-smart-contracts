@@ -12,11 +12,29 @@ var contracts_input = fs.readFileSync('src/smartcontracts/CarSharingContract.sol
 var contracts_output = solc.compile(contracts_input.toString(), 1);
 var oracle_bytecode = contracts_output.contracts[':CarDetails'].bytecode;
 var oracle_abi = JSON.parse(contracts_output.contracts[':CarDetails'].interface);
-var oracle_contract = web3.eth.contract(oracle_abi);
+var car_contract = web3.eth.contract(oracle_abi);
 var oracleAddress = null;
 var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 var Web3Utils = require('web3-utils');
+
+function geofencePrefAndSufToGeofence(prefix, suffix) {
+    var pref = web3.toDecimal(removeZeros(prefix));
+    var suf = [];
+    for (var i = 0; i < suffix.length; i++) {
+        var tempSuf = web3.toDecimal(removeZeros(suffix[i]));
+        suf.push(parseInt(String(pref).concat(String(tempSuf))));
+    }
+    return suf;
+}
+
+function removeZeros(hex) {
+    var newHex = hex;
+    while (newHex.substring(newHex.length - 1) == '0' && newHex[newHex.length - 2] != 'x') {
+        newHex = newHex.substring(0, newHex.length - 1);
+    }
+    return newHex;
+}
 
 module.exports = {
 
@@ -82,7 +100,7 @@ module.exports = {
                 var car_response = new Array();
                 result.forEachDone(function(item){
                     if(item.car_owner_address) {
-                        var car_owner = renter_contract.at(item.car_owner_address);
+                        var car_owner = owner_contract.at(item.car_owner_address);
                         console.log(">?>>>>>>>>>>>>> BEFORE THE CALL ", item.car_owner_address);
                         var rentedCars = car_owner.getRentedCars.call();
                         var rentedCarsResult = new Array();

@@ -21,6 +21,19 @@ class CreateCar extends Component {
         s2Level: 15
     };
 
+    componentDidMount() {
+        CreateCar.staticState = {
+            carGSMNum: null,
+            penaltyValue: 0,
+            position: 5163466995026362368,
+            geofence: [],
+            s2GFPolygons: [],
+            s2GFHashes: [],
+            s2Level: 15
+        };
+        console.log("AAAAAAAAAA ", CreateCar.staticState);
+    }
+
     strToIntArr(geofence) {
         var newGeo = [];
         for (let a of geofence) {
@@ -50,7 +63,15 @@ class CreateCar extends Component {
             .then(result=>result.json())
             .then(result=>this.props.triggerRender());
 
-        console.log(carObject);
+        CreateCar.staticState = {
+            carGSMNum: null,
+            penaltyValue: 0,
+            position: 5163466995026362368,
+            geofence: [],
+            s2GFPolygons: [],
+            s2GFHashes: [],
+            s2Level: 15
+        };
     }
 
     render() {

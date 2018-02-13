@@ -60,8 +60,8 @@ class PolygonDrawMap extends Component {
     onS2LevelChange(e) {
         this.props.inputValues.s2Level = e.target.value;
 
-        if (this.props.inputValues.geofence != []) {
-
+        if (this.props.inputValues.geofence.length != 0) {
+            console.log("SHOULD BE HERE: ", this.props.inputValues.geofence.length);
             let url = s2ServerUrl + '/convertGeofenceToS2Polygons?maxLevel=' + e.target.value;
 
             fetch(url, {
@@ -87,7 +87,7 @@ class PolygonDrawMap extends Component {
         var target = $('#hidden-search-field-polygons')[0];
         target.dispatchEvent(event);
 
-        this.refs.asd.setState({
+        this.refs.polyCounter.setState({
             numberOfPolys: response.cellIds.length
         });
     }
@@ -101,9 +101,10 @@ class PolygonDrawMap extends Component {
                 var latlng = input.value.split(/\s/);
                 var objLatLng = {lat: latlng[0], lng: latlng[1]};
                 this.props.inputValues.geofence.push(objLatLng);
+                input.value = "";
             } else {
                 console.log(this.props.inputValues.geofence);
-                let url = s2ServerUrl + '/convertGeofenceToS2Polygons?maxLevel=' + 15;
+                let url = s2ServerUrl + '/convertGeofenceToS2Polygons?maxLevel=' + this.props.inputValues.s2Level;
 
                 fetch(url, {
                         method: 'POST',
@@ -144,7 +145,7 @@ class PolygonDrawMap extends Component {
                     <option value={15}>15</option>
                     <option value={16}>16</option>
                 </select>
-                <CreateCarPolygonCounter ref="asd"
+                <CreateCarPolygonCounter ref="polyCounter"
                     numberOfPolygons={this.props.inputValues.s2GFHashes.length}/>
 
 

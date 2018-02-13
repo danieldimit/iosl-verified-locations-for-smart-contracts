@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import CreateCar from './CreateCar';
 import DeleteCar from './DeleteCar';
-import CreateAndDeleteCar from './CreateAndDeleteCar';
 import { fetchAllAccounts } from '../actions/index';
 import { ethereumBackendUrl } from '../config';
 

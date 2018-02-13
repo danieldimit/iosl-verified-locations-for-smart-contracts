@@ -43,7 +43,7 @@ class RentedCars extends Component {
         this.createScriptNode = this.createScriptNode.bind(this);
         this.returnCar = this.returnCar.bind(this);
         this.fetchRentedCars = this.fetchRentedCars.bind(this);
-        this.setRentedCarsToState = this.setRentedCarsToState.bind(this);
+        this.flattenRentedCarsList = this.flattenRentedCarsList.bind(this);
         this.renderCarOnMap = this.renderCarOnMap.bind(this);
         this.handleClickOnCar = this.handleClickOnCar.bind(this);
         this.returnCarAndRerender = this.returnCarAndRerender.bind(this);
@@ -59,7 +59,7 @@ class RentedCars extends Component {
         fetch(url, {
             method: 'get'
         })  .then(result=>result.json())
-            .then(result=>result.success ? this.setRentedCarsToState(result.data) : null);
+            .then(result=>result.success ? this.flattenRentedCarsList(result.data) : null);
     }
 
 
@@ -72,7 +72,7 @@ class RentedCars extends Component {
         }
     }
 
-    setRentedCarsToState(rentedCars) {
+    flattenRentedCarsList(rentedCars) {
         var flattenedDict = [];
         var idCounter = 0;
         var totalNumber = 0;

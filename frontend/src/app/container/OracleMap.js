@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import * as s2 from 's2-geometry';
 import { fetchAllAccounts } from '../actions/index';
 
-import { oracleBackendUrl, s2ServerUrl } from '../config';
+import { oracleBackendUrl, ethereumBackendUrl, s2ServerUrl } from '../config';
 
 import { compose, withProps } from "recompose";
 import {
@@ -55,11 +55,17 @@ class OracleMap extends Component {
             cellCenter: { lat: 52.520007, lng: 13.404954 },
             cellRadius: 0,
             value: '',
-            s2Polygon: []
+            s2Polygon: [],
+            rentedCars: [],
+            selectedCar: {}
         };
 
         this.giveToState = this.giveToState.bind(this);
         this.handleMarkerDragged = this.handleMarkerDragged.bind(this);
+        this.fetchRentedCars = this.fetchRentedCars.bind(this);
+        this.flattenRentedCarsList = this.flattenRentedCarsList.bind(this);
+        this.setStateOfRentedCars = this.setStateOfRentedCars.bind(this);
+        this.onSelectedCarChange = this.onSelectedCarChange.bind(this);
     }
 
     componentDidMount() {
@@ -69,7 +75,73 @@ class OracleMap extends Component {
         fetch(url)
             .then(result=>result.json())
             .then(result=>this.giveToState(result));
-        this.props.fetchAllAccounts();
+        this.fetchRentedCars();
+    }
+
+    fetchRentedCars() {
+        let url = ethereumBackendUrl + '/oracle/getRentedCarsContracts';
+        fetch(url, {
+            method: 'get'
+        })  .then(result=>result.json())
+            .then(result=>result.success ? this.flattenRentedCarsList(result.data) : null);
+    }
+
+    setStateOfRentedCars(flattenedDict, totalNumber) {
+
+        if (flattenedDict.length === totalNumber) {
+
+            console.log("WOOOW: ", flattenedDict.length, " ", totalNumber);
+            this.setState({rentedCars: flattenedDict});
+        }
+    }
+
+    flattenRentedCarsList(rentedCars) {
+        var flattenedDict = [];
+        var idCounter = 0;
+        var totalNumber = 0;
+
+        function handleResponse(newCar, result) {
+
+            newCar['carDetails']['position'] = result;
+            flattenedDict.push(newCar);
+
+            console.log(flattenedDict);
+            return flattenedDict;
+        }
+
+        // Get complete car number. Can be implemeneted better!
+        for (let carsOfOneOwner of rentedCars) {
+            for (let car of carsOfOneOwner.availableCarContract) {
+                totalNumber++;
+            }
+        }
+
+        for (let carsOfOneOwner of rentedCars) {
+            for (let car of carsOfOneOwner.availableCarContract) {
+                car['owner'] = carsOfOneOwner.ownerContract;
+                car['id'] = idCounter;
+
+
+                // Convert position from s2 to lat lon
+                let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + car['carDetails']['position'];
+
+                fetch(url, {mode: 'cors'})
+                    .then(result=>result.json())
+                    .then(result=>handleResponse(car, result))
+                    .then(result=>this.setStateOfRentedCars(flattenedDict, totalNumber));
+
+                if (car.id == 0) {
+                    this.setState({selectedCar: car});
+                }
+                idCounter++;
+            }
+        }
+        return flattenedDict;
+    }
+
+    onSelectedCarChange(e) {
+        console.log("Selected Car: ", this.state.rentedCars[e.target.value]);
+        this.setState({selectedCar: this.state.rentedCars[e.target.value]});
     }
 
     handleChange(event) {
@@ -111,7 +183,7 @@ class OracleMap extends Component {
 
     renderAllAccountsDropdown(data) {
         return (
-            <option key={data} value={data}>{data}</option>
+            <option key={data.id} value={data.id}>{data.carContractAddress}</option>
         );
     }
 
@@ -146,9 +218,9 @@ class OracleMap extends Component {
                     <article className="content-block col-lg-4 col-md-5 col-sm-12 col-xs-12">
                         <h2>Car address</h2>
 
-                        <select onChange={this.onOwnerChange} ref="selectionOracle">
+                        <select onChange={this.onSelectedCarChange} ref="selectionOracle">
                             <option value={null}>-</option>
-                            { this.props.accounts.map(this.renderAllAccountsDropdown) }
+                            { this.state.rentedCars.map(this.renderAllAccountsDropdown) }
                         </select>
                     </article>
                 </section>

@@ -47,6 +47,7 @@ class RentedCars extends Component {
         this.renderCarOnMap = this.renderCarOnMap.bind(this);
         this.handleClickOnCar = this.handleClickOnCar.bind(this);
         this.returnCarAndRerender = this.returnCarAndRerender.bind(this);
+        this.setStateOfRentedCars = this.setStateOfRentedCars.bind(this);
     }
 
     componentDidMount() {
@@ -61,9 +62,20 @@ class RentedCars extends Component {
             .then(result=>result.success ? this.setRentedCarsToState(result.data) : null);
     }
 
+
+    setStateOfRentedCars(flattenedDict, totalNumber) {
+
+        if (flattenedDict.length === totalNumber) {
+
+            console.log("WOOOW: ", flattenedDict.length, " ", totalNumber);
+            this.setState({rentedCars: flattenedDict});
+        }
+    }
+
     setRentedCarsToState(rentedCars) {
         var flattenedDict = [];
         var idCounter = 0;
+        var totalNumber = 0;
 
         function handleResponse(newCar, result) {
 
@@ -72,6 +84,13 @@ class RentedCars extends Component {
 
             console.log(flattenedDict);
             return flattenedDict;
+        }
+
+        // Get complete car number. Can be implemeneted better!
+        for (let carsOfOneOwner of rentedCars) {
+            for (let car of carsOfOneOwner.availableCarContract) {
+                totalNumber++;
+            }
         }
 
         for (let carsOfOneOwner of rentedCars) {
@@ -86,7 +105,7 @@ class RentedCars extends Component {
                 fetch(url, {mode: 'cors'})
                     .then(result=>result.json())
                     .then(result=>handleResponse(car, result))
-                    .then(result=>this.setState({rentedCars: flattenedDict}));
+                    .then(result=>this.setStateOfRentedCars(flattenedDict, totalNumber));
 
                 if (car.id == 0) {
                     this.setState({selectedCar: car});

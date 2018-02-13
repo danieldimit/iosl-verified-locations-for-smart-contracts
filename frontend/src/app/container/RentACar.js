@@ -27,7 +27,8 @@ const OracleMapWithCellTowers = compose(
         defaultZoom={11}
         defaultCenter={props.center}
     >
-        {props.availableCars.map(props.renderCars)}
+        {props.availableCars.map(res=>console.log("HTML: ", res))}
+        {props.renderCars(props.availableCars)}
     </GoogleMap>
 );
 
@@ -49,6 +50,8 @@ class RentACar extends Component {
         this.setAvailableCarsToState = this.setAvailableCarsToState.bind(this);
         this.renderCarOnMap = this.renderCarOnMap.bind(this);
         this.handleClickOnCar = this.handleClickOnCar.bind(this);
+        this.renderCar = this.renderCar.bind(this);
+        this.setStateOfAvailableCars = this.setStateOfAvailableCars.bind(this);
     }
 
     componentDidMount() {
@@ -63,9 +66,19 @@ class RentACar extends Component {
             .then(result=>result.success ? this.setAvailableCarsToState(result.data) : null);
     }
 
+    setStateOfAvailableCars(flattenedDict, totalNumber) {
+
+        if (flattenedDict.length === totalNumber) {
+
+            console.log("WOOOW: ", flattenedDict.length, " ", totalNumber);
+            this.setState({availableCars: flattenedDict});
+        }
+    }
+
     setAvailableCarsToState(availableCars) {
         var flattenedDict = [];
         var idCounter = 0;
+        var totalNumber = 0;
 
         function handleResponse(newCar, result) {
 
@@ -75,6 +88,14 @@ class RentACar extends Component {
             console.log(flattenedDict);
             return flattenedDict;
         }
+
+        // Get complete car number. Can be implemeneted better!
+        for (let carsOfOneOwner of availableCars) {
+            for (let car of carsOfOneOwner.availableCarContract) {
+                totalNumber++;
+            }
+        }
+
 
         for (let carsOfOneOwner of availableCars) {
             for (let car of carsOfOneOwner.availableCarContract) {
@@ -88,7 +109,7 @@ class RentACar extends Component {
                 fetch(url, {mode: 'cors'})
                     .then(result=>result.json())
                     .then(result=>handleResponse(car, result))
-                    .then(result=>this.setState({availableCars: flattenedDict}));
+                    .then(result=>this.setStateOfAvailableCars(flattenedDict, totalNumber));
 
                 if (car.id == 0) {
                     this.setState({selectedCar: car});
@@ -123,9 +144,18 @@ class RentACar extends Component {
     }
 
     renderCarOnMap(car) {
+        return (
+            <div>
+                {car.map(this.renderCar)}
+            </div>
+        );
+    }
+
+    renderCar (car) {
         console.log("RENDER CAR: ", car);
         return (
-            <Marker key={car.id} options={{ fillColor: `orange`, fillOpacity: 0.3, strokeWeight: 1}} position={car.carDetails.position[0]} draggable={false}
+            <Marker key={car.id}
+                    position={car.carDetails.position[0]} draggable={false}
                     onClick={() => this.handleClickOnCar(car.id)}/>
         );
     }

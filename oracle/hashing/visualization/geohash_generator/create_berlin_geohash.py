@@ -1,4 +1,4 @@
-import geohash
+import pygeohash as ghash
 from polygon_geohasher.polygon_geohasher import polygon_to_geohashes, geohashes_to_polygon
 from shapely.geometry import Polygon, mapping
 
@@ -62,7 +62,7 @@ def generate_geohash():
     print(perc_area)
     points = []
     for hash in compress(list(geohashes_polygon)):
-        bbox = geohash.bbox(hash)
+        bbox = ghash.bbox(hash)
         lat1 = bbox['s']
         lat2 = bbox['n']
         lon1 = bbox['w']
@@ -78,6 +78,5 @@ def generate_geohash():
     f = open("fences_points.txt", "w")
     f.write(str(points))
     f.close()
-
 generate_geohash()
 

@@ -3,7 +3,9 @@ from shapely import geometry
 from shapely.geometry import Polygon, mapping
 from area import area
 import itertools
+import geohash
 
+import sys
 
 def compress(hashes):
     len_hash = len(hashes[0])
@@ -53,10 +55,24 @@ def read_fences():
 
 
 if __name__ == "__main__":
+    args = sys.argv
+    if len(args) < 4:
+        print("Usage: <path to fences file> <min precision> <max precision> <optional: save points of points --points>")
+        exit(1)
+
+    points = False
+
+    fences_path = args[1]
+    precision_min = args[2]
+    precision_max = args[3]
+
+    if len(args) >= 5:
+        if args[4] == "--points":
+            points = True
 
     fences = read_fences()
 
-    for precision in range(7, 9):
+    for precision in range(int(precision_min), int(precision_max)+1):
         geohash_num = []
         p_area = []
         for fence in fences:
@@ -69,9 +85,29 @@ if __name__ == "__main__":
             perc_area = 100 * (area(create_geojson(mapping(polygon)["coordinates"][0])) / 1000000) / real_area
             p_area.append(perc_area)
             geohash_num.append(len(compress(list(geohashes_polygon))))
-            print(precision)
 
+            if points:
+                ps = []
+                for hash in compress(list(geohashes_polygon)):
+                    bbox = geohash.bbox(hash)
+                    lat1 = bbox['s']
+                    lat2 = bbox['n']
+                    lon1 = bbox['w']
+                    lon2 = bbox['e']
+                    ps.append(lat1)
+                    ps.append(lon1)
+                    ps.append(lat2)
+                    ps.append(lon1)
+                    ps.append(lat2)
+                    ps.append(lon2)
+                    ps.append(lat1)
+                    ps.append(lon2)
+                f = open("fences_points.txt", "a")
+                f.write(str(ps))
+                f.close()
 
         f = open("geohash_info.txt", "a")
         f.write(str(str(sum(geohash_num) / len(geohash_num)) + "\n") + "," + str(sum(p_area) / len(p_area)) )
         f.close()
+
+

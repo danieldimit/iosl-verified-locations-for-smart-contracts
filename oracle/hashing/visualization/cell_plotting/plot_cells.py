@@ -6,7 +6,8 @@ import cartopy.io.shapereader as shpreader
 
 import sys
 
-from shapely .geometry import Polygon
+from shapely.geometry import Polygon
+
 
 def read_fences(path="fences.txt"):
     fences = list()
@@ -17,13 +18,13 @@ def read_fences(path="fences.txt"):
             cords = x.split(",")
             latlon = list()
             for i in range(0, len(cords), 2):
-                latlon.append([float(cords[i]), float(cords[i+1])])
+                latlon.append([float(cords[i]), float(cords[i + 1])])
             fences.append(latlon)
             line = fp.readline()
     return fences
 
-def read_fences_point(path):
 
+def read_fences_point(path):
     fences = list()
     with open(path) as fp:
         line = fp.readline()
@@ -50,8 +51,8 @@ def read_fences_point(path):
             line = fp.readline()
     return fences
 
-def plot_fence(fence, fence_points, subplot, extent=[13.0, 13.8, 52.3, 52.7]):
 
+def plot_fence(fence, fence_points, subplot, extent=[13.0, 13.8, 52.3, 52.7]):
     proj = cimgt.MapQuestOSM()
     ax = plt.subplot(subplot[0], subplot[1], subplot[2], projection=proj.crs)
 
@@ -77,12 +78,37 @@ def plot_fence(fence, fence_points, subplot, extent=[13.0, 13.8, 52.3, 52.7]):
     ax.add_geometries(geoms2, ccrs.PlateCarree(), facecolor='orange',
                       edgecolor='black', alpha=0.2)
 
+
+def read_extent(string_extent):
+    ext = string_extent.replace("[", "").replace("]", "").split(",")
+    if len(ext) != 4:
+        print("Parsing extent failed: Specify exactly 4 numbers")
+        print(
+            "Usage: <fences path> <hashes fence points path> <optional extent of map in the following format [min_longitude,max_longitude,min_latitude,max_latitude] (no spaces)")
+        return None
+    extent = []
+    for x in ext:
+        try:
+            extent.append(float(x))
+        except:
+            print("Parsing extent failed: Could not parse one of the numbers in the extent")
+            print(
+            "Usage: <fences path> <hashes fence points path> <optional extent of map in the following format [min_longitude,max_longitude,min_latitude,max_latitude] (no spaces)")
+            return None
+    return extent
+
+
 if __name__ == "__main__":
 
     args = sys.argv
     if len(args) < 3:
-        print("You must provide at least the hashes fence points and the fence points")
+        print(
+        "Usage: <fences path> <hashes fence points path> <optional extent of map in the following format [min_longitude,max_longitude,min_latitude,max_latitude] (no spaces)")
         exit(1)
+    extent = None
+    if len(args) >= 4:
+        extent = read_extent(args[3])
+
     fences_path = args[1]
     hashed_fences_path = args[2]
 
@@ -91,5 +117,8 @@ if __name__ == "__main__":
 
     for x in range(0, len(fences)):
         plt.figure(figsize=(20, 20))
-        plot_fence(fences[x], fences_points[x], [1,1,1])
+        if extent != None:
+            plot_fence(fences[x], fences_points[x], [1, 1, 1], extent)
+        else:
+            plot_fence(fences[x], fences_points[x], [1, 1, 1])
         plt.savefig("plot-" + str(x) + ".png")

@@ -1,0 +1,6 @@
+# Geohash Polygon generation requirements
+
+python-geohash==0.8.5
+area==1.1.0
+polygon-geohasher==0.0.1
+Shapely==1.6.4

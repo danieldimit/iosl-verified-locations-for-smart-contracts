@@ -32,13 +32,17 @@ class CreateCarInput extends Component {
                 <label>
                     Car GSM number:
                     <br/>
-                    <input type="text" onChange={this.handleChangeInGSM} ref="carGSMField"/>
+                    <input type="text" onChange={this.handleChangeInGSM}
+                           value={this.props.inputValues.carGSMNum} ref="carGSMField"/>
+
                 </label>
                 <br/>
                 <label>
                     Penalty value:
                     <br/>
-                    <input type="text" onChange={this.handleChangeInPenalty} ref="penalty"/>
+                    <input type="text" onChange={this.handleChangeInPenalty}
+                           value={this.props.inputValues.penaltyValue} ref="penalty"/>
+
                 </label>
             </div>
         );

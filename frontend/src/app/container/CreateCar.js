@@ -12,8 +12,8 @@ class CreateCar extends Component {
     }
 
     static staticState = {
-        carGSMNum: null,
-        penaltyValue: 0,
+        carGSMNum: "",
+        penaltyValue: "",
         position: 5163466995026362368,
         geofence: [],
         s2GFPolygons: [],
@@ -23,8 +23,8 @@ class CreateCar extends Component {
 
     componentDidMount() {
         CreateCar.staticState = {
-            carGSMNum: null,
-            penaltyValue: 0,
+            carGSMNum: "",
+            penaltyValue: "",
             position: 5163466995026362368,
             geofence: [],
             s2GFPolygons: [],
@@ -64,8 +64,8 @@ class CreateCar extends Component {
             .then(result=>this.props.triggerRender());
 
         CreateCar.staticState = {
-            carGSMNum: null,
-            penaltyValue: 0,
+            carGSMNum: "",
+            penaltyValue: "",
             position: 5163466995026362368,
             geofence: [],
             s2GFPolygons: [],

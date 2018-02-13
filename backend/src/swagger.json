@@ -550,6 +550,13 @@
             "description": "The address of the car contract of the car that gets rented",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "deposit",
+            "in": "query",
+            "description": "Money to be deposited in the contract",
+            "required": true,
+            "type": "integer"
           }
         ],
         "responses": {

@@ -129,10 +129,12 @@ class Renter extends Component {
                                 </TabList>
 
                                 <TabPanel>
-                                    <RentACar renterEthAddress={this.state.chosenAddress} />
+                                    <RentACar renterEthAddress={this.state.chosenAddress}
+                                              getBalance={this.fetchAccountBalance}/>
                                 </TabPanel>
                                 <TabPanel>
-                                    <RentedCars renterEthAddress={this.state.chosenAddress} />
+                                    <RentedCars renterEthAddress={this.state.chosenAddress}
+                                                getBalance={this.fetchAccountBalance}/>
                                 </TabPanel>
                             </Tabs>
 

@@ -303,7 +303,7 @@ module.exports = {
 			                    	if(err){
 			                    		base.errorCallback(err,callback);
 			                    	}if(result){
-			                    		base.successCallback(result,callback);
+			                    		base.successCallback(global.web3.fromWei(result, 'ether'),callback);
 			                    	}
 			                    });
 		    		}else{

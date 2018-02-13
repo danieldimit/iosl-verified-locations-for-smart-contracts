@@ -21,15 +21,17 @@ router.post('/:address/createRenterContract', function (request, response) {
 	});
 });
 
-router.put('/:address/:ownercontractaddress/:car_contract_address/rentCar', function (request, response) {
-	renter.rentCar(request.params.address,request.params.ownercontractaddress,request.params.car_contract_address,function(result){
+router.put('/:address/:ownerContractAddress/:carContractAddress/rentCar', function (request, response) {
+	renter.rentCar(request.params.address, request.params.ownerContractAddress,
+		request.params.carContractAddress, request.query.deposit, function(result){
 		response.json(result);
 	});
 });
 
 router.put('/:address/:ownercontractaddress/:car_contract_address/returnCar', function (request, response) {
 	console.log("here we are");
-	renter.returnCar(request.params.address,request.params.ownercontractaddress,request.params.car_contract_address,function(result){
+	renter.returnCar(request.params.address, request.params.ownercontractaddress,
+		request.params.car_contract_address, function(result){
 		response.json(result);
 	});
 });

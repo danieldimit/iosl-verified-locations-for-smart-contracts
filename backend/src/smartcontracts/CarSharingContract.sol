@@ -246,8 +246,7 @@ contract Owner {
     address[] cars;
 
     address[] listAvailableCars;
-
-    address[] RentedCars;
+    address[] listRentedCars;
 
     modifier onlyOwner() {
         require(msg.sender == owner_address);
@@ -266,17 +265,72 @@ contract Owner {
     function addNewCar(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) onlyOwner returns (address){
         address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
         cars.push(carContract);
+        listRentedCars.push(0x0);
+        listAvailableCars.push(carContract);
         return carContract;
     }
 
     function deleteCar(address carAddress) onlyOwner {
-        var index = cars.length;
+        bool available = false;
+
         for (uint i = 0; i < cars.length; i++) {
             if (cars[i] == carAddress) {
                 CarDetails carObj = CarDetails(cars[i]);
+                available = carObj.isAvailable();
                 carObj.deleteCarDetails();
-                delete cars[i];
-                index = i;
+                cars[i] = cars[cars.length - 1];
+                delete cars[cars.length - 1];
+                cars.length--;
+                break;
+            }
+        }
+
+        bool aDeleted = false;
+        bool rDeleted = false;
+
+        if (available) {
+            for (uint j = 0; j < listAvailableCars.length; j++) {
+                if (listAvailableCars[j] == carAddress) {
+                    listAvailableCars[j] = listAvailableCars[listAvailableCars.length - 1];
+                    delete listAvailableCars[listAvailableCars.length - 1];
+                    listAvailableCars.length--;
+                    aDeleted = true;
+                    if (rDeleted) {
+                        break;
+                    }
+                }
+
+                if (listRentedCars[j] == 0x0) {
+                    listRentedCars[j] = listRentedCars[listRentedCars.length - 1];
+                    delete listRentedCars[listRentedCars.length - 1];
+                    listRentedCars.length--;
+                    rDeleted = true;
+                    if (aDeleted) {
+                        break;
+                    }
+                }
+            }
+        } else {
+            for (uint m = 0; m < listAvailableCars.length; m++) {
+                if (listAvailableCars[m] == 0x0) {
+                    listAvailableCars[m] = listAvailableCars[listAvailableCars.length - 1];
+                    delete listAvailableCars[listAvailableCars.length - 1];
+                    listAvailableCars.length--;
+                    aDeleted = true;
+                    if (rDeleted) {
+                        break;
+                    }
+                }
+
+                if (listRentedCars[m] == carAddress) {
+                    listRentedCars[m] = listRentedCars[listRentedCars.length - 1];
+                    delete listRentedCars[listRentedCars.length - 1];
+                    listRentedCars.length--;
+                    rDeleted = true;
+                    if (aDeleted) {
+                        break;
+                    }
+                }
             }
         }
     }
@@ -302,37 +356,63 @@ contract Owner {
     // Functions called by renter
     /////////////////////////////////////
 
-    function ListAvailableCars() constant returns (address[]){
-        for (uint i = 0; i < cars.length; i++)
-        {
-            CarDetails carObj = CarDetails(cars[i]);
-            if (carObj.isAvailable() == true) {
-                listAvailableCars.push(cars[i]);
-            }
-            else {
-                delete cars[i];
-            }
-        }
+    function getAvailableCars() constant returns (address[]) {
         return listAvailableCars;
     }
 
-    function showCarDetail(address carAddress) constant returns (bool){
-        bool success = false;
-        for (uint i = 0; i < cars.length; i++)
-        {
-            CarDetails carObj = CarDetails(cars[i]);
-            bool isCarAvailable = carObj.isAvailable();
-            if (cars[i] == carAddress && isCarAvailable) {
-                success = true;
-            }
-        }
-        return success;
+    function getRentedCars() constant returns (address[]){
+        return listRentedCars;
     }
-
 
     function alreadyRentedCarByUser(address renterAdr) constant returns (address) {
         var renter = renters[renterAdr];
         return renter.rented_car;
+    }
+
+    function insertInAvailableList(address carAdr) constant {
+        bool laRdy = false;
+        bool lrRdy = false;
+
+        for (uint i = 0; i < listAvailableCars.length; i++) {
+            if (!laRdy && listAvailableCars[i] == 0x0) {
+                listAvailableCars[i] = carAdr;
+                laRdy = true;
+                if (lrRdy) {
+                    break;
+                }
+            }
+
+            if (!lrRdy && listRentedCars[i] == carAdr) {
+                listRentedCars[i] = 0x0;
+                lrRdy = true;
+                if (laRdy) {
+                    break;
+                }
+            }
+        }
+    }
+
+    function insertInRentedList(address carAdr) constant {
+        bool laRdy = false;
+        bool lrRdy = false;
+
+        for (uint i = 0; i < listAvailableCars.length; i++) {
+            if (!laRdy && listAvailableCars[i] == carAdr) {
+                listAvailableCars[i] = 0x0;
+                laRdy = true;
+                if (lrRdy) {
+                    break;
+                }
+            }
+
+            if (!lrRdy && listRentedCars[i] == 0x0) {
+                listRentedCars[i] = carAdr;
+                lrRdy = true;
+                if (laRdy) {
+                    break;
+                }
+            }
+        }
     }
 
     function rentCar(address carAddress) payable returns (bool){
@@ -349,6 +429,9 @@ contract Owner {
         }*/
         CarDetails carObj = CarDetails(carAddress);
         bool isCarAvailable = carObj.isAvailable();
+
+        insertInRentedList(carAddress);
+
         if (isCarAvailable) {
             var renter = renters[msg.sender];
             renter.rented_car = carAddress;
@@ -409,12 +492,15 @@ contract Owner {
             carObj.SetCarStatus(msg.sender, true);
             success = true;
         }
+
         for (uint i = 0; i < renterAddress.length; i++) {
             if (renterAddress[i] == msg.sender) {
                 delete renterAddress[i];
             }
         }
+
+        insertInAvailableList(carAddress);
+
         return success;
     }
-
 }

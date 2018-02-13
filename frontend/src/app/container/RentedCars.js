@@ -123,7 +123,8 @@ class RentedCars extends Component {
             }
         })
             .then(result=>result.json())
-            .then(result=>this.returnCarAndRerender(result));
+            .then(result=>this.returnCarAndRerender(result))
+            .then(res=>this.props.getBalance());
     }
 
     returnCarAndRerender(result) {

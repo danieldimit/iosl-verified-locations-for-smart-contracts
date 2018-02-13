@@ -207,19 +207,19 @@ module.exports = {
             });
     },
 
-    rentCar : function (account_address, ownercontractaddress ,car_contract_address, callback){
+    rentCar : function (account_address, ownercontractaddress ,car_contract_address, deposit, callback){
         //Implementation Pending as per ABI 
       
               var owner = renter_contract.at(ownercontractaddress);
               var rent_car = owner.rentCar.sendTransaction(car_contract_address,
                                 { from: account_address, 
-                                gas: 4700000,
-                                  value: web3.toWei(10,'ether')},(err, result) => {
-                                                            if(err){
-                                                                base.errorCallback(err,callback);
-                                                            }if(result){
-                                                                base.successCallback(result,callback);
-                                                            }
+                                    gas: 4700000,
+                                    value: web3.toWei(parseInt(deposit), 'ether')},(err, result) => {
+                                        if(err){
+                                            base.errorCallback(err,callback);
+                                        }if(result){
+                                            base.successCallback(result,callback);
+                                        }
              });
                 
     },

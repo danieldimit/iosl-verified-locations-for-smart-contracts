@@ -102,7 +102,9 @@ class RentACar extends Component {
     rentCar() {
         console.log(this.props.renterEthAddress, this.state.selectedCar.owner, this.state.selectedCar.carContractAddress);
         let url = ethereumBackendUrl + '/renter/' + this.props.renterEthAddress + '/'
-            + this.state.selectedCar.owner + '/' + this.state.selectedCar.carContractAddress + '/rentCar';
+            + this.state.selectedCar.owner + '/' + this.state.selectedCar.carContractAddress
+            + '/rentCar?deposit=' + this.state.selectedCar.carDetails.penaltyValue;
+        console.log(url);
         fetch(url, {
             method: 'PUT',
             headers: {
@@ -111,7 +113,8 @@ class RentACar extends Component {
             }
         })
             .then(result=>result.json())
-            .then(result=>console.log("Renting ", this.state.selectedCar.carContractAddress, ' ', result));
+            .then(result=>console.log("Renting ", this.state.selectedCar.carContractAddress, ' ', result))
+            .then(res=>this.props.getBalance());
     }
 
     handleClickOnCar(carId) {

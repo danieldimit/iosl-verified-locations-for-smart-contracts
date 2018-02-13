@@ -81,32 +81,35 @@ module.exports = {
         Account.findAll().then(result=>{
                 var car_response = new Array();
                 result.forEachDone(function(item){
-                    if(item.car_owner_address){
+                    if(item.car_owner_address) {
                         var car_owner = renter_contract.at(item.car_owner_address);
-                        var rented_car = car_owner.alreadyRentedCarByUser(accounts_address, {from: item.car_owner_address, gas: 4700000},
-                            (err, carResult) => {if(carResult){
-                                var rented_car_result = new Array();
-                                console.log("POSITION: ", web3.toDecimal(carResult));
-                                if (web3.toDecimal(carResult) != 0) {
-                                    var car_address = car_contract.at(carResult);
+                        console.log(">?>>>>>>>>>>>>> BEFORE THE CALL ", item.car_owner_address);
+                        var rentedCars = car_owner.getRentedCars.call();
+                        var rentedCarsResult = new Array();
+                        rentedCars.forEachDone(function(_car){
+                            if (_car != "0x0000000000000000000000000000000000000000") {
+                                console.log(_car);
+                                var car_address = car_contract.at(_car);
 
-                                    car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
-                                        (err, result) => {if(result){
-                                            var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
-                                            console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
-                                            rented_car_result.push({
-                                                carContractAddress: carResult,
-                                                carDetails:
-                                                    {penaltyValue: result[0],
-                                                        carGSMNum: result[1],
-                                                        position: web3.toDecimal(String(result[2]).substring(0, 18)),
-                                                        geofence: geofence
-                                                    }});
-                                            car_response.push({ownerContract:item.car_owner_address,availableCarContract:rented_car_result});
-                                        }});
-                                }
-
-                            }});
+                                car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
+                                    (err, result) => {if(result){
+                                        var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
+                                        console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
+                                        rentedCarsResult.push({carContractAddress:_car,
+                                            carDetails:{penaltyValue:result[0],
+                                                carGSMNum: result[1],
+                                                position: web3.toDecimal(String(result[2]).substring(0, 18)),
+                                                geofence: geofence
+                                            }});
+                                    }});
+                            }
+                        },function(){
+                            setTimeout(function() {
+                                car_response.push({
+                                    ownerContract:item.car_owner_address,
+                                    availableCarContract:rentedCarsResult});
+                            }, 1000);
+                        });
                     }
                 }, function(){
                     setTimeout(function() {
@@ -118,40 +121,6 @@ module.exports = {
             error=>{
                 base.errorCallback(error,callback);
             });
-
-		 Account.findAll().then(result=>{
-            var car_response = new Array();
-            result.forEachDone(function(item){
-                if(item.car_owner_address){
-                     var car_owner = owner_contract.at(item.car_owner_address);
-                        var available_car = car_owner.alreadyRentedCars.call();
-                        var available_car_result = new Array();
-                        available_car.forEachDone(function(car_){
-                             car_owner.GetCarDetails(car_, {from: item.account_address, gas: 4700000},
-                                                    (err, result) => {if(result){
-                                                                            available_car_result.push({carContractAddress:car_,
-                                                                                carDetails:{penaltyValue:result[0],
-                                                                                            carGSMNum:Web3Utils.hexToUtf8(result[1]),
-                                                                                            position:Web3Utils.hexToUtf8(result[2]),
-                                                                                            geofence:result[3]
-                                                                                            }});
-                                                                    }});
-                        },function(){
-                            setTimeout(function() {
-                              car_response.push({ownerContract:item.car_owner_address,availableCarContract:available_car_result});
-                            }, 1000);
-                        });
-                }
-            }, function(){
-                setTimeout(function() {
-                        console.log('done');
-                         base.successCallback(car_response,callback);
-                }, 1000);
-            });
-        },
-            error=>{
-                base.errorCallback(error,callback);
-        });
 	} ,
 
 	updatePosition : function(car_contract_address , geohash_position ,callback){

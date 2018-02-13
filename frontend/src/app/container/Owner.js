@@ -196,11 +196,11 @@ class Owner extends Component {
                     { this.state.progressStep > 1 ?
                         <div className="header-cols col-md-5">
                             <p>
-                                Owner Ethereum Address: {this.state.ownerEthereumAddress}
+                                <b>Owner Ethereum Address:</b> {this.state.ownerEthereumAddress}
                                 <br/>
-                                Owner Contract Address: {this.state.ownerContractAddress}
+                                <b>Owner Contract Address:</b> {this.state.ownerContractAddress}
                                 <br/>
-                                Available Ether: {this.state.balance}
+                                <b>Available Ether:</b> {this.state.balance}
                             </p>
                         </div>
                         : null }

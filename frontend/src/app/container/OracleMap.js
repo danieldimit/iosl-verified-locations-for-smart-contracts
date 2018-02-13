@@ -222,7 +222,7 @@ class OracleMap extends Component {
                     <h1 className="header-cols section-header col-md-6 col-sm-7 col-xs-12">Oracle Control Panel</h1>
                     <div className="header-cols col-md-6 col-sm-5 col-xs-12">
                         <p>
-                            Oracle address:
+                            <b>Oracle address:</b>
                             <br/>
                             {String(this.props.oracleAddress)}
                         </p>

@@ -88,9 +88,9 @@ class Renter extends Component {
                     { this.state.progressStep == 2 ?
                         <div className="header-cols col-md-5">
                             <p>
-                                Account: {this.state.chosenAddress}
+                                <b>Account:</b> {this.state.chosenAddress}
                                 <br/>
-                                Available Ether: {this.state.balance}
+                                <b>Available Ether:</b> {this.state.balance}
                             </p>
                         </div>
                     : null }

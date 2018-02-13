@@ -484,14 +484,15 @@ contract Owner {
             bool leftGeofence = carObj.hasLeftGeofence();
             uint deposit = carObj.penaltyValue();
             if (leftGeofence == false) {
-                msg.sender.send(deposit);
+                msg.sender.transfer(deposit);
                 owner_balance -= deposit;
-
             }
+
             delete renters[msg.sender];
             carObj.SetCarStatus(msg.sender, true);
             success = true;
         }
+
 
         for (uint i = 0; i < renterAddress.length; i++) {
             if (renterAddress[i] == msg.sender) {

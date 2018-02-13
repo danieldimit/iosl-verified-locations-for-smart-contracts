@@ -236,7 +236,7 @@ module.exports = {
 				console.log("Sled ",geoSplit.geofenceSuffix );
 
                 var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
-                    responsebody.penaltyValue,
+                    global.web3.toWei(responsebody.penaltyValue, 'ether'),
                     parseInt(responsebody.position),
                     geoSplit.geofencePrefix,
                     geoSplit.geofenceSuffix,
@@ -248,12 +248,12 @@ module.exports = {
                         if(result){
                             console.log("result: ", result);
                             var res = { Message : "New car is added", carAddress : result };
-                            Car.create({ account_address:account_address,
-                                car_address:result,
-                                carGSMNum:responsebody.carGSMNum ,
-                                penaltyValue:responsebody.penaltyValue,
-                                position:responsebody.position,
-                                geofence :JSON.stringify(responsebody.geofence)}).then(result => {
+                            Car.create({ account_address: account_address,
+                                car_address: result,
+                                carGSMNum: responsebody.carGSMNum ,
+                                penaltyValue: responsebody.penaltyValue,
+                                position: responsebody.position,
+                                geofence: JSON.stringify(responsebody.geofence)}).then(result => {
                                 base.successCallback(res,callback);
                             });
                         }
@@ -303,7 +303,7 @@ module.exports = {
 			                    	if(err){
 			                    		base.errorCallback(err,callback);
 			                    	}if(result){
-			                    		base.successCallback(global.web3.fromWei(result, 'ether'),callback);
+			                    		base.successCallback(global.web3.fromWei(result, 'ether'), callback);
 			                    	}
 			                    });
 		    		}else{

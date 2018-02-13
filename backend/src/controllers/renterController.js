@@ -95,7 +95,7 @@ module.exports = {
                                         var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
                                         console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
                                         available_car_result.push({carContractAddress:_car,
-                                            carDetails:{penaltyValue:result[0],
+                                            carDetails:{penaltyValue: global.web3.fromWei(result[0], 'ether'),
                                                 carGSMNum: result[1],
                                                 position: web3.toDecimal(String(result[2]).substring(0, 18)),
                                                 geofence: geofence
@@ -184,7 +184,7 @@ module.exports = {
                                             rented_car_result.push({
                                                 carContractAddress: carResult,
                                                 carDetails:
-                                                    {penaltyValue: result[0],
+                                                    {penaltyValue: web3.fromWei(result[0], 'ether'),
                                                     carGSMNum: result[1],
                                                     position: web3.toDecimal(String(result[2]).substring(0, 18)),
                                                     geofence: geofence
@@ -226,13 +226,16 @@ module.exports = {
 
     returnCar : function (renter_address, ownercontractaddress ,car_contract_address, callback){
         //Implementation Pending as per ABI
+        console.log("returning");
         var owner = renter_contract.at(ownercontractaddress);
               var rent_car = owner.returnCar(car_contract_address,
                                 { from: renter_address,
                                 gas: 4700000},(err, result) => {
                                                             if(err){
                                                                 base.errorCallback(err,callback);
+                                                                console.log(err);
                                                             }if(result){
+                          console.log("succ");
                                                                 base.successCallback(result,callback);
                                                             }
              });

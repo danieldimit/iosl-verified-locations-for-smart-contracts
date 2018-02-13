@@ -46,13 +46,14 @@ contract CarDetails {
     //            Functions
     /////////////////////////////////////
 
-    function CarDetails(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix)  {
+    function CarDetails(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix, address _oracle)  {
         carGSMNum = _carGSMNum;
         owner = msg.sender;
         penaltyValue = _penaltyValue;
         position = _position;
         geofence_prefix = _geofencePrefix;
         geofence_suffix = _geofenceSuffix;
+        oracle = _oracle;
     }
 
 
@@ -117,11 +118,12 @@ contract CarDetails {
     // leftGeofence = !inside;
     // }
 
-    function CheckPositionInGeofence(bytes16 position, bytes6 prefix, bytes16[] suffix)
+    function checkPositionInGeofence(bytes16 position, bytes6 prefix, bytes16[] suffix)
     public constant returns (bool)
     {
         bool out = leftGeofence;
-
+        leftGeofence = true;
+        return true;
         //violation condition for prefix
         if (position[0] != prefix[0] || position[1] != prefix[1] || position[2] != prefix[2]) {
             out = true;
@@ -178,10 +180,11 @@ contract CarDetails {
         selfdestruct(owner);
     }
 
-    function SetCarStatus(address renter, bool status){
+    function SetCarStatus(address renter, bool status, bool leftGeo){
         //TraceLocation(_carGSMNum);
         CarRenterSatus(renter, address(this), status);
         availability = status;
+        leftGeofence = leftGeo;
     }
 
     // function setOracleAddress(address _oracle) onlyOwner{
@@ -189,9 +192,9 @@ contract CarDetails {
     // }
 
     //  all address can create oracle onlyOwner removed
-    function setOracleAddress(address _oracle){
-        oracle = _oracle;
-    }
+    //function setOracleAddress(address _oracle){
+    //    oracle = _oracle;
+    //}
 
 
     function GetCarDetails() onlyOwner public constant returns (uint _penaltyValue, string _carGSMNum,
@@ -207,10 +210,11 @@ contract CarDetails {
     // Functions called by the oracle
     /////////////////////////////////////
 
-    function updatePosition(bytes16 curPos) onlyOracle {
+    function updatePosition(bytes16 curPos) onlyOracle returns (bool) {
         position = curPos;
         // checkPositionInGeofenceGeohash();
-        CheckPositionInGeofence(curPos, geofence_prefix, geofence_suffix);
+        bool out = checkPositionInGeofence(curPos, geofence_prefix, geofence_suffix);
+        return out;
     }
 
     function getPosition() constant returns (bytes32) {
@@ -229,8 +233,8 @@ contract Owner {
     */
     struct RenterInfo {
     //address renter;
-    address rented_car;
-    uint moneyForcar; //rent + deposit
+        address rented_car;
+        uint moneyForcar; //rent + deposit
     }
 
     mapping (address => RenterInfo) renters;
@@ -241,7 +245,8 @@ contract Owner {
 
     address public owner_address;
 
-    uint owner_balance;
+    uint ownerEarnings;
+    uint fundsLockedInContract;
 
     address[] cars;
 
@@ -262,8 +267,8 @@ contract Owner {
     // Functions called by owner
     /////////////////////////////////////
 
-    function addNewCar(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix) onlyOwner returns (address){
-        address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix);
+    function addNewCar(string _carGSMNum, uint _penaltyValue, bytes16 _position, bytes6 _geofencePrefix, bytes16[] _geofenceSuffix, address oracle) onlyOwner returns (address){
+        address carContract = new CarDetails(_carGSMNum, _penaltyValue, _position, _geofencePrefix, _geofenceSuffix, oracle);
         cars.push(carContract);
         listRentedCars.push(0x0);
         listAvailableCars.push(carContract);
@@ -335,19 +340,23 @@ contract Owner {
         }
     }
 
-    function showCars() onlyOwner constant returns (address[]){
+    function showCars() onlyOwner constant returns (address[]) {
         return cars;
     }
 
-    function showBalance() onlyOwner constant returns (uint){
-        return owner_balance;
+    function showEarnings() onlyOwner constant returns (uint) {
+        return ownerEarnings;
     }
 
-    function showRenters() onlyOwner constant returns (address[]){
+    function showFundsLockedInContract() onlyOwner constant returns (uint) {
+        return fundsLockedInContract;
+    }
+
+    function showRenters() onlyOwner constant returns (address[]) {
         return renterAddress;
     }
 
-    function getRenterInfo(address _renterAddress) view public returns (address, uint){
+    function getRenterInfo(address _renterAddress) view public returns (address, uint) {
         return (renters[_renterAddress].rented_car, renters[_renterAddress].moneyForcar);
     }
 
@@ -360,7 +369,7 @@ contract Owner {
         return listAvailableCars;
     }
 
-    function getRentedCars() constant returns (address[]){
+    function getRentedCars() constant returns (address[]) {
         return listRentedCars;
     }
 
@@ -415,6 +424,14 @@ contract Owner {
         }
     }
 
+    function withdrawEarnings() public onlyOwner {
+        uint amount = ownerEarnings;
+        // Remember to zero the pending refund before
+        // sending to prevent re-entrancy attacks
+        ownerEarnings = 0;
+        msg.sender.transfer(amount);
+    }
+
     function rentCar(address carAddress) payable returns (bool){
         bool success = false;
         /*for(uint i = 0; i < cars.length; i++) {
@@ -438,7 +455,7 @@ contract Owner {
             renter.moneyForcar = msg.value;
             renterAddress.push(msg.sender);
             carObj.SetCarStatus(msg.sender, false);
-            owner_balance += msg.value;
+            fundsLockedInContract += msg.value;
             success = true;
         }
 
@@ -483,13 +500,16 @@ contract Owner {
             CarDetails carObj = CarDetails(carAddress);
             bool leftGeofence = carObj.hasLeftGeofence();
             uint deposit = carObj.penaltyValue();
+            fundsLockedInContract -= deposit;
+
             if (leftGeofence == false) {
                 msg.sender.transfer(deposit);
-                owner_balance -= deposit;
+            } else {
+                ownerEarnings += deposit;
             }
 
             delete renters[msg.sender];
-            carObj.SetCarStatus(msg.sender, true);
+            carObj.SetCarStatus(msg.sender, true, false);
             success = true;
         }
 

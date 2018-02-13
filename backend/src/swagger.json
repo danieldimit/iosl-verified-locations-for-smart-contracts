@@ -335,7 +335,7 @@
         }
       }
     },
-    "/owner/{userAddress}/showBalance": {
+    "/owner/{userAddress}/showEarnings": {
       "get": {
         "tags": [
           "owner"
@@ -343,6 +343,34 @@
         "summary": "Get the availble balance in account",
         "description": "get the availble balance in account",
         "operationId": "getBalance",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "userAddress",
+            "in": "path",
+            "description": "The user address in the blockchain",
+            "required": true,
+            "type": "string",
+            "format": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation"
+          }
+        }
+      }
+    },
+    "/owner/{userAddress}/showFundsLockedInContract": {
+      "get": {
+        "tags": [
+          "owner"
+        ],
+        "summary": "Get the availble balance in account",
+        "description": "get the funds that are deposited, but it's unknown yet if they would be taken",
+        "operationId": "showFundsLockedInContract",
         "produces": [
           "application/json"
         ],

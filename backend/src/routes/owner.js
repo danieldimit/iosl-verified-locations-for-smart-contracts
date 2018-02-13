@@ -33,18 +33,23 @@ router.post('/:address/createCarContract',function (request,response) {
 });
 
 router.get('/:address/getCarContracts', function (request, response){
-	owner.getAllCarDetails(request.params.address,function (result){
+	owner.getAllCarDetails(request.params.address, function (result){
 		response.json(result);
 	});
 });
 
 
-router.get('/:address/showBalance', function (request, response){
-	owner.showBalance(request.params.address,function (result){
+router.get('/:address/showEarnings', function (request, response){
+	owner.showEarnings(request.params.address, function (result){
 		response.json(result);
 	});
-}); 
+});
 
+router.get('/:address/showFundsLockedInContract', function (request, response){
+    owner.showFundsLockedInContract(request.params.address, function (result){
+        response.json(result);
+    });
+});
 
 router.get('/:address/showRentedCarsInfo', function (request, response){
 	owner.showRentedCarsInfo(request.params.address,function (result){

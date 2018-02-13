@@ -14,7 +14,9 @@ class Owner extends Component {
         this.state = {
             ownerEthereumAddress: "-",
             ownerContractAddress: null,
-            etherInContract: null,
+            balance: 0,
+            fundsLockedInContract: 0,
+            ownerEarnings: null,
             carAddresses: [],
             selectedCar: "-",
             state: 1,
@@ -26,7 +28,7 @@ class Owner extends Component {
         this.setOwnerEthAccountAndCheckOwnerContract = this.setOwnerEthAccountAndCheckOwnerContract.bind(this);
         this.decideNextStep = this.decideNextStep.bind(this);
         this.withdrawEthereum = this.withdrawEthereum.bind(this);
-        this.getEthereumBalanceOfContract = this.getEthereumBalanceOfContract.bind(this);
+        this.getEthereumOwnerEarningsInContract = this.getEthereumOwnerEarningsInContract.bind(this);
         this.moveToNextStepAndSaveContractHash = this.moveToNextStepAndSaveContractHash.bind(this);
 
         this.filterOutEmptyAddresses = this.filterOutEmptyAddresses.bind(this);
@@ -34,6 +36,8 @@ class Owner extends Component {
         this.getCarContracts = this.getCarContracts.bind(this);
         this.onSelectedCarChange = this.onSelectedCarChange.bind(this);
         this.triggerRender = this.triggerRender.bind(this);
+        this.fetchAccountBalance = this.fetchAccountBalance.bind(this);
+        this.getEthereumLockedInContract = this.getEthereumLockedInContract.bind(this);
     }
 
     componentDidMount() {
@@ -46,6 +50,16 @@ class Owner extends Component {
 
     onOwnerChange(e) {
         this.setState({ownerEthereumAddress: e.target.value});
+    }
+
+    fetchAccountBalance() {
+        let url = ethereumBackendUrl + '/account/' + this.state.ownerEthereumAddress;
+
+        fetch(url, {
+            method: 'get'
+        })  .then(result=>result.json())
+            .then(result=>result.success ? this.setState({balance: result.data.balance}) : null);
+
     }
 
     onSelectedCarChange(e) {
@@ -72,9 +86,10 @@ class Owner extends Component {
                 progressStep: 3,
                 ownerContractAddress: response.data.contractMinedAddress
             })
-            this.getEthereumBalanceOfContract();
+            this.getEthereumOwnerEarningsInContract();
             this.triggerRender();
         }
+        this.fetchAccountBalance();
     }
 
     moveToNextStepAndSaveContractHash(result) {
@@ -84,11 +99,21 @@ class Owner extends Component {
         });
     }
 
-    getEthereumBalanceOfContract() {
-        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/showBalance';
+    getEthereumLockedInContract(ownerEarnings) {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/showFundsLockedInContract';
         fetch(url)
             .then(result=>result.json())
-            .then(result=>this.setState({etherInContract: result.data}));
+            .then(result=>this.setState({
+                ownerEarnings: ownerEarnings,
+                fundsLockedInContract: result.data
+            }));
+    }
+
+    getEthereumOwnerEarningsInContract() {
+        let url = ethereumBackendUrl + '/owner/' + this.state.ownerEthereumAddress + '/showEarnings';
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.getEthereumLockedInContract(result.data));
     }
 
     getCarContracts() {
@@ -100,7 +125,7 @@ class Owner extends Component {
 
     handleWithdrawMoneyResponse(response) {
         if (response == true) {
-            this.setState({etherInContract: 0});
+            this.setState({ownerEarnings: 0});
         }
     }
 
@@ -127,7 +152,7 @@ class Owner extends Component {
         })
             .then(result=>result.json())
             .then(result=>this.moveToNextStepAndSaveContractHash(result))
-            .then(result=>this.getEthereumBalanceOfContract());
+            .then(result=>this.getEthereumOwnerEarningsInContract());
     }
 
     filterOutEmptyAddresses(data) {
@@ -150,6 +175,9 @@ class Owner extends Component {
         })
             .then(result=>result.json())
             .then(result=>this.handleWithdrawMoneyResponse(result));
+
+        this.getEthereumOwnerEarningsInContract();
+        this.fetchAccountBalance();
     }
 
     triggerRender() {
@@ -173,6 +201,8 @@ class Owner extends Component {
                                 Owner Ethereum Address: {this.state.ownerEthereumAddress}
                                 <br/>
                                 Owner Contract Address: {this.state.ownerContractAddress}
+                                <br/>
+                                Available Ether: {this.state.balance}
                             </p>
                         </div>
                         : null }
@@ -223,7 +253,9 @@ class Owner extends Component {
                             <div id="withdraw" className="ownerControlPanel">
                                 <h3>Withdraw money from all car contracts</h3>
                                 <p>
-                                    Ethereum in the owner contract: {this.state.etherInContract}
+                                    Ethereum earning for owner contract: {this.state.ownerEarnings} Ether
+                                    <br/>
+                                    Money locked in contract: {this.state.fundsLockedInContract} Ether (cannot be withdrawn yet)
                                 </p>
                                 <button onClick={this.withdrawEthereum}>Withdraw money</button>
                             </div>

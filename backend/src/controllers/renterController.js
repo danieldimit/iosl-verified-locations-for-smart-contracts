@@ -95,7 +95,7 @@ module.exports = {
                                         var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
                                         console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
                                         available_car_result.push({carContractAddress:_car,
-                                            carDetails:{penaltyValue: global.web3.fromWei(result[0], 'ether'),
+                                                carDetails: {penaltyValue: global.web3.fromWei(result[0], 'ether'),
                                                 carGSMNum: result[1],
                                                 position: web3.toDecimal(String(result[2]).substring(0, 18)),
                                                 geofence: geofence
@@ -104,7 +104,9 @@ module.exports = {
                             }
                         },function(){
                             setTimeout(function() {
-                              car_response.push({ownerContract:item.car_owner_address,availableCarContract:available_car_result});
+                              car_response.push({
+                                  ownerContract:item.car_owner_address,
+                                  availableCarContract:available_car_result});
                             }, 1000);
                         });
                 }
@@ -224,20 +226,19 @@ module.exports = {
                 
     },
 
-    returnCar : function (renter_address, ownercontractaddress ,car_contract_address, callback){
+    returnCar : function (renterAddress, ownerContractAddress ,carContractAddress, callback){
         //Implementation Pending as per ABI
         console.log("returning");
-        var owner = renter_contract.at(ownercontractaddress);
-              var rent_car = owner.returnCar(car_contract_address,
-                                { from: renter_address,
-                                gas: 4700000},(err, result) => {
-                                                            if(err){
-                                                                base.errorCallback(err,callback);
-                                                                console.log(err);
-                                                            }if(result){
-                          console.log("succ");
-                                                                base.successCallback(result,callback);
-                                                            }
-             });
+        var owner = renter_contract.at(ownerContractAddress);
+        var rent_car = owner.returnCar(carContractAddress,
+            {   from: renterAddress,
+                gas: 4700000},
+            (err, result) => {
+                if(err){
+                    base.errorCallback(err,callback);
+                }if(result){
+                    base.successCallback(result,callback);
+                }
+        });
     }
 }

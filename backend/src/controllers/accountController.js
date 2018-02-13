@@ -54,7 +54,7 @@ module.exports = {
 		}
     },
 
-    getAddress : function (address , callback){
+    getAddress : function (address , callback) {
 
         const body = {
             'account_address': address

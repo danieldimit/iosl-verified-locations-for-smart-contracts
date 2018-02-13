@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+var config = require('../config');
 
 // const PG_HOST = process.env.PG_HOST || "baasu.db.elephantsql.com";
 // const PG_PORT = process.env.PG_PORT || "5432";
@@ -7,8 +8,8 @@ const Sequelize = require('sequelize');
 // const PG_PASSWORD = process.env.PG_PASSWORD || "IpINcghMvxWlkSQPKpMAJToifC4fyujn";
 
 
-const PG_HOST = process.env.PG_HOST || "192.168.99.100";
-const PG_PORT = process.env.PG_PORT || "5432";
+const PG_HOST = process.env.PG_HOST || config.postgresAddress;
+const PG_PORT = process.env.PG_PORT || config.postgresPort;
 const PG_USER = process.env.PG_USER || "postgres";
 const PG_DATABASE = process.env.PG_DATABASE || "logging";
 const PG_PASSWORD = process.env.PG_PASSWORD || "root";
@@ -80,10 +81,10 @@ var Locations = global.db.define('locations', {
 
 
 module.exports = {
-              Accounts:Accounts ,
-              Cars :Cars,
-              Locations : Locations
-                          };
+    Accounts:Accounts ,
+    Cars :Cars,
+    Locations : Locations
+};
 
 global.db.authenticate().then(function(err){
     console.log('Connection to database could be established successfully.');

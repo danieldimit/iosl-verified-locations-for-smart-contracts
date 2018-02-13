@@ -191,7 +191,8 @@ class OracleMap extends Component {
                 'Content-Type': 'application/json',
             }
         })
-            .then(result=>result.json());
+            .then(result=>result.json())
+            .then(result=>console.log("Backend answer: ", result));
     }
 
     handleMarkerDragged = (e) => {

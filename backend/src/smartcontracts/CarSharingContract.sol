@@ -122,8 +122,11 @@ contract CarDetails {
     public constant returns (bool)
     {
         bool out = leftGeofence;
-        leftGeofence = true;
-        return true;
+
+        // TODO Delete it when ready - used for testing
+        //leftGeofence = true;
+        //return true;
+
         //violation condition for prefix
         if (position[0] != prefix[0] || position[1] != prefix[1] || position[2] != prefix[2]) {
             out = true;

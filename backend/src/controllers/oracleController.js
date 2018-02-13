@@ -141,8 +141,11 @@ module.exports = {
             });
 	} ,
 
-	updatePosition : function(car_contract_address , geohash_position ,callback){
-		base.successCallback({Message : "Implementation is pending"},callback);
+	updatePosition : function(carContractAddress , geohashPosition ,callback){
+	    if (carContractAddress != undefined) {
+            console.log("Contract: ", carContractAddress, " pos: ", geohashPosition);
+            base.successCallback({Message : "Implementation is pending"},callback);
+        }
 	}
 
 }

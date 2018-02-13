@@ -21,7 +21,6 @@ router.get('/getRentedCarsContracts', function (request, response) {
 	});
 });
 
-
 router.put('/updatePosition', function (request, response) {
 	oracle.updatePosition(request.query.carContractAddress, request.query.geohashPosition,function(result){
 		response.json(result);

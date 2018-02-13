@@ -51,8 +51,8 @@ class OracleMap extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            carPosition: { lat: 52.520007, lng: 13.404954 },
-            cellCenter: { lat: 52.520007, lng: 13.404954 },
+            carPosition: { lat: 40.6, lng: 16.7 },
+            cellCenter: { lat: 40.6, lng: 16.7 },
             cellRadius: 0,
             value: '',
             s2Polygon: [],
@@ -69,7 +69,6 @@ class OracleMap extends Component {
     }
 
     componentDidMount() {
-        console.log(this.state.carPosition.lat);
         let url = oracleBackendUrl + '/getInArea?lon=' + this.state.carPosition.lng + '&lat=' + this.state.carPosition.lat;
         console.log(url);
         fetch(url)
@@ -89,7 +88,6 @@ class OracleMap extends Component {
     setStateOfRentedCars(flattenedDict, totalNumber) {
 
         if (flattenedDict.length === totalNumber) {
-
             console.log("WOOOW: ", flattenedDict.length, " ", totalNumber);
             this.setState({rentedCars: flattenedDict});
         }
@@ -141,7 +139,20 @@ class OracleMap extends Component {
 
     onSelectedCarChange(e) {
         console.log("Selected Car: ", this.state.rentedCars[e.target.value]);
-        this.setState({selectedCar: this.state.rentedCars[e.target.value]});
+
+        let selectedCar = this.state.rentedCars[e.target.value];
+
+        let url = oracleBackendUrl + '/getInArea?lon=' + selectedCar.carDetails.position[0].lng
+            + '&lat=' + selectedCar.carDetails.position[0].lat;
+
+        this.setState({
+            selectedCar: selectedCar,
+            carPosition: selectedCar.carDetails.position[0]
+        });
+
+        fetch(url)
+            .then(result=>result.json())
+            .then(result=>this.giveToState(result));
     }
 
     handleChange(event) {
@@ -158,7 +169,7 @@ class OracleMap extends Component {
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
 
-        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 14);
+        let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 16);
         var id = s2.S2.keyToId(s2Key);
 
         let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + id.toString();
@@ -168,6 +179,19 @@ class OracleMap extends Component {
             .then(result=>this.setState({ cellCenter:{lat: cellLat, lng: cellLng},
                                             cellRadius: cellRad,
                                             s2Polygon: result}));
+
+        let urlEthereum = ethereumBackendUrl + '/oracle/updatePosition?carContractAddress='
+            + this.state.selectedCar.carContractAddress
+            + "&geohashPosition=" + id;
+
+        fetch(urlEthereum, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(result=>result.json());
     }
 
     handleMarkerDragged = (e) => {

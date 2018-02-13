@@ -454,7 +454,7 @@ contract Owner {
             renter.rented_car = carAddress;
             renter.moneyForcar = msg.value;
             renterAddress.push(msg.sender);
-            carObj.SetCarStatus(msg.sender, false);
+            carObj.SetCarStatus(msg.sender, false, false);
             fundsLockedInContract += msg.value;
             success = true;
         }

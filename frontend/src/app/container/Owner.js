@@ -174,10 +174,9 @@ class Owner extends Component {
             }
         })
             .then(result=>result.json())
-            .then(result=>this.handleWithdrawMoneyResponse(result));
-
-        this.getEthereumOwnerEarningsInContract();
-        this.fetchAccountBalance();
+            .then(result=>this.handleWithdrawMoneyResponse(result))
+            .then(res=>this.getEthereumOwnerEarningsInContract())
+            .then(res=>this.fetchAccountBalance());
     }
 
     triggerRender() {

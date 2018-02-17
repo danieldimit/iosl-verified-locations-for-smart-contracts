@@ -24,11 +24,11 @@ var Web3Utils = require('web3-utils');
 var oracleAddress = null;
 
 function geofencePrefAndSufToGeofence(prefix, suffix) {
-    var pref = web3.toDecimal(removeZeros(prefix));
+    //var pref = web3.toDecimal(removeZeros(prefix));
     var suf = [];
     for (var i = 0; i < suffix.length; i++) {
-        var tempSuf = web3.toDecimal(removeZeros(suffix[i]));
-        suf.push(parseInt(String(pref).concat(String(tempSuf))));
+        //var tempSuf = web3.toDecimal(removeZeros(suffix[i]));
+        suf.push(parseInt(String(prefix).concat(String(suffix[i]))));
     }
     return suf;
 }
@@ -78,7 +78,7 @@ module.exports = {
                                 car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
                                     (err, result) => {if(result){
                                         var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
-                                        console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
+                                        //console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
                                         rentedCarsResult.push({carContractAddress:_car,
                                             carDetails:{penaltyValue:result[0],
                                                 carGSMNum: result[1],

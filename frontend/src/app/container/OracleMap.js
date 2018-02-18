@@ -73,7 +73,7 @@ class OracleMap extends Component {
         console.log(url);
         fetch(url)
             .then(result=>result.json())
-            .then(result=>this.giveToState(result));
+            .then(result=>this.giveToState(result, false));
         this.fetchRentedCars();
     }
 
@@ -152,7 +152,7 @@ class OracleMap extends Component {
 
         fetch(url)
             .then(result=>result.json())
-            .then(result=>this.giveToState(result));
+            .then(result=>this.giveToState(result, false));
     }
 
     handleChange(event) {
@@ -164,7 +164,7 @@ class OracleMap extends Component {
         event.preventDefault();
     }
 
-    giveToState = (cellInfo) => {
+    giveToState = (cellInfo, sendPosToBackend) => {
         let cellLat = parseFloat(cellInfo[7]);
         let cellLng = parseFloat(cellInfo[6]);
         let cellRad = parseInt(cellInfo[8]);
@@ -172,9 +172,6 @@ class OracleMap extends Component {
         let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 16);
         var id = s2.S2.keyToId(s2Key);
 
-        console.log("ID IS ", id);
-        console.log("ID PARSE TO INT ", parseInt(id));
-        console.log("With geofence: ", this.state.selectedCar.carDetails.geofence);
 
         let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + id.toString();
 
@@ -184,7 +181,12 @@ class OracleMap extends Component {
                                             cellRadius: cellRad,
                                             s2Polygon: result}));
 
-        if (this.state.selectedCar != null) {
+        if (this.state.selectedCar != null && sendPosToBackend) {
+
+            console.log("ID IS ", id);
+            console.log("ID PARSE TO INT ", parseInt(id));
+            console.log("With geofence: ", this.state.selectedCar.carDetails.geofence);
+
             let urlEthereum = ethereumBackendUrl + '/oracle/updatePosition?carContractAddress='
                 + this.state.selectedCar.carContractAddress
                 + "&geohashPosition=" + id;
@@ -207,7 +209,7 @@ class OracleMap extends Component {
 
         fetch(url)
             .then(result=>result.json())
-            .then(result=>this.giveToState(result));
+            .then(result=>this.giveToState(result, true));
 
         console.log(e.latLng.lat(), " " + e.latLng.lng());
     }

@@ -36,9 +36,9 @@ var ConvertBase = function (num) {
 };
 
 var encodeS2Id = function (x) {
-    for(var l = x.length - 1; l >= 0; l -= 2){
-        if( x[l] + x[l-1] != "00" ){
-            x = x.substring(0, l+1);
+    for(var l = x.length - 1; l >= 0; l -= 1){
+        if( x[l]  == "1" ){
+            x = x.substring(0, l);
             break;
         }
     }
@@ -198,7 +198,7 @@ module.exports = {
 				pos = ConvertBase(pos).from(10).to(2);
 				var positionPrefix = pos.substring(0, 7);
 				var position = encodeS2Id(pos.substring(7, pos.length));
-				console.log("Saving position " + position.toString())
+				console.log("Saving position " + position.toString());
 
                 var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
                     global.web3.toWei(responsebody.penaltyValue, 'ether'),

@@ -73,8 +73,8 @@ function decodeS2Id(prefix, position) {
             realPosition += "11";
         }
     }
-    realPosition = prefix + realPosition;
-    for(var i = lvl+1; i <=30; i++)
+    realPosition = prefix + realPosition + "10";
+    for(var i = lvl+2; i <=30; i++)
         realPosition += "00";
 
     return ConvertBase(realPosition).from(2).to(10) ;
@@ -82,9 +82,9 @@ function decodeS2Id(prefix, position) {
 
 
 var encodeS2Id = function (x) {
-    for(var l = x.length - 1; l >= 0; l -= 2){
-        if( x[l] + x[l-1] != "00" ){
-            x = x.substring(0, l+1);
+    for(var l = x.length - 1; l >= 0; l -= 1){
+        if( x[l]  == "1" ){
+            x = x.substring(0, l);
             break;
         }
     }

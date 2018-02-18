@@ -27,7 +27,7 @@ function geofencePrefAndSufToGeofence(prefix, suffix) {
     //var pref = web3.toDecimal(removeZeros(prefix));
     var suf = [];
     for (var i = 0; i < suffix.length; i++) {
-        suf.push(parseInt(decodeS2Id(prefix, parseInt(suffix[i],10)), 10));
+        suf.push(parseInt(decodeS2Id(parseInt(suffix[i],10)), 10));
     }
     return suf;
 }
@@ -45,21 +45,16 @@ var ConvertBase = function (num) {
     };
 };
 
-function byteToBits(b){
-    var output = "";
-    for (var i = 7; i >= 0; i--) {
-        var bit = b & (1 << i) ? 1 : 0;
-        output += bit;
-    }
-    return output;
-}
+function decodeS2Id(position) {
 
-function decodeS2Id(prefix, position) {
+    position = position.toString();
+    var prefix = position[0];
+    prefix = ConvertBase(prefix).from(10).to(2);
 
     var pos = position.toString();
-    lvl = pos.length + 2;
+    lvl = pos.length - 1;
     var realPosition = "";
-    for(var i = 0; i < pos.length; i++){
+    for(var i = 1; i < pos.length; i++){
         if( pos[i] == "1"){
             realPosition += "00";
         }
@@ -81,7 +76,10 @@ function decodeS2Id(prefix, position) {
 }
 
 
-var encodeS2Id = function (x) {
+var encodeS2Id = function (id) {
+    prefix = ConvertBase(id.substring(0,3)).from(2).to(10);
+    x = id.substring(3, id.length);
+
     for(var l = x.length - 1; l >= 0; l -= 1){
         if( x[l]  == "1" ){
             x = x.substring(0, l);
@@ -104,7 +102,7 @@ var encodeS2Id = function (x) {
             suffix += "4";
         }
     }
-    return suffix;
+    return prefix + suffix;
 };
 
 module.exports = {
@@ -145,12 +143,12 @@ module.exports = {
                                     (err, result) => {if(result){
                                         var geofence = geofencePrefAndSufToGeofence("1000111", result[4]);
 
-                                        console.log("POSITION: ", parseInt(result[2]), " ", decodeS2Id("1000111", result[2]));
+                                        console.log("POSITION: ", parseInt(result[2]), " ", decodeS2Id(result[2]));
 
                                         rentedCarsResult.push({carContractAddress:_car,
                                             carDetails:{penaltyValue:result[0],
                                                 carGSMNum: result[1],
-                                                position: web3.toDecimal(String(decodeS2Id("1000111", result[2]))),
+                                                position: web3.toDecimal(String(decodeS2Id(result[2]))),
                                                 geofence: geofence
                                             }});
                                     }});
@@ -183,8 +181,7 @@ module.exports = {
             console.log("Contract: ", carContractAddress, " pos: ", geohashPosition);
 
             pos = ConvertBase(geohashPosition).from(10).to(2);
-            var positionPrefix = pos.substring(0, 7);
-            var position = encodeS2Id(pos.substring(7, pos.length));
+            var position = encodeS2Id(pos);
             console.log(position);
 
             var selectedCar = car_contract.at(carContractAddress);

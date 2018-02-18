@@ -54,11 +54,7 @@ contract CarDetails {
     {
         bool out = leftGeofence;
 
-        //violation condition for prefix
-        if (false) {
-            out = true;
-        }
-        else if (out == false)
+        if (out == false)
         {
             for (uint i = 0; i < suffix.length; i++) {
                 uint64 hash = suffix[i];

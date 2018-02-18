@@ -35,7 +35,10 @@ var ConvertBase = function (num) {
     };
 };
 
-var encodeS2Id = function (x) {
+var encodeS2Id = function (id) {
+    prefix = ConvertBase(id.substring(0,3)).from(2).to(10);
+    x = id.substring(3, id.length);
+
     for(var l = x.length - 1; l >= 0; l -= 1){
         if( x[l]  == "1" ){
             x = x.substring(0, l);
@@ -58,7 +61,7 @@ var encodeS2Id = function (x) {
             suffix += "4";
         }
     }
-    return suffix;
+    return prefix + suffix;
 };
 
 splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
@@ -74,8 +77,7 @@ splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
 
     // Encode the bit string by using a number from 1 - 4 for every level
     for(var i = 0; i < newArrGeohashes.length; i++){
-        cellid = newArrGeohashes[i].substring(7, newArrGeohashes[i].length);
-        suffix = encodeS2Id(cellid);
+        suffix = encodeS2Id(newArrGeohashes[i]);
         arraySuffixes.push(suffix);
     }
 
@@ -196,8 +198,7 @@ module.exports = {
 
 				pos = responsebody.position.toString();
 				pos = ConvertBase(pos).from(10).to(2);
-				var positionPrefix = pos.substring(0, 7);
-				var position = encodeS2Id(pos.substring(7, pos.length));
+				var position = encodeS2Id(pos);
 				console.log("Saving position " + position.toString());
 
                 var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,

@@ -28,7 +28,7 @@ function geofencePrefAndSufToGeofence(prefix, suffix) {
     //var pref = web3.toDecimal(removeZeros(prefix));
     var suf = [];
     for (var i = 0; i < suffix.length; i++) {
-        suf.push(parseInt(decodeS2Id(prefix, parseInt(suffix[i],10)), 10));
+        suf.push(parseInt(decodeS2Id(parseInt(suffix[i],10)), 10));
     }
     return suf;
 }
@@ -45,21 +45,16 @@ var ConvertBase = function (num) {
     };
 };
 
-function byteToBits(b){
-    var output = "";
-    for (var i = 7; i >= 0; i--) {
-        var bit = b & (1 << i) ? 1 : 0;
-        output += bit;
-    }
-    return output;
-}
+function decodeS2Id(position) {
 
-function decodeS2Id(prefix, position) {
+    position = position.toString();
+    var prefix = position[0];
+    prefix = ConvertBase(prefix).from(10).to(2);
 
     var pos = position.toString();
-    lvl = pos.length + 2;
+    lvl = pos.length - 1;
     var realPosition = "";
-    for(var i = 0; i < pos.length; i++){
+    for(var i = 1; i < pos.length; i++){
         if( pos[i] == "1"){
             realPosition += "00";
         }
@@ -131,12 +126,12 @@ module.exports = {
                                     (err, result) => {if(result){
                                         var geofence = geofencePrefAndSufToGeofence("1000111", result[4]);
 
-                                        console.log("POSITION: ", parseInt(result[2]), " ", decodeS2Id("1000111", result[2]));
+                                        console.log("POSITION: ", parseInt(result[2]), " ", decodeS2Id(result[2]));
 
                                         available_car_result.push({carContractAddress:_car,
                                                 carDetails: {penaltyValue: global.web3.fromWei(result[0], 'ether'),
                                                 carGSMNum: result[1],
-                                                position: web3.toDecimal(String(decodeS2Id("1000111", result[2]))),
+                                                position: web3.toDecimal(String(decodeS2Id(result[2]))),
                                                 geofence: geofence
                                             }});
                                     }});
@@ -222,13 +217,13 @@ module.exports = {
                                         (err, result) => {if(result){
                                             var geofence = geofencePrefAndSufToGeofence("1000111", result[4]);
                                             console.log(result[3])
-                                            console.log("POSITION: ", result[2], " ", decodeS2Id("1000111", result[2]));
+                                            console.log("POSITION: ", result[2], " ", decodeS2Id(result[2]));
                                             rented_car_result.push({
                                                 carContractAddress: carResult,
                                                 carDetails:
                                                     {penaltyValue: web3.fromWei(result[0], 'ether'),
                                                     carGSMNum: result[1],
-                                                    position: web3.toDecimal(String(decodeS2Id("1000111", result[2]))),
+                                                    position: web3.toDecimal(String(decodeS2Id(result[2]))),
                                                     geofence: geofence
                                                 }});
                                             car_response.push({ownerContract:item.car_owner_address,availableCarContract:rented_car_result});

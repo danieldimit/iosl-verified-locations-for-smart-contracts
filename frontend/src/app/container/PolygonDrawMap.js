@@ -87,6 +87,8 @@ class PolygonDrawMap extends Component {
         var target = $('#hidden-search-field-polygons')[0];
         target.dispatchEvent(event);
 
+        console.log("Geofence submitted to backend is", response.cellIds);
+
         this.refs.polyCounter.setState({
             numberOfPolys: response.cellIds.length
         });

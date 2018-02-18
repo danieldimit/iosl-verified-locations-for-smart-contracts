@@ -172,6 +172,10 @@ class OracleMap extends Component {
         let s2Key = s2.S2.latLngToKey(cellLat, cellLng, 16);
         var id = s2.S2.keyToId(s2Key);
 
+        console.log("ID IS ", id);
+        console.log("ID PARSE TO INT ", parseInt(id));
+        console.log("With geofence: ", this.state.selectedCar.carDetails.geofence);
+
         let url = s2ServerUrl + '/convertS2ToBoundingLatLonPolygon?cellId=' + id.toString();
 
         fetch(url, {mode: 'cors'})

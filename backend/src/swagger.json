@@ -690,12 +690,12 @@
           "format": "int32"
         },
         "position": {
-          "type": "integer"
+          "type": "string"
         },
         "geofence": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "type": "string"
           }
         }
       },

@@ -14,7 +14,7 @@ class CreateCar extends Component {
     static staticState = {
         carGSMNum: "",
         penaltyValue: "",
-        position: 5163466995026362368,
+        position: "5163466995026362368",
         geofence: [],
         s2GFPolygons: [],
         s2GFHashes: [],
@@ -25,7 +25,7 @@ class CreateCar extends Component {
         CreateCar.staticState = {
             carGSMNum: "",
             penaltyValue: "",
-            position: 5163466995026362368,
+            position: "5163466995026362368",
             geofence: [],
             s2GFPolygons: [],
             s2GFHashes: [],
@@ -47,9 +47,11 @@ class CreateCar extends Component {
         var carObject = {
             carGSMNum: CreateCar.staticState.carGSMNum,
             penaltyValue: CreateCar.staticState.penaltyValue,
-            position: parseInt(CreateCar.staticState.position),
-            geofence: this.strToIntArr(CreateCar.staticState.s2GFHashes)
+            position: CreateCar.staticState.position,
+            geofence: CreateCar.staticState.s2GFHashes
         }
+
+        console.log("Submitting car:", carObject);
 
         let url = ethereumBackendUrl + '/owner/' + this.props.ownerEthereumAddress + '/createCarContract';
         fetch(url, {
@@ -66,7 +68,7 @@ class CreateCar extends Component {
         CreateCar.staticState = {
             carGSMNum: "",
             penaltyValue: "",
-            position: 5163466995026362368,
+            position: "5163466995026362368",
             geofence: [],
             s2GFPolygons: [],
             s2GFHashes: [],

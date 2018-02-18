@@ -26,10 +26,6 @@ function initMap() {
 
     var marker = new google.maps.Marker({
         position: map.getCenter(),
-        icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 7
-        },
         draggable: true,
         map: map
     });

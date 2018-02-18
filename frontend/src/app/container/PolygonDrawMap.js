@@ -133,9 +133,9 @@ class PolygonDrawMap extends Component {
     render() {
         return (
             <div>
-                S2 Level (bigger number = smaller polygons around the edges):
-                <br />
-                <select defaultValue={15} onChange={this.onS2LevelChange}>
+                S2 Level (bigger number = smaller polygons around the edges): &nbsp;
+
+                <select style={{width: 'auto'}} defaultValue={15} onChange={this.onS2LevelChange}>
                     <option value={9}>9</option>
                     <option value={10}>10</option>
                     <option value={11}>11</option>

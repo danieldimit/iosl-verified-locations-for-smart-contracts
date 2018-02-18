@@ -70,7 +70,7 @@ class CreateCar extends Component {
             geofence: [],
             s2GFPolygons: [],
             s2GFHashes: [],
-            s2Level: 15
+            s2Level: CreateCar.staticState.s2Level
         };
     }
 

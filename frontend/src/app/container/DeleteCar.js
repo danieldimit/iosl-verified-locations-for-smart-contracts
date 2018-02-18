@@ -50,15 +50,13 @@ class DeleteCar extends Component {
         return (
             <div id="delete" className="ownerControlPanel">
                 <h3>Delete existing car contract</h3>
-                <label>
-                    Car contract address:
-                    <br/>
-                    <select style={{float: 'left'}} onChange={this.onSelectedCarChange}>
+                <div>
+                    Car contract address: &nbsp;
+                    <select onChange={this.onSelectedCarChange}>
                         <option value={null}>-</option>
                         { this.props.carAddresses.map(this.renderAllAccountsDropdown) }
                     </select>
-                </label>
-                <br/>
+                </div>
                 <button onClick={this.deleteCar}>Delete car</button>
             </div>
         );

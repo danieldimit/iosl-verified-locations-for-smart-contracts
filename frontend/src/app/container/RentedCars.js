@@ -200,9 +200,9 @@ class RentedCars extends Component {
                 <div className="car-info col-lg-3 col-md-4 col-sm-12 col-xs-12">
                     <h3>Car Information:</h3>
                     <p>
-                        Address: {this.state.selectedCar != undefined ? this.state.selectedCar.carContractAddress : null}
+                        <b>Address:</b> {this.state.selectedCar != undefined ? this.state.selectedCar.carContractAddress : null}
                         <br/>
-                        Deposited:      {this.state.selectedCar != undefined &&
+                        <b>Deposited:</b>      {this.state.selectedCar != undefined &&
                                         this.state.selectedCar.carDetails != undefined
                                         ? this.state.selectedCar.carDetails.penaltyValue : null} Ether
                     </p>

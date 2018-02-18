@@ -56,13 +56,15 @@ class Footer extends Component {
                                 </div>
                                 <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 top-pad">
                                     <div id="footer-text">
-                                        <p>Explain project Explain project Explain project Explain project Explain project
-                                            Explain project Explain project Explain project Explain project
-                                            Explain project Explain project Explain project Explain project
-                                            Explain project Explain project Explain project Explain project
-                                            Explain project Explain project Explain project Explain project
-                                            Explain project Explain project Explain project </p>
-                                        <p>“The Explain project ”</p>
+                                        <p>
+                                            The goal of this project is to showcase the uses of the
+                                            blockchain technology in the car sharing industry. This website simulates
+                                            the whole system from the perspective of each participant in the smart contract -
+                                            the owner, the retner and the oracle. The renter can rent and return a car.
+                                            The owner can create and delete car as well as withdraw his earnings collected
+                                            from penalties from renters who left the geo-fence. The oracle can see all rented
+                                            cars and is able to set their position on the map.
+                                        </p>
                                     </div>
                                 </div>
 
@@ -76,7 +78,7 @@ class Footer extends Component {
                                 className="col-lg-6 col-md-6 col-sm-6 col-xs-12"
                                 id="footer-about">
                                 <div>
-                                    &copy; All rights reserved 2017.
+                                    &copy; All rights reserved 2018.
                                 </div>
                             </div>
                             <div

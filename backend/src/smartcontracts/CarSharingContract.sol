@@ -63,55 +63,52 @@ contract CarDetails {
             for (uint i = 0; i < suffix.length; i++) {
                 uint64 hash = suffix[i];
                 out = true;
-                if(hash > 1000000000000 && hash == position){
+                if(hash == position){
                     out = false;
                     break;
                 }
-                else if( hash > 100000000000 && (hash >> 1) == position ){
+                else if( (position / 10) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 10000000000 && (hash >> 2) == position ){
+                else if( (position / 10 ** 2) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 1000000000 && (hash >> 3) == position ){
+                else if( (position / 10 ** 3) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 100000000 && (hash >> 4) == position ){
+                else if( (position / 10 ** 4) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 10000000 && (hash >> 5) == position ){
+                else if((position / 10 ** 5) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 1000000 && (hash >> 6) == position ){
+                else if( (position / 10 ** 6) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 100000 && (hash >> 7) == position ){
+                else if( (position / 10 ** 7) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 10000 && (hash >> 8) == position ){
+                else if( (position / 10 ** 8) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 1000 && (hash >> 9) == position ){
+                else if( (position / 10 ** 9) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 100 && (hash >> 10) == position ){
+                else if( (position / 10 ** 10) == hash ){
                     out = false;
                     break;
                 }
-                else if( hash > 10 && (hash >> 11) == position ){
+                else if( (position / 10 ** 11) == hash ){
                     out = false;
-                    break;
-                }
-                if (out == false) {
                     break;
                 }
             }

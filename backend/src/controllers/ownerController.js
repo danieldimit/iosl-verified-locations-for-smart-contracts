@@ -35,6 +35,32 @@ var ConvertBase = function (num) {
     };
 };
 
+var encodeS2Id = function (x) {
+    for(var l = x.length - 1; l >= 0; l -= 2){
+        if( x[l] + x[l-1] != "00" ){
+            x = x.substring(0, l+1);
+            break;
+        }
+    }
+
+    var suffix = "";
+    for(var k = 0; k < x.length - 1; k+=2){
+        if( x[k] + x[k + 1] == "00"){
+            suffix += "1";
+        }
+        if( x[k] + x[k + 1] == "01"){
+            suffix += "2";
+        }
+        if( x[k] + x[k + 1] == "10"){
+            suffix += "3";
+        }
+        if( x[k] + x[k + 1] == "11"){
+            suffix += "4";
+        }
+    }
+    return suffix;
+};
+
 splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
 	var commonPrefix;
 	var arraySuffixes = [];
@@ -48,29 +74,8 @@ splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
 
     // Encode the bit string by using a number from 1 - 4 for every level
     for(var i = 0; i < newArrGeohashes.length; i++){
-        x = newArrGeohashes[i].substring(7, newArrGeohashes[i].length);
-        for(var l = x.length - 2; l >= 0; l -= 2){
-            if( x[l] + x[l-1] != "00" ){
-                x = x.substring(0, l);
-                break;
-            }
-        }
-
-        var suffix = "";
-        for(var k = 0; k < x.length - 1; k+=2){
-            if( x[k] + x[k + 1] == "00"){
-                suffix += "1";
-            }
-            if( x[k] + x[k + 1] == "01"){
-                suffix += "2";
-            }
-            if( x[k] + x[k + 1] == "10"){
-                suffix += "3";
-            }
-            if( x[k] + x[k + 1] == "11"){
-                suffix += "4";
-            }
-        }
+        cellid = newArrGeohashes[i].substring(7, newArrGeohashes[i].length);
+        suffix = encodeS2Id(cellid);
         arraySuffixes.push(suffix);
     }
 
@@ -189,9 +194,15 @@ module.exports = {
 				console.log("Predi: ",geoSplit.geofencePrefix);
 				console.log("Sled ",geoSplit.geofenceSuffix );
 
+				pos = responsebody.position.toString();
+				pos = ConvertBase(pos).from(10).to(2);
+				var positionPrefix = pos.substring(0, 7);
+				var position = encodeS2Id(pos.substring(7, pos.length));
+				console.log("Saving position " + position.toString())
+
                 var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
                     global.web3.toWei(responsebody.penaltyValue, 'ether'),
-                    parseInt(responsebody.position),
+                    parseInt(position),
                     geoSplit.geofencePrefix,
                     geoSplit.geofenceSuffix,
                     oracleController.getOracleAddressLocal(),

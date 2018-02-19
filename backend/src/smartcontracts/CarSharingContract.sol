@@ -59,43 +59,27 @@ contract CarDetails {
             for (uint i = 0; i < suffix.length; i++) {
                 uint64 hash = suffix[i];
                 out = true;
-                if(hash == position){
+                if( (position / 10 ** 16) == hash ){
                     out = false;
                     break;
                 }
-                else if( (position / 10) == hash ){
+                else if( (position / 10 ** 15) == hash ){
                     out = false;
                     break;
                 }
-                else if( (position / 10 ** 2) == hash ){
+                else if( (position / 10 ** 14) == hash ){
                     out = false;
                     break;
                 }
-                else if( (position / 10 ** 3) == hash ){
+                else if( (position / 10 ** 13) == hash ){
                     out = false;
                     break;
                 }
-                else if( (position / 10 ** 4) == hash ){
+                else if( (position / 10 ** 12) == hash ){
                     out = false;
                     break;
                 }
-                else if((position / 10 ** 5) == hash ){
-                    out = false;
-                    break;
-                }
-                else if( (position / 10 ** 6) == hash ){
-                    out = false;
-                    break;
-                }
-                else if( (position / 10 ** 7) == hash ){
-                    out = false;
-                    break;
-                }
-                else if( (position / 10 ** 8) == hash ){
-                    out = false;
-                    break;
-                }
-                else if( (position / 10 ** 9) == hash ){
+                else if((position / 10 ** 11) == hash ){
                     out = false;
                     break;
                 }
@@ -103,7 +87,43 @@ contract CarDetails {
                     out = false;
                     break;
                 }
-                else if( (position / 10 ** 11) == hash ){
+                else if( (position / 10 ** 9) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 8) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 7) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 6) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 5) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 4) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 3) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 2) == hash ){
+                    out = false;
+                    break;
+                }
+                else if( (position / 10 ** 1) == hash ){
+                    out = false;
+                    break;
+                }
+                if(hash == position){
                     out = false;
                     break;
                 }

@@ -81,6 +81,7 @@ splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
         arraySuffixes.push(suffix);
     }
 
+    arraySuffixes = arraySuffixes.sort();
 	return {
         geofencePrefix: commonPrefix,
         geofenceSuffix: arraySuffixes

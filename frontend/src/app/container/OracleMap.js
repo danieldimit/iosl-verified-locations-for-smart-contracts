@@ -244,8 +244,7 @@ class OracleMap extends Component {
                             Each time the marker gets released the position is submitted to the backend. For visualization
                             purposes the nearest cell tower and its range is shown (the very small black circle is the
                             cell tower and the big purple circle is the range of the tower). The red square is the hashed
-                            position of the car. This hashed position gets submitted to the backend. It is inaccurate so
-                            that it would perserve the renters position anonymous to the network.
+                            position of the car. This hashed position gets submitted to the backend.
                         </p>
                     </article>
                     <article className="content-block col-lg-4 col-md-5 col-sm-12 col-xs-12">

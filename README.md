@@ -2,7 +2,7 @@
 
 Verified locations for smart contracts is a proof-of-concept project.
 
-## Installation of the whole system
+## Deployment via Docker
 
 1. Make sure you have docker. Install it if you don't have it already.
 
@@ -10,37 +10,12 @@ Verified locations for smart contracts is a proof-of-concept project.
 ```
 git clone https://github.com/danieldimit/iosl-verified-locations-for-smart-contracts.git
 ```
+4. Find the file `config.js` in backend and frontend and change the IPs listed there to correspond to the IP of docker on your machine. Most of the IP should be localhost, but on Windows docker is running on separate contaier and usually has IP 192.168.99.100. Because of that most of the IP in the frontend `config.js` file would have IP 192.168.99.100.
 
-3. To start the project, run:
+3. Finally start the project by running:
  ```
  docker-compose up
  ```
-
-## Installation and setup of the smart contract testing environment
-
-To deploy the contract on a test network do the following:
-
-1. Make sure you have NodeJS and NPM. Check if you do by running:
-```
-node -v
-npm -v
-```
-Install them if you don't have them on your machine.
-
-2. Then run the following in the command line to install testrpc:
-
-```
-npm install -g ethereumjs-testrpc
-```
-After it's finished the following to start the testrpc:
-```
-testrpc
-```
-This provides you with 10 different accounts and private keys, along with a local server that runs a dummy local ethereum network at localhost:8545.
-
-3. Open the [Remix IDE](http://remix.ethereum.org/) and click the "Run" tab on the top right side. Then set the value for the "Environment" property to "Web3 Provider". Then click "Yes" on the first and on the next dialog add http://localhost:8545 as Web3 Provider Endpoint.
-
-4. Add the CarSharingContract.sol to the workspace by clicking the upload icon on the top left corner.
 
 ## Team
 

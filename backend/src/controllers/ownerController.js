@@ -23,46 +23,65 @@ var owner_bytecode = contracts_output.contracts[':Owner'].bytecode;
 var owner_abi = JSON.parse(contracts_output.contracts[':Owner'].interface);
 var owner_contract = web3.eth.contract(owner_abi);
 
+var ConvertBase = function (num) {
+    return {
+        from : function (baseFrom) {
+            return {
+                to : function (baseTo) {
+                    return parseInt(num, baseFrom).toString(baseTo);
+                }
+            };
+        }
+    };
+};
+
+var encodeS2Id = function (id) {
+    prefix = ConvertBase(id.substring(0,3)).from(2).to(10);
+    x = id.substring(3, id.length);
+
+    for(var l = x.length - 1; l >= 0; l -= 1){
+        if( x[l]  == "1" ){
+            x = x.substring(0, l);
+            break;
+        }
+    }
+
+    var suffix = "";
+    for(var k = 0; k < x.length - 1; k+=2){
+        if( x[k] + x[k + 1] == "00"){
+            suffix += "1";
+        }
+        if( x[k] + x[k + 1] == "01"){
+            suffix += "2";
+        }
+        if( x[k] + x[k + 1] == "10"){
+            suffix += "3";
+        }
+        if( x[k] + x[k + 1] == "11"){
+            suffix += "4";
+        }
+    }
+    return prefix + suffix;
+};
+
 splitGeofenceInPrefixAndSuffix = (arrOfGeohashes) => {
 	var commonPrefix;
 	var arraySuffixes = [];
-	var stillSame = true;
-	var shortestGeohash = 999999;
-	var currentSymbolNum = 0;
 
-	// See how long the shortest geohash is and convert it to integer
-    for (var j = 0; j < arrOfGeohashes.length; j++) {
-    	arrOfGeohashes[j] = parseInt(arrOfGeohashes[j]);
-		var temp = String(arrOfGeohashes[j]).length;
-
-		if (temp < shortestGeohash) {
-			shortestGeohash = temp;
-		}
+	var newArrGeohashes = [];
+    for(var j = 0; j < arrOfGeohashes.length; j++){
+	    newArrGeohashes.push(ConvertBase(arrOfGeohashes[j]).from(10).to(2));
     }
 
-    // Extract the common prefix
-	while (stillSame && currentSymbolNum < shortestGeohash) {
-    	var curSymbol = String(arrOfGeohashes[0])[currentSymbolNum];
-        for (var i = 1; i < arrOfGeohashes.length; i++) {
-            if (curSymbol != String(arrOfGeohashes[i])[currentSymbolNum]) {
-                stillSame = false;
-			}
-        }
+    commonPrefix = newArrGeohashes[0].substring(0, 7);
 
-        // If the symbols are still the same go check the next one, otherwise stop here
-        if (stillSame == true) {
-            currentSymbolNum++;
-		}
-	}
-
-	// Split into prefix and suffixes
-	if (currentSymbolNum != -1) {
-        commonPrefix = parseInt(String(arrOfGeohashes[0]).substring(0, currentSymbolNum));
-	}
-    for (var i = 0; i < arrOfGeohashes.length; i++) {
-        arraySuffixes.push(parseInt(String(arrOfGeohashes[i]).substring(currentSymbolNum, String(arrOfGeohashes[i]).length)));
+    // Encode the bit string by using a number from 1 - 4 for every level
+    for(var i = 0; i < newArrGeohashes.length; i++){
+        suffix = encodeS2Id(newArrGeohashes[i]);
+        arraySuffixes.push(suffix);
     }
 
+    arraySuffixes = arraySuffixes.sort();
 	return {
         geofencePrefix: commonPrefix,
         geofenceSuffix: arraySuffixes
@@ -178,9 +197,14 @@ module.exports = {
 				console.log("Predi: ",geoSplit.geofencePrefix);
 				console.log("Sled ",geoSplit.geofenceSuffix );
 
+				pos = responsebody.position.toString();
+				pos = ConvertBase(pos).from(10).to(2);
+				var position = encodeS2Id(pos);
+				console.log("Saving position " + position.toString());
+
                 var addNewCar = car_owner.addNewCar(responsebody.carGSMNum,
                     global.web3.toWei(responsebody.penaltyValue, 'ether'),
-                    parseInt(responsebody.position),
+                    parseInt(position),
                     geoSplit.geofencePrefix,
                     geoSplit.geofenceSuffix,
                     oracleController.getOracleAddressLocal(),

@@ -61,7 +61,7 @@ var Cars = global.db.define('cars', {
     type: Sequelize.STRING
   },
   geofence : {
-    type: Sequelize.STRING
+    type: Sequelize.STRING(2000)
   }
 }, {
   timestamps: false

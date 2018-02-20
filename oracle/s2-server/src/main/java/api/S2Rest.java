@@ -2,8 +2,8 @@ package api;
 
 import com.google.common.geometry.*;
 import models.Geofence;
-import models.S2Geofence;
 import models.LatLng;
+import models.S2Geofence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +41,40 @@ public class S2Rest {
             latLon.setLng(latLng.lngDegrees());
             response.add(latLon);
         }
+
+        return response;
+    }
+
+    @RequestMapping(
+            value = "{convertS2ArrayToBoundingLatLonPolygons}",
+            method = RequestMethod.POST,
+            produces = {"application/json"})
+    @ResponseBody
+    public ArrayList<LatLng[]> converGeofenceToS2Polygons(
+            @RequestBody ArrayList<String> cellIds){
+        ArrayList<LatLng[]> response = new ArrayList<>();
+
+        ArrayList<S2Cell> s2Cells = new ArrayList<>();
+        // S2Cell s2Cell = new S2Cell(s2CellId);
+
+        for (String cellId: cellIds) {
+            S2CellId s2CellId = new S2CellId(Long.valueOf(cellId));
+            s2Cells.add(new S2Cell(s2CellId));
+        }
+
+        for (S2Cell cell: s2Cells) {
+            LatLng[] tempArr = new LatLng[4];
+            for(int i=0; i < 4; i++){
+                S2Point p = cell.getVertex(i);
+                S2LatLng latLng = new S2LatLng(p);
+                LatLng latLon = new LatLng();
+                latLon.setLat(latLng.latDegrees());
+                latLon.setLng(latLng.lngDegrees());
+                tempArr[i] = latLon;
+            }
+            response.add(tempArr);
+        }
+
 
         return response;
     }

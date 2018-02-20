@@ -139,8 +139,12 @@ class RentACar extends Component {
     }
 
     handleClickOnCar(carId) {
-        this.setState({selectedCar: this.state.availableCars[carId]});
-        console.log("clicker", carId);
+        for (var car of this.state.availableCars) {
+            if (car.id == carId) {
+                this.setState({selectedCar: car});
+                break;
+            }
+        }
     }
 
     renderCarOnMap(car) {

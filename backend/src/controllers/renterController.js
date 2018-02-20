@@ -25,22 +25,54 @@ var renter_contract = web3.eth.contract(renter_abi);
 
 //Object forEachDone
 function geofencePrefAndSufToGeofence(prefix, suffix) {
-    var pref = web3.toDecimal(removeZeros(prefix));
+    //var pref = web3.toDecimal(removeZeros(prefix));
     var suf = [];
     for (var i = 0; i < suffix.length; i++) {
-        var tempSuf = web3.toDecimal(removeZeros(suffix[i]));
-        suf.push(parseInt(String(pref).concat(String(tempSuf))));
+        suf.push(parseInt(decodeS2Id(parseInt(suffix[i],10)), 10));
     }
     return suf;
 }
 
+var ConvertBase = function (num) {
+    return {
+        from : function (baseFrom) {
+            return {
+                to : function (baseTo) {
+                    return parseInt(num, baseFrom).toString(baseTo);
+                }
+            };
+        }
+    };
+};
 
-function removeZeros(hex) {
-    var newHex = hex;
-    while (newHex.substring(newHex.length - 1) == '0' && newHex[newHex.length - 2] != 'x') {
-        newHex = newHex.substring(0, newHex.length - 1);
+function decodeS2Id(position) {
+
+    position = position.toString();
+    var prefix = position[0];
+    prefix = ConvertBase(prefix).from(10).to(2);
+
+    var pos = position.toString();
+    lvl = pos.length - 1;
+    var realPosition = "";
+    for(var i = 1; i < pos.length; i++){
+        if( pos[i] == "1"){
+            realPosition += "00";
+        }
+        if( pos[i] == "2"){
+            realPosition += "01";
+        }
+        if( pos[i] == "3"){
+            realPosition += "10";
+        }
+        if( pos[i] == "4"){
+            realPosition += "11";
+        }
     }
-    return newHex;
+    realPosition = prefix + realPosition + "10";
+    for(var i = lvl+2; i <=30; i++)
+        realPosition += "00";
+
+    return ConvertBase(realPosition).from(2).to(10) ;
 }
 
 Object.defineProperty(Array.prototype, "forEachDone", {
@@ -92,12 +124,14 @@ module.exports = {
 
                                 car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
                                     (err, result) => {if(result){
-                                        var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
-                                        console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
+                                        var geofence = geofencePrefAndSufToGeofence("1000111", result[4]);
+
+                                        console.log("POSITION: ", parseInt(result[2]), " ", decodeS2Id(result[2]));
+
                                         available_car_result.push({carContractAddress:_car,
                                                 carDetails: {penaltyValue: global.web3.fromWei(result[0], 'ether'),
                                                 carGSMNum: result[1],
-                                                position: web3.toDecimal(String(result[2]).substring(0, 18)),
+                                                position: web3.toDecimal(String(decodeS2Id(result[2]))),
                                                 geofence: geofence
                                             }});
                                     }});
@@ -181,14 +215,15 @@ module.exports = {
 
                                     car_address.GetCarDetails({from: item.car_owner_address, gas: 4700000},
                                         (err, result) => {if(result){
-                                            var geofence = geofencePrefAndSufToGeofence(result[3], result[4]);
-                                            console.log("POSITION: ", result[2], " ", removeZeros(result[2]));
+                                            var geofence = geofencePrefAndSufToGeofence("1000111", result[4]);
+                                            console.log(result[3])
+                                            console.log("POSITION: ", result[2], " ", decodeS2Id(result[2]));
                                             rented_car_result.push({
                                                 carContractAddress: carResult,
                                                 carDetails:
                                                     {penaltyValue: web3.fromWei(result[0], 'ether'),
                                                     carGSMNum: result[1],
-                                                    position: web3.toDecimal(String(result[2]).substring(0, 18)),
+                                                    position: web3.toDecimal(String(decodeS2Id(result[2]))),
                                                     geofence: geofence
                                                 }});
                                             car_response.push({ownerContract:item.car_owner_address,availableCarContract:rented_car_result});

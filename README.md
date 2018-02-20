@@ -14,7 +14,7 @@ git clone https://github.com/danieldimit/iosl-verified-locations-for-smart-contr
 
 3. Finally start the project by running:
  ```
- docker-compose up
+ docker-compose up --build
  ```
 
 ## Team

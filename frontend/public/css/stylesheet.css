@@ -9179,6 +9179,51 @@ body {
 .btn.active.focus {
   outline: 0 auto -webkit-focus-ring-color;
 }
+.react-tabs__tab-list {
+  border-bottom: 1px solid #aaa;
+  margin: 0 0 10px;
+  padding: 0;
+}
+.react-tabs__tab {
+  display: inline-block;
+  border: 1px solid transparent;
+  border-bottom: none;
+  bottom: -1px;
+  position: relative;
+  list-style: none;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.react-tabs__tab--selected {
+  background: #fff;
+  border-color: #aaa;
+  color: black;
+  border-radius: 5px 5px 0 0;
+}
+.react-tabs__tab--disabled {
+  color: GrayText;
+  cursor: default;
+}
+.react-tabs__tab:focus {
+  box-shadow: 0 0 5px #0188fe;
+  border-color: #0188fe;
+  outline: none;
+}
+.react-tabs__tab:focus:after {
+  content: "";
+  position: absolute;
+  height: 5px;
+  left: -4px;
+  right: -4px;
+  bottom: -5px;
+  background: #fff;
+}
+.react-tabs__tab-panel {
+  display: none;
+}
+.react-tabs__tab-panel--selected {
+  display: block;
+}
 #cv-table td {
   padding-bottom: 30px;
 }
@@ -9439,6 +9484,9 @@ body {
   font-family: 'SEGOEUIL' !important;
   color: #181818;
 }
+select {
+  width: 375px;
+}
 .selectedMenuItem {
   font-weight: 600;
 }
@@ -9572,6 +9620,14 @@ a {
   width: 100%;
   height: 400px;
 }
+.header-cols {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+.header-cols p {
+  font-size: 80%;
+  text-align: right;
+}
 .ownerControlPanel {
   padding: 20px 30px 30px 30px;
 }
@@ -9585,7 +9641,23 @@ a {
   background: #a4bfb6;
 }
 #addnew {
-  background: #668d93;
+  background: #cccccc;
+}
+.rent-car .react-tabs__tab {
+  font-size: 25px !important;
+}
+.rent-car .car-info {
+  background: #cccccc;
+  word-wrap: break-word;
+}
+@media (min-width: 992px) {
+  .rent-car .car-info {
+    height: 400px;
+  }
+  .rent-car .renter-map {
+    padding-right: 0;
+    padding-left: 0;
+  }
 }
 .content-block {
   margin-bottom: 30px;
@@ -9692,13 +9764,13 @@ a {
   padding: 20px 20px 0 20px;
 }
 #home-content #references .ref-cols #ref-1 {
-  background: #7a7596;
+  background: #cccccc;
 }
 #home-content #references .ref-cols #ref-2 {
-  background: #42aace;
+  background: #a4bfb6;
 }
 #home-content #references .ref-cols #ref-3 {
-  background: #20596b;
+  background: #668d93;
 }
 #home-content #references .ref-cols ul {
   padding-left: 18px;

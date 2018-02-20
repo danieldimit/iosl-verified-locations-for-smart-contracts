@@ -9,7 +9,8 @@ import {
     withScriptjs,
     withGoogleMap,
     GoogleMap,
-    Marker
+    Marker,
+    Polygon
 } from "react-google-maps";
 
 const OracleMapWithCellTowers = compose(
@@ -27,7 +28,6 @@ const OracleMapWithCellTowers = compose(
         defaultZoom={11}
         defaultCenter={props.center}
     >
-        {props.availableCars.map(res=>console.log("HTML: ", res))}
         {props.renderCars(props.availableCars)}
     </GoogleMap>
 );
@@ -41,17 +41,20 @@ class RentACar extends Component {
         super(props);
         this.state = {
             availableCars: [],
-            selectedCar: {}
+            selectedCar: {},
+            markerVisibility: [],
+            visible: true
         };
         this.rentCar = this.rentCar.bind(this);
         this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
-        this.createScriptNode = this.createScriptNode.bind(this);
+        this.renderCarOnMap = this.renderCarOnMap.bind(this);
+        this.renderCar = this.renderCar.bind(this);
         this.fetchAvailableCars = this.fetchAvailableCars.bind(this);
         this.setAvailableCarsToState = this.setAvailableCarsToState.bind(this);
-        this.renderCarOnMap = this.renderCarOnMap.bind(this);
         this.handleClickOnCar = this.handleClickOnCar.bind(this);
-        this.renderCar = this.renderCar.bind(this);
         this.setStateOfAvailableCars = this.setStateOfAvailableCars.bind(this);
+        this.sortCarsById = this.sortCarsById.bind(this);
+        this.removeCarFromAvailableCarsList = this.removeCarFromAvailableCarsList.bind(this);
     }
 
     componentDidMount() {
@@ -66,12 +69,30 @@ class RentACar extends Component {
             .then(result=>result.success ? this.setAvailableCarsToState(result.data) : null);
     }
 
+    sortCarsById(carList) {
+        let tempCars = Array.apply(null, Array(carList.length)).fill({});
+
+        for (let i = 0; i < carList.length; i++) {
+            tempCars[carList[i].id] = carList[i];
+        }
+        return tempCars;
+    }
+
     setStateOfAvailableCars(flattenedDict, totalNumber) {
 
         if (flattenedDict.length === totalNumber) {
 
-            console.log("WOOOW: ", flattenedDict.length, " ", totalNumber);
-            this.setState({availableCars: flattenedDict});
+            let tempMarkerVisib = Array.apply(null, Array(flattenedDict.length)).fill(true);
+            flattenedDict = this.sortCarsById(flattenedDict);
+
+            // Set Selected Car
+            let selectedCar = flattenedDict[0];
+
+            this.setState({
+                selectedCar: selectedCar,
+                availableCars: flattenedDict,
+                markerVisibility: tempMarkerVisib
+            });
         }
     }
 
@@ -81,11 +102,8 @@ class RentACar extends Component {
         var totalNumber = 0;
 
         function handleResponse(newCar, result) {
-
             newCar['carDetails']['position'] = result;
             flattenedDict.push(newCar);
-
-            console.log(flattenedDict);
             return flattenedDict;
         }
 
@@ -111,9 +129,6 @@ class RentACar extends Component {
                     .then(result=>handleResponse(car, result))
                     .then(result=>this.setStateOfAvailableCars(flattenedDict, totalNumber));
 
-                if (car.id == 0) {
-                    this.setState({selectedCar: car});
-                }
                 idCounter++;
             }
         }
@@ -134,17 +149,37 @@ class RentACar extends Component {
             }
         })
             .then(result=>result.json())
-            .then(result=>console.log("Renting ", this.state.selectedCar.carContractAddress, ' ', result))
+            .then(result=>this.removeCarFromAvailableCarsList(result))
             .then(res=>this.props.getBalance());
     }
 
-    handleClickOnCar(carId) {
-        for (var car of this.state.availableCars) {
-            if (car.id == carId) {
-                this.setState({selectedCar: car});
-                break;
+    removeCarFromAvailableCarsList(res) {
+        if (res.success === true) {
+            let tempVis = this.state.markerVisibility;
+            tempVis[this.state.selectedCar.id] = false;
+
+            let tempCars = this.state.availableCars;
+            tempCars[this.state.selectedCar.id] = {};
+
+            let temp = false;
+            if (this.state.visible == false) {
+                temp = true;
             }
+
+            this.setState({
+                markerVisibility: tempVis,
+                availableCars: tempCars,
+                visible: temp
+            });
         }
+    }
+
+    handleClickOnCar(carId) {
+        this.setState({selectedCar: this.state.availableCars[carId]});
+    }
+
+    setOwnerEthAccount() {
+        this.setState({progressStep: 2, shown: false});
     }
 
     renderCarOnMap(car) {
@@ -156,31 +191,15 @@ class RentACar extends Component {
     }
 
     renderCar (car) {
-        console.log("RENDER CAR: ", car);
         return (
-            <Marker key={car.id}
-                    position={car.carDetails.position[0]} draggable={false}
-                    onClick={() => this.handleClickOnCar(car.id)}/>
+            <div key={Math.floor(Math.random() * 9999999)}>
+                {this.state.markerVisibility[car.id]
+                    ? <Marker
+                        position={car.carDetails.position[0]} draggable={false}
+                        onClick={() => this.handleClickOnCar(car.id)}/>
+                    : null}
+            </div>
         );
-    }
-
-    setOwnerEthAccount() {
-        this.setState({progressStep: 2});
-    }
-
-
-    createScriptNode() {
-        const initMapScript = document.createElement("script");
-        const script = document.createElement("script");
-        initMapScript.src = "/js/googleMapsDrawPolygon.js";
-        initMapScript.async = true;
-        initMapScript.id = "initMap"
-        document.body.appendChild(initMapScript);
-
-        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&libraries=drawing&callback=initMap";
-        script.async = true;
-        script.id = "googleMapsScript";
-        document.body.appendChild(script);
     }
 
     render() {
@@ -193,6 +212,7 @@ class RentACar extends Component {
                 </p>
                 <div className="renter-map col-lg-9 col-md-8 col-sm-12 col-xs-12">
                     <OracleMapWithCellTowers
+                        visible={this.state.visible}
                         availableCars={this.state.availableCars}
                         renderCars={this.renderCarOnMap}
                     />

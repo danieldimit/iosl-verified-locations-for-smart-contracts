@@ -24,7 +24,7 @@ const ReturnCarMap = compose(
         defaultZoom={11}
         defaultCenter={props.center}
     >
-        {props.rentedCars.map(props.renderCars)}
+        {props.renderCars(props.rentedCars)}
     </GoogleMap>
 );
 
@@ -37,17 +37,21 @@ class RentedCars extends Component {
         super(props);
         this.state = {
             rentedCars: [],
-            selectedCar: {}
+            selectedCar: {},
+            markerVisibility: [],
+            visible: true
         };
         this.setOwnerEthAccount = this.setOwnerEthAccount.bind(this);
-        this.createScriptNode = this.createScriptNode.bind(this);
         this.returnCar = this.returnCar.bind(this);
         this.fetchRentedCars = this.fetchRentedCars.bind(this);
         this.flattenRentedCarsList = this.flattenRentedCarsList.bind(this);
+
+        this.renderCar = this.renderCar.bind(this);
         this.renderCarOnMap = this.renderCarOnMap.bind(this);
         this.handleClickOnCar = this.handleClickOnCar.bind(this);
         this.returnCarAndRerender = this.returnCarAndRerender.bind(this);
         this.setStateOfRentedCars = this.setStateOfRentedCars.bind(this);
+        this.sortCarsById = this.sortCarsById.bind(this);
     }
 
     componentDidMount() {
@@ -62,13 +66,30 @@ class RentedCars extends Component {
             .then(result=>result.success ? this.flattenRentedCarsList(result.data) : null);
     }
 
+    sortCarsById(carList) {
+        let tempCars = Array.apply(null, Array(carList.length)).fill({});
+
+        for (let i = 0; i < carList.length; i++) {
+            tempCars[carList[i].id] = carList[i];
+        }
+        return tempCars;
+    }
 
     setStateOfRentedCars(flattenedDict, totalNumber) {
 
         if (flattenedDict.length === totalNumber) {
 
-            console.log("WOOOW: ", flattenedDict.length, " ", totalNumber);
-            this.setState({rentedCars: flattenedDict});
+            let tempMarkerVisib = Array.apply(null, Array(flattenedDict.length)).fill(true);
+            flattenedDict = this.sortCarsById(flattenedDict);
+
+            // Set Selected Car
+            let selectedCar = flattenedDict[0];
+
+            this.setState({
+                selectedCar: selectedCar,
+                rentedCars: flattenedDict,
+                markerVisibility: tempMarkerVisib
+            });
         }
     }
 
@@ -122,11 +143,22 @@ class RentedCars extends Component {
     }
 
     renderCarOnMap(car) {
-        console.log("RENDER CAR: ", car);
         return (
-            <Marker key={car.id}
-                    position={car.carDetails.position[0]} draggable={false}
-                    onClick={() => this.handleClickOnCar(car.id)}/>
+            <div>
+                {car.map(this.renderCar)}
+            </div>
+        );
+    }
+
+    renderCar (car) {
+        return (
+            <div key={Math.floor(Math.random() * 9999999)}>
+                {this.state.markerVisibility[car.id]
+                    ? <Marker
+                        position={car.carDetails.position[0]} draggable={false}
+                        onClick={() => this.handleClickOnCar(car.id)}/>
+                    : null}
+            </div>
         );
     }
 
@@ -148,39 +180,27 @@ class RentedCars extends Component {
 
     returnCarAndRerender(result) {
         if (result.success == true) {
-            let newCarsList = this.state.rentedCars;
+            let tempVis = this.state.markerVisibility;
+            tempVis[this.state.selectedCar.id] = false;
 
-            // Delete car with the given id
-            newCarsList.splice(this.state.selectedCar.id, 1);
+            let tempCars = this.state.rentedCars;
+            tempCars[this.state.selectedCar.id] = {};
 
-            // Renumber the entries to be able to do it again
-            for (var i = 0; i < newCarsList.length; i++) {
-                newCarsList[i].id = i;
+            let temp = false;
+            if (this.state.visible == false) {
+                temp = true;
             }
 
-            this.setState({rentedCars: newCarsList});
-
-            console.log("Returning ", this.state.selectedCar.carContractAddress, ' ', newCarsList);
+            this.setState({
+                markerVisibility: tempVis,
+                rentedCars: tempCars,
+                visible: temp
+            });
         }
     }
 
     setOwnerEthAccount() {
         this.setState({progressStep: 2});
-    }
-
-
-    createScriptNode() {
-        const initMapScript = document.createElement("script");
-        const script = document.createElement("script");
-        initMapScript.src = "/js/googleMapsDrawPolygon.js";
-        initMapScript.async = true;
-        initMapScript.id = "initMap"
-        document.body.appendChild(initMapScript);
-
-        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDd3nVf8mY97Bl1zk9lx6j5kHZDosCxgVA&libraries=drawing&callback=initMap";
-        script.async = true;
-        script.id = "googleMapsScript";
-        document.body.appendChild(script);
     }
 
     render() {
@@ -193,6 +213,7 @@ class RentedCars extends Component {
                 </p>
                 <div className="renter-map col-lg-9 col-md-8 col-sm-12 col-xs-12">
                     <ReturnCarMap
+                        visible={this.state.visible}
                         rentedCars={this.state.rentedCars}
                         renderCars={this.renderCarOnMap}
                     />

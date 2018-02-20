@@ -8,8 +8,10 @@ const Car = require('../model/accounts').Cars;
 var config = require('../config');
 var oracleController = require("./oracleController");
 
-//Added temprory for testing else global.web3 will be used
-var web3 = new Web3(new Web3.providers.HttpProvider(config.testrpcAddress));
+const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || "http://localhost";
+const ETHEREUM_CLIENT_PORT = process.env.ETHEREUM_CLIENT_PORT || "8545";
+const ETHEREUM_CLIENT =  ETHEREUM_CLIENT_IP + ':' + ETHEREUM_CLIENT_PORT;
+var web3 = new Web3(new Web3.providers.HttpProvider(ETHEREUM_CLIENT));
 
 //car
 var contracts_input = fs.readFileSync('src/smartcontracts/CarSharingContract.sol');

@@ -12,6 +12,7 @@ services:
     links:
       - oracle_backend_celltower
 
+
   oracle_backend_celltower:
     build: oracle/backendOracle
     container_name: backend_celltower
@@ -23,16 +24,40 @@ services:
     container_name: backend
     ports:
       - "4000:4000"
+    environment:
+      - PG_HOST=db
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=root
+      - PG_DATABASE=iosl
+      - PUBLIC_PORT=4000
+      - ETHEREUM_CLIENT_IP=http://172.25.0.102
+      - ETHEREUM_CLIENT_PORT=8545
     depends_on:
       - testrpc_server
     links:
       - testrpc_server
+    networks:
+      mynet:
+        ipv4_address: 172.25.0.101
+
 
   testrpc_server:
     build: testrpc
     container_name: testrpc
     ports:
       - "8545:8545"
+    networks:
+      mynet:
+        ipv4_address: 172.25.0.102
+
+
+
+  s2 :
+    build: oracle/s2-server
+    container_name: s2-server
+    ports:
+      - "8180:8180"
 
   db :
     build: db
@@ -40,8 +65,13 @@ services:
     ports:
       - "5432:5432"
 
-  s2 :
-    build: oracle/s2-server
-    container_name: s2-server
-    ports:
-      - "8180:8180"
+
+networks:
+  mynet:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.25.0.0/24
+
+
+  

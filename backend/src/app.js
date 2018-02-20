@@ -17,10 +17,10 @@ var swaggerDocument = require('./swagger.json');
 // Application config
 const LOCAL_APP_PORT = 4000;
 const PUBLIC_APP_PORT = process.env.PUBLIC_APP_PORT || LOCAL_APP_PORT;
-//const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || "http://localhost";
-//const ETHEREUM_CLIENT_PORT = process.env.ETHEREUM_CLIENT_PORT || "8545";
-//const ETHEREUM_CLIENT =  ETHEREUM_CLIENT_IP + ':' + ETHEREUM_CLIENT_PORT;
-const ETHEREUM_CLIENT = config.testrpcAddress;
+const ETHEREUM_CLIENT_IP = process.env.ETHEREUM_CLIENT_IP || "http://localhost";
+const ETHEREUM_CLIENT_PORT = process.env.ETHEREUM_CLIENT_PORT || "8545";
+const ETHEREUM_CLIENT =  ETHEREUM_CLIENT_IP + ':' + ETHEREUM_CLIENT_PORT;
+// const ETHEREUM_CLIENT = config.testrpcAddress;
 
 //Set up global RPC connection
 global.web3 = new Web3(new Web3.providers.HttpProvider(ETHEREUM_CLIENT));
